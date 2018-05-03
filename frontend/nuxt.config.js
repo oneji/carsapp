@@ -6,6 +6,12 @@ module.exports = {
   mode: 'universal',
 
   /*
+  ** Router settings
+  */
+  // router: {
+  //   middleware: ['auth']
+  // },
+  /*
   ** Headers of the page
   */
   head: {
@@ -46,7 +52,7 @@ module.exports = {
   */
   plugins: [
     '@/plugins/vuetify',
-    '@/plugins/vee-validate',
+    '@/plugins/vee-validate'
   ],
 
   /*
@@ -58,10 +64,31 @@ module.exports = {
     '@nuxtjs/auth'
   ],
   /*
+  ** Auth module settings 
+  */
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/auth/login', method: 'post', propertyName: 'token' },
+          logout: { url: '/auth/logout', method: 'post' },
+          user: { url: '/me', method: 'get', propertyName: 'user' }
+        },
+      }
+    },
+    redirect: {
+      login: '/login',
+      logout: '/login',
+      home: '/',
+      user: '/',
+    }
+  },
+  /*
   ** Axios module configuration
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+    baseURL: 'http://localhost:8000/api'
   },
 
   /*
@@ -72,7 +99,7 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend(config, ctx) {
-      
+
       if (ctx.isServer) {
         config.externals = [
           nodeExternals({
