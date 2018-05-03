@@ -6,48 +6,22 @@
       </v-flex>
     </v-layout>
     
-    <v-layout>
+    <v-layout class="py-2">
       <v-flex xs12 sm12 md10 lg8>
-        <v-card>
-          <v-card-title>
-            Nutrition
-            <v-spacer></v-spacer>
-            <v-text-field append-icon="search" label="Поиск" single-line hide-details v-model="search"></v-text-field>
-          </v-card-title>
-          <v-data-table :headers="headers" select-all v-model="selected" :items="items" :search="search" class="elevation-1">
-            <!-- Main temlpate -->
-            <template slot="items" slot-scope="props">
-              <td><v-checkbox primary hide-details v-model="props.selected"></v-checkbox></td>
-              <td>{{ props.item.name }}</td>
-              <td class="text-xs-right">{{ props.item.calories }}</td>
-              <td class="text-xs-right">{{ props.item.fat }}</td>
-              <td class="text-xs-right">{{ props.item.carbs }}</td>
-              <td class="text-xs-right">{{ props.item.protein }}</td>
-              <td class="text-xs-right">{{ props.item.iron }}</td>
-            </template>
-
-            <!-- No data template -->
-            <template slot="no-data">
-              <v-alert :value="true" color="error" icon="warning">
-                Нет доступных данных.
-              </v-alert>
-            </template>
-          </v-data-table>
-          
-          <!-- No results template -->
-          <v-alert slot="no-results" :value="true" color="error" icon="warning">
-            Реультатов "{{ search }}" не найдено.
-          </v-alert>
-        </v-card>
+        <data-table :headers="headers" :items="items"/>
       </v-flex>
     </v-layout>
   </div>
 </template>
 
 <script>
+import DataTable from '~/components/DataTable'
 export default {
   head: {
     title: 'Компании'
+  },
+  components: {
+    DataTable
   },
   data() {
     return {

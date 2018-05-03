@@ -67,7 +67,8 @@ export default {
       fixed: false,
       items: [
         { icon: "home", title: "Главная", to: "/" },
-        { icon: "business", title: "Компании", to: "/companies" }
+        { icon: "business", title: "Компании", to: "/companies" },
+        { icon: "build", title: "СТО", to: "/stos" },
       ],
       miniVariant: false,
       rightDrawer: false,

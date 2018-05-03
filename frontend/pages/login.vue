@@ -58,31 +58,6 @@ export default {
         loading: false
     }),
     methods: {
-        // login() {
-        //     this.$validator.validateAll()
-        //         .then((success) => {
-        //             // Validation passed
-        //             if(success) {      
-        //                 this.loading = true;
-        //                 this.$store.dispatch('auth/login', {
-        //                     email: this.email,
-        //                     password: this.password
-        //                 }).then(result => {
-        //                     console.log(result);
-        //                     this.loading = false;
-        //                     this.alert.show = false;
-        //                     console.log(this.$store.state.user)
-        //                     this.$router.push('/');
-        //                 }).catch(error => {
-        //                     this.loading = false;
-        //                     if (error.response && error.response.data) {
-        //                         this.alert.message = error.response.data.message || error.reponse.status;
-        //                         this.alert.show = true;
-        //                     }
-        //                 });                   
-        //             }
-        //         });         
-        // }
         login() {
             this.$validator.validateAll()
                 .then((success) => {

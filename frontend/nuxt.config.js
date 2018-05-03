@@ -81,6 +81,12 @@ module.exports = {
       login: '/login',
       logout: '/login',
       home: '/',
+    },
+    localStorage: false,
+    cookie: {
+      options: {
+        expires: 1
+      }
     }
   },
   /*
