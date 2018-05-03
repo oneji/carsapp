@@ -100,9 +100,11 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout(Request $request) {
-        $this->validate($request, ['token' => 'required']);
+        $header = $request->header('Authorization');
+        $token = explode(' ', $header);
+
         try {
-            JWTAuth::invalidate($request->input('token'));
+            JWTAuth::invalidate($token[1]);
             return response()->json(['success' => true]);
         } catch (JWTException $e) {
             return response()->json(['success' => false, 'error' => 'Что то пошло не так. Пожалуйста повторите попытку.'], 500);

@@ -8,9 +8,9 @@ module.exports = {
   /*
   ** Router settings
   */
-  // router: {
-  //   middleware: ['auth']
-  // },
+  router: {
+    middleware: ['auth']
+  },
   /*
   ** Headers of the page
   */
@@ -67,6 +67,7 @@ module.exports = {
   ** Auth module settings 
   */
   auth: {
+    // fetchUserOnLogin: true,
     strategies: {
       local: {
         endpoints: {
@@ -80,7 +81,6 @@ module.exports = {
       login: '/login',
       logout: '/login',
       home: '/',
-      user: '/',
     }
   },
   /*

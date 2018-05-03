@@ -20,7 +20,7 @@
       <v-btn icon @click.stop="miniVariant = !miniVariant">
         <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
       </v-btn>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title v-text="`Привет, ${user.fullname}`"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
@@ -35,13 +35,15 @@
     </v-content>
 
     <!-- Right sidebar -->
-    <v-navigation-drawer temporary :right="right" v-model="rightDrawer" fixed>
+    <v-navigation-drawer temporary right v-model="rightDrawer" fixed>
       <v-list>
-        <v-list-tile @click.native="right = !right">
+        <v-list-tile @click="logout">
           <v-list-tile-action>
-            <v-icon light>compare_arrows</v-icon>
+            <v-icon light>power_settings_new</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
+          <v-list-tile-content>
+            <v-list-tile-title>Выйти</v-list-tile-title>
+          </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
@@ -54,19 +56,32 @@
 
 <script>
 export default {
+  computed: {
+    user() {
+      return (this.$auth.user || {}) || null;
+    }
+  },
   data() {
     return {
       drawer: true,
       fixed: false,
       items: [
         { icon: "home", title: "Главная", to: "/" },
-        { icon: "account_circle", title: "Login page", to: "/login" }
+        { icon: "business", title: "Компании", to: "/companies" }
       ],
       miniVariant: false,
-      right: true,
       rightDrawer: false,
-      title: ``
     };
+  },
+
+  methods: {
+    async logout() {
+      await this.$auth.logout();    
+    }
+  },
+
+  created() {
+    // this.$auth.fetchUser();
   }
 };
 </script>

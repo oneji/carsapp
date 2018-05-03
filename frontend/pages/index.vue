@@ -2,8 +2,7 @@
     <v-container>
         <v-layout>
             <v-flex>
-                <v-btn @click="logout" color="success">Выйти</v-btn>
-                <v-btn @click="showUser" color="success">Пользователь</v-btn>
+                <h1>Главная страница</h1>
             </v-flex>
         </v-layout>
     </v-container>
@@ -11,16 +10,10 @@
 
 <script>
 export default {
+    head: {
+        title: 'Главная'
+    },
     methods: {
-        async logout() {
-            await this.$auth.logout();
-            this.$router.push('/login');
-        },
-
-        showUser() {  
-                          
-        },
-
         parseJwt (token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -28,7 +21,14 @@ export default {
         }
     },
     created() {
-        console.log(this.$auth.user.email);
+        // this.$auth.fetchUser();  
+        let jwt = this.parseJwt(window.localStorage.getItem('auth._token.local'));
+        
+        let expDate = new Date(jwt.exp * 1000);
+        let iatDate = new Date(jwt.iat * 1000);
+
+        let result = expDate.getDate() === iatDate.getDate();
+        console.log(result);
     }
 }
 </script>
