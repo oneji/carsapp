@@ -36,6 +36,7 @@ class AuthController extends Controller
         $user->fullname = $request->fullname;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        $user->type = $request->type;
         $user->save();
 
         return response()->json([

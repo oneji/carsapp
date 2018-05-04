@@ -4,7 +4,9 @@ const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   mode: 'universal',
-
+  env: {
+    apiURL: 'http://localhost:8000'
+  },
   /*
   ** Router settings
   */

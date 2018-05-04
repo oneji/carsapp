@@ -12,14 +12,14 @@
                     </v-card-media> 
                                      
                     <v-card-text>
-                        <v-alert transition="slide-y-reverse-transition" type="error" :value="alert.message">
+                        <v-alert transition="scale-transition" type="error" :value="alert.message">
                             {{ alert.message }}
                         </v-alert>
                         <v-form @submit.prevent="login">
                             <v-text-field v-model="email" name="email" label="Email" type="text"
                                 v-validate="'required|email'" 
                                 :error-messages="errors.collect('email')"
-                                data-vv-name="email" required                                    
+                                data-vv-name="email" data-vv-as='"Email"' required                                    
                             ></v-text-field>
                             <v-text-field v-model="password" name="password" label="Пароль" hint="Минимум 6 символов"
                                 :append-icon="showPassword ? 'visibility' : 'visibility_off'"
@@ -27,7 +27,7 @@
                                 :type="showPassword ? 'password' : 'text'"
                                 v-validate="'required|min:6'"
                                 :error-messages="errors.collect('password')"
-                                data-vv-name="password" data-vv-as="пароль" required
+                                data-vv-name="password" data-vv-as='"Пароль"' required 
                             ></v-text-field>                            
                             <v-btn :loading="loading" color="info" block large type="submit">Войти</v-btn>
                         </v-form>

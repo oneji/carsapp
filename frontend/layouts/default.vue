@@ -29,7 +29,7 @@
 
     <!-- Main content -->
     <v-content>
-      <v-container>
+      <v-container grid-list-xs grid-list-sm grid-list-md grid-list-lg>
         <nuxt />
       </v-container>
     </v-content>
@@ -82,7 +82,7 @@ export default {
   },
 
   created() {
-    // this.$auth.fetchUser();
+    
   }
 };
 </script>

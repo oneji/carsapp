@@ -20,6 +20,9 @@ Route::group(['namespace' => 'Api'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         Route::post('auth/logout', 'AuthController@logout');
         Route::get('/me', 'AuthController@user');
-    });  
-    
+
+        // Company routes
+        Route::get('/companies', 'CompanyController@get')->name('api.companies.get');
+        Route::post('/companies', 'CompanyController@store')->name('api.companies.store');
+    }); 
 });
