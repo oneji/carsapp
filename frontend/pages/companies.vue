@@ -3,7 +3,7 @@
     <v-layout row wrap>
       <v-flex xs12 sm12 md12 lg12>
         <v-btn @click.native.stop="dialog = true" color="success">Создать компанию</v-btn>
-        <!-- Modal -->
+        <!-- Create new company modal -->
         <v-dialog v-model="dialog" max-width="500">
           <v-card>
             <v-card-title class="headline">Создать компанию</v-card-title>
@@ -18,7 +18,7 @@
                       ></v-text-field>
                     <v-text-field hint="Например: +992 987641312" prepend-icon="phone"  v-model="newCompany.contact" name="contact" label="Контакт компании"></v-text-field>
 
-                    <img class="file-preview" :src="newCompany.logo.url" height="150" v-if="newCompany.logo.url" />
+                    <img class="logo-preview" :src="newCompany.logo.url" height="150" v-if="newCompany.logo.url" />
                     <v-text-field label="Выберите логотип" @click="pickFile" v-model="newCompany.logo.name" prepend-icon="attach_file"></v-text-field>
                     <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
                   </form>
@@ -37,10 +37,17 @@
     </v-layout>    
     
     <!-- A list of companies -->
-    <transition-group tag="v-layout" class="py-2 row wrap" name="slide-x-transition">     
-      <v-flex xs12 sm4 md3 lg3 v-for="item in items" :key="item.id">
+    <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
+      <v-flex xs12 sm4 md3 lg2 v-for="item in items" :key="item.id">
         <v-card>
-          <v-card-media :src="`${assetURL}/uploads/logos/companies/${item.logo}`" height="200px"></v-card-media>            
+          <v-card-media height="150px">
+            <v-layout row justify-center align-center>
+              <v-flex xs6 sm6 md6 lg6>
+                <img v-if="item.logo" :src="`${assetURL}/uploads/logos/companies/${item.logo}`" :alt="`Логотип ${item.company_name}`">
+                <img v-else src="/images/no-logo.png" alt="Нет логотипа">
+              </v-flex>
+            </v-layout>
+          </v-card-media>            
           <v-card-title primary-title>
             <div>
               <h3 class="headline mb-0">{{ item.company_name }}</h3>
@@ -48,7 +55,6 @@
               <div v-else>Контакта нет</div>
             </div>
           </v-card-title>
-
           <!-- <v-card-actions>
             <v-btn flat color="orange">Изменить</v-btn>
           </v-card-actions> -->
@@ -185,7 +191,7 @@ export default {
 </script>
 
 <style>
-  .file-preview {
+  .logo-preview {
     display: block;
     margin: 0 auto;
   }
