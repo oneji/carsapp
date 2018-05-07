@@ -13,14 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['namespace' => 'Api'], function() {
-    Route::post('auth/login', 'AuthController@login');    
-    Route::post('auth/register', 'AuthController@register');
+// General routes
+Route::post('auth/login', 'AuthController@login');    
+Route::post('auth/register', 'AuthController@register');
 
+Route::group(['middleware' => ['jwt.auth']], function() {
+    Route::post('auth/logout', 'AuthController@logout');
+    Route::get('/me', 'AuthController@user');
+}); 
+
+Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
-        Route::post('auth/logout', 'AuthController@logout');
-        Route::get('/me', 'AuthController@user');
-
         // Company routes
         Route::get('/companies', 'CompanyController@get')->name('api.companies.get');
         Route::post('/companies', 'CompanyController@store')->name('api.companies.store');

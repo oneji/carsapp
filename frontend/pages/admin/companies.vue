@@ -127,7 +127,7 @@ export default {
   methods: {
     fetchCompanies() {
       this.alert.noCompanies = false;
-      this.$axios.get('/companies')
+      this.$axios.get('/admin/companies')
         .then(response => {
           this.items = response.data;
           if(this.items.length === 0) {
@@ -148,7 +148,7 @@ export default {
             formData.append('contact', this.newCompany.contact);
             formData.append('logo', this.newCompany.logo.file);
 
-            this.$axios.post('/companies', formData)
+            this.$axios.post('/admin/companies', formData)
             .then(response => {
               this.items.push(response.data);
               this.alert.noCompanies = false;

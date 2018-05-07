@@ -66,9 +66,9 @@ export default {
       drawer: true,
       fixed: false,
       items: [
-        { icon: "home", title: "Главная", to: "/" },
-        { icon: "business", title: "Компании", to: "/companies" },
-        { icon: "build", title: "СТО", to: "/stos" },
+        { icon: 'home', title: 'Главная', to: '/admin' },
+        { icon: 'business', title: 'Компании', to: '/admin/companies' },
+        { icon: 'build', title: 'СТО', to: '/admin/stos' },
       ],
       miniVariant: false,
       rightDrawer: false,

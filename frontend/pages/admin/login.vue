@@ -69,7 +69,7 @@ export default {
                                 password: this.password
                             }
                         }).then(() => {
-                            this.$router.push('/');
+                            this.$router.push('/admin');
                         }).catch((error) => {
                             this.loading = false;
                             this.alert.message = error.response.data.message;

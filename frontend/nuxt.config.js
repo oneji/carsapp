@@ -80,9 +80,9 @@ module.exports = {
       }
     },
     redirect: {
-      login: '/login',
-      logout: '/login',
-      home: '/',
+      login: '/admin/login',
+      logout: '/admin/login',
+      home: '/admin',
     },
     localStorage: false,
     cookie: {
