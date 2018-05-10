@@ -13,14 +13,14 @@ import cookies from 'js-cookie'
 export default {
   name: 'App',
   created() {
-    const token = cookies.get('auth.token');
+    // const token = cookies.get('auth.token');
 
-    if(token !== undefined) {
-      this.$store.dispatch('fetch');
-    } else {
-      this.$store.dispatch('resetUser');
-      this.$router.push('/login');
-    }
+    // if(token !== undefined) {
+    //   this.$store.dispatch('fetch');
+    // } else {
+    //   this.$store.dispatch('resetUser');
+    //   this.$router.push('/login');
+    // }
   }
 }
 </script>

@@ -9,8 +9,12 @@
 </template>
 
 <script>
-export default {
-    
+export default {    
+    methods: {
+        hasRole(role) {
+            
+        }   
+    }
 }
 </script>
 

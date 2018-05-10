@@ -73,7 +73,12 @@ export default {
             this.$store.dispatch('login', credentials).then(response => {
                 this.loading = false;
                 this.$router.push('/');
-            });            
+            })
+            .catch(error => {
+                this.loading = false;
+                this.alert.message = error.data.message;
+                this.alert.show = true;
+            })        
         }
     }, 
 };

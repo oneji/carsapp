@@ -10,7 +10,8 @@ import actions from './actions'
 export default new Vuex.Store({
     state: {
         user: null,
-        isLogged: false
+        isLogged: false,
+        token: null
     },
     getters,
     mutations,

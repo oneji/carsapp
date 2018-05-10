@@ -64,20 +64,20 @@ class AuthController extends Controller
             return response()->json([ 'false' => true, 'message' => $error ]);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->with(['roles', 'permissions'])->first();
         if(!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Пользователя с таким email не существует.'
-            ], 401);
+            ]);
         }
         
         try {
             if(!$token = JWTAuth::attempt($credentials)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Неверные пароль.'
-                ], 401);
+                    'message' => 'Неверный пароль.'
+                ]);
             }
         } catch (JWTException $e) {
             return response()->json([
@@ -107,7 +107,10 @@ class AuthController extends Controller
             JWTAuth::invalidate($token[1]);
             return response()->json(['success' => true]);
         } catch (JWTException $e) {
-            return response()->json(['success' => false, 'error' => 'Что то пошло не так. Пожалуйста повторите попытку.'], 500);
+            return response()->json([
+                'success' => false, 
+                'error' => 'Что то пошло не так. Пожалуйста повторите попытку.'
+            ], 500);
         }
     }
 
@@ -138,4 +141,29 @@ class AuthController extends Controller
             'user' => $me
         ]);
     }
+
+    /**
+     * Refresh token.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refreshToken(Request $request) 
+    {
+        $header = $request->header('Authorization');
+        $token = explode(' ', $header);
+
+        try {
+            $refreshedToken = JWTAuth::refresh($token[1]);
+            return response()->json([
+                'success' => true,
+                'refreshedToken' => $refreshedToken
+            ]);
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false, 
+                'error' => 'Что то пошло не так. Пожалуйста повторите попытку.'
+            ], 500);
+        }
+    } 
 }
+

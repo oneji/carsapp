@@ -16,10 +16,12 @@ use Illuminate\Http\Request;
 // General routes
 Route::post('auth/login', 'AuthController@login');    
 Route::post('auth/register', 'AuthController@register');
+Route::get('/token/refresh', 'AuthController@refreshToken');
+Route::get('/token/check', 'AuthController@checkToken');
 
 Route::group(['middleware' => ['jwt.auth']], function() {
     Route::post('auth/logout', 'AuthController@logout');
-    Route::get('/me', 'AuthController@user');
+    Route::get('/me', 'AuthController@user');    
 }); 
 
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
