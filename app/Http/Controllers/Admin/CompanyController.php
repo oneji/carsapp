@@ -37,10 +37,14 @@ class CompanyController extends Controller
         }
 
         $company = new Company($request->all());
-        $company->logo = $fileNameToStore;
+        $company->logo = 'uploads/logos/companies/'.$fileNameToStore;
         $company->slug = str_slug($request->company_name);
         $company->save();
 
-        return response()->json($company);
+        return response()->json([
+            'success' => true,
+            'message' => 'Компания успешно создана!',
+            'company' => $company
+        ]);
     }
 }

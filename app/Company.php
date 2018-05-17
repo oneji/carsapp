@@ -14,4 +14,13 @@ class Company extends Model
     protected $fillable = [
         'company_name', 'contact',
     ];
+
+    /**
+     * Get users which belong to a company.
+     * 
+     */
+    public function users() 
+    {
+        return $this->belongsToMany('App\User');
+    }
 }
