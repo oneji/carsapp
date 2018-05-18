@@ -15,7 +15,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {    
     const token = cookie.get('auth.token');
 
-    if(to.name.toLowerCase() !== 'login')  {
+    if(to.name.toLowerCase() !== 'login' && store.getters.user === null)  {
         store.dispatch('fetch')
             .then(() => {
                 const user = store.getters.user;

@@ -32,12 +32,13 @@ class CompanyController extends Controller
             $fileExtension = $request->file('logo')->getClientOriginalExtension();
             $fileNameToStore = time().'.'.$fileExtension;
             $path = $request->file('logo')->move(public_path('/uploads/logos/companies'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/logos/companies/'.$fileNameToStore;
         } else {
             $fileNameToStore = null;
         }
 
         $company = new Company($request->all());
-        $company->logo = 'uploads/logos/companies/'.$fileNameToStore;
+        $company->logo = $fileNameToStore;
         $company->slug = str_slug($request->company_name);
         $company->save();
 

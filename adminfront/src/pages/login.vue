@@ -19,7 +19,7 @@
                             <v-text-field v-model="email" name="email" label="Email" type="text"
                                 v-validate="'required|email'" 
                                 :error-messages="errors.collect('email')"
-                                data-vv-name="email" data-vv-as='"Email"' required                                    
+                                data-vv-name="email" data-vv-as='"Email"'                                    
                             ></v-text-field>
                             <v-text-field v-model="password" name="password" label="Пароль" hint="Минимум 6 символов"
                                 :append-icon="showPassword ? 'visibility' : 'visibility_off'"
@@ -27,7 +27,7 @@
                                 :type="showPassword ? 'password' : 'text'"
                                 v-validate="'required|min:6'"
                                 :error-messages="errors.collect('password')"
-                                data-vv-name="password" data-vv-as='"Пароль"' required 
+                                data-vv-name="password" data-vv-as='"Пароль"' 
                             ></v-text-field>                            
                             <v-btn :loading="loading" color="info" block large type="submit">Войти</v-btn>
                         </v-form>
@@ -66,19 +66,26 @@ export default {
     methods: {
         login() {
             this.loading = true;
-            let credentials = {
-                email: this.email,
-                password: this.password
-            }
-            this.$store.dispatch('login', credentials).then(response => {
-                this.loading = false;
-                this.$router.push('/');
-            })
-            .catch(error => {
-                this.loading = false;
-                this.alert.message = error.data.message;
-                this.alert.show = true;
-            })        
+            this.$validator.validateAll()
+                .then((result) => {
+                    if(result) {
+                        let credentials = {
+                            email: this.email,
+                            password: this.password
+                        }
+                        this.$store.dispatch('login', credentials).then(response => {
+                            this.loading = false;
+                            this.$router.push('/');
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            this.alert.message = error.data.message;
+                            this.alert.show = true;
+                        });  
+                    } else {
+                        this.loading = false;
+                    }        
+                });
         }
     }, 
 };

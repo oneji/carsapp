@@ -61,12 +61,14 @@ class UserController extends Controller
             $fileExtension = $request->file('avatar')->getClientOriginalExtension();
             $fileNameToStore = time().'.'.$fileExtension;
             $path = $request->file('avatar')->move(public_path('/uploads/avatars'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/avatars/'.$fileNameToStore;
         } else {
             $fileNameToStore = null;
         }
 
         $user = new User($request->all());
-        $user->avatar = 'uploads/avatars/'.$fileNameToStore;
+        $user->avatar = $fileNameToStore;
+        $user->password = bcrypt($request->password);
         $user->save();
         
         if($request->roles !== null)

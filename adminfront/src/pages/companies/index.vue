@@ -36,7 +36,7 @@
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
           {{ snackbar.text }}
-          <v-btn dark flat @click.native="snackbar = false">Закрыть</v-btn>
+          <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
       </v-flex>
     </v-layout>    
@@ -49,7 +49,7 @@
             <v-layout row justify-center align-center>
               <v-flex xs6 sm6 md6 lg6>
                 <img v-if="item.logo" :src="`${assetURL}/${item.logo}`" :alt="`Логотип ${item.company_name}`">
-                <img v-else src="/images/no-logo.png" alt="Нет логотипа">
+                <img v-else src="/static/images/no-logo.png" alt="Нет логотипа">
               </v-flex>
             </v-layout>
           </v-card-media> 
