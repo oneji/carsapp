@@ -42,7 +42,7 @@
                     </v-card-title>
 
                     <v-card-actions>
-                        <v-btn flat color="green">Изменить</v-btn>
+                        <v-btn flat color="green" :to="`/users/edit/${user.id}`">Изменить</v-btn>
                         <v-btn flat color="red" @click="deleteUser(user.id, index)">Удалить</v-btn>
                     </v-card-actions>                    
                 </v-card>
@@ -155,6 +155,14 @@ export default {
                         this.alert.text = JSON.parse(response.data.message);
                         this.alert.active = true;
                     }
+                });
+        },
+
+        editUser(user) {
+            const vm = this;
+            this.$store.dispatch('userToEdit', user)
+                .then(() => {
+                    vm.$router.push({ name: 'UserEdit' });
                 });
         },
         

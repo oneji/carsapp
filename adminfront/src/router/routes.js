@@ -4,7 +4,8 @@ import Home from '@/pages/index'
 import Companies from '@/pages/companies/index'
 import Stos from '@/pages/stos/index'
 import UsersIndex from '@/pages/users/index'
-import UsersCreate from '@/pages/users/create'
+import UserCreate from '@/pages/users/create'
+import UserEdit from '@/pages/users/edit'
 import ACL from '@/pages/acl/index'
 
 const routes = [        
@@ -15,7 +16,8 @@ const routes = [
             { path: '/companies', name: 'Companies', component: Companies, meta: { requiresAuth: true, } },
             { path: '/stos', name: 'Stos', component: Stos, meta: { requiresAuth: true } },
             { path: '/users', name: 'Users', component: UsersIndex, meta: { requiresAuth: true } },
-            { path: '/users/create', name: 'UsersCreate', component: UsersCreate, meta: { requiresAuth: true } },
+            { path: '/users/create', name: 'UserCreate', component: UserCreate, meta: { requiresAuth: true } },
+            { path: '/users/edit/:id', name: 'UserEdit', component: UserEdit, meta: { requiresAuth: true } },
             { path: '/acl', name: 'ACL', component: ACL, meta: { requiresAuth: true } },
         ],
         meta: { requiresAuth: true },

@@ -64,7 +64,7 @@ class AuthController extends Controller
             return response()->json([ 'false' => true, 'message' => $error ]);
         }
 
-        $user = User::where('email', $request->email)->where('deleted', 0)->with(['roles', 'permissions'])->first();
+        $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with(['roles', 'permissions'])->first();
         if(!$user) {
             return response()->json([
                 'success' => false,

@@ -1,4 +1,4 @@
-import { SET_USER, RESET_USER, REFRESH_TOKEN } from './mutation-types'
+import { SET_USER, RESET_USER, REFRESH_TOKEN, USER_TO_EDIT } from './mutation-types'
 import router from '@/router'
 
 const mutations = {
@@ -13,9 +13,9 @@ const mutations = {
         router.push('/login');
     },
 
-    [REFRESH_TOKEN] (state, token) {
-        state.token = token;
-    } 
+    [USER_TO_EDIT] (state, user) {
+        state.userToEdit = user;
+    }
 }
 
 export default mutations

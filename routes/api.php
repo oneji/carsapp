@@ -27,13 +27,18 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Company routes
-        Route::get('/companies', 'CompanyController@get')->name('api.companies.get');
-        Route::post('/companies', 'CompanyController@store')->name('api.companies.store');
+        Route::get('/companies', 'CompanyController@get');
+        Route::post('/companies', 'CompanyController@store');
         // User routes
-        Route::get('/users', 'UserController@getAll')->name('api.users.get');
-        Route::delete('/users/{user}', 'UserController@destroy')->name('api.user.delete');
-        Route::post('/users', 'UserController@store')->name('api.user.store');
+        Route::get('/users', 'UserController@getAll');
+        Route::get('/users/{user}', 'UserController@getByID');
+        Route::delete('/users/{user}', 'UserController@destroy');
+        Route::post('/users', 'UserController@store');
+        Route::put('/users/{user}', 'UserController@update');
         // Acl routes
-        Route::get('/acl', 'AclController@get')->name('api.acl.get');
+        Route::get('/acl', 'AclController@get');
+        Route::put('/acl', 'AclController@update');
+        Route::post('/acl/roles', 'AclController@createRole');
+        Route::post('/acl/permissions', 'AclController@createPermission');
     }); 
 });

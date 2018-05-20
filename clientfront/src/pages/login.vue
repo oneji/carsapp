@@ -28,7 +28,8 @@
                                 v-validate="'required|min:6'"
                                 :error-messages="errors.collect('password')"
                                 data-vv-name="password" data-vv-as='"Пароль"' required 
-                            ></v-text-field>                            
+                            ></v-text-field>       
+                            <v-select :items="items" v-model="type" label="Выберите тип" single-line></v-select>                     
                             <v-btn :loading="loading" color="info" block large type="submit">Войти</v-btn>
                         </v-form>
                     </v-card-text> 
@@ -57,6 +58,11 @@ export default {
         showPassword: true,
         email: '',
         password: '',
+        type: '',
+        items: [
+            { text: 'Компания', value: 1 },
+            { text: 'СТО', value: 2 },
+        ],
         alert: {
             show: false,
             message: ''
@@ -68,7 +74,8 @@ export default {
             this.loading = true;
             let credentials = {
                 email: this.email,
-                password: this.password
+                password: this.password,
+                type: this.type
             }
             this.$store.dispatch('login', credentials).then(response => {
                 this.loading = false;

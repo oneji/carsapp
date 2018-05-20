@@ -71,7 +71,8 @@ export default {
                     if(result) {
                         let credentials = {
                             email: this.email,
-                            password: this.password
+                            password: this.password,
+                            type: 0
                         }
                         this.$store.dispatch('login', credentials).then(response => {
                             this.loading = false;

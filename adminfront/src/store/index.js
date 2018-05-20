@@ -11,7 +11,7 @@ export default new Vuex.Store({
     state: {
         user: null,
         isLogged: false,
-        token: null
+        userToEdit: null
     },
     getters,
     mutations,

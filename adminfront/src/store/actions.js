@@ -1,13 +1,14 @@
 import axios from '@/axios'
 import cookie from 'js-cookie'
 import router from '@/router'
+import * as mTypes from './mutation-types'
 
 const actions = {
     fetch({ commit }) {        
         return new Promise((resolve, reject) => {
             axios.get('/me')
                 .then(response => { 
-                    commit('setUser', response.data.user);
+                    commit(mTypes.SET_USER, response.data.user);
                     cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
                     resolve(response);
                 })
@@ -22,12 +23,13 @@ const actions = {
         return new Promise((resolve, reject) => {
             axios.post('/auth/login', {
                 'email': user.email,
-                'password': user.password
+                'password': user.password,
+                'type': user.type
             })
             .then(response => { 
                 if(response.status === 200) { 
                     if(response.data.success) {
-                        commit('setUser', response.data.user);
+                        commit(mTypes.SET_USER, response.data.user);
                         cookie.set('auth.token', response.data.token, { expires: 1 });
                         cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
                         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
@@ -44,7 +46,7 @@ const actions = {
     logout({ commit }) {
         axios.post('/auth/logout')
             .then(response => {
-                commit('resetUser');
+                commit(mTypes.RESET_USER);
                 cookie.remove('auth.token');
                 cookie.remove('user')
             })
@@ -52,19 +54,17 @@ const actions = {
     },
 
     resetUser({ commit }) {
-        commit('resetUser'); 
+        commit(mTypes.RESET_USER); 
         cookie.remove('auth.token');
         cookie.remove('user')       
     },
 
-    refreshToken({ commit }) {
-        axios.get('/token/refresh')
-            .then(response => {
-                console.log(axios.defaults.headers.common);
-            })
-            .catch(error => console.log(error));
-           
-    },
+    userToEdit({ commit }, user) {
+        return new Promise((resolve, reject) => {
+            commit(mTypes.USER_TO_EDIT, user);
+            resolve();
+        })
+    }
 }
 
 export default actions

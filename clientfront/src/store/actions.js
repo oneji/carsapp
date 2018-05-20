@@ -22,7 +22,8 @@ const actions = {
         return new Promise((resolve, reject) => {
             axios.post('/auth/login', {
                 'email': user.email,
-                'password': user.password
+                'password': user.password,
+                'type': user.type
             })
             .then(response => { 
                 if(response.status === 200) { 

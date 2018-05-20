@@ -7,8 +7,8 @@ const getters = {
         return state.isLogged;
     },
 
-    token: state => {
-        return state.token;
+    userToEdit: state => {
+        return state.userToEdit;
     }
 }
 
