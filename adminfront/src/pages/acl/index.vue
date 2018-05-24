@@ -1,12 +1,5 @@
 <template>
     <div>
-        <v-layout>
-            <v-flex>
-                <v-btn color="success">Создать роль</v-btn>
-                <v-btn color="info">Создать право доступа</v-btn>
-            </v-flex>
-        </v-layout>
-
         <v-layout row wrap>
             <v-flex xs12 sm4 md6 lg6> 
                 <v-form @submit.prevent="editRoles">

@@ -3,29 +3,14 @@
     <!-- Left sidebar -->
     <v-navigation-drawer :mini-variant="miniVariant" clipped v-model="drawer" fixed app>
       <v-list>
-        <template v-for="(item, index) in items">
-          <v-layout v-if="item.heading" :key="index" row align-center>
-            <v-flex xs6>
-              <v-subheader v-if="item.heading">
-                {{ item.heading }}
-              </v-subheader>
-            </v-flex>
-            <v-flex xs6 class="text-xs-right">
-              <v-btn small flat>Создать</v-btn>
-            </v-flex>
-          </v-layout>
-          <v-divider v-else-if="item.divider" :key="index" dark class="my-1"></v-divider>
-          <v-list-tile v-else :key="index" :to="item.to">
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title class="grey--text">
-                {{ item.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </template>
+        <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
+          <v-list-tile-action>
+            <v-icon v-html="item.icon"></v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     
@@ -83,18 +68,7 @@ export default {
       drawer: true,
       fixed: false,
       items: [
-        { icon: 'home', title: 'Все проекты', to: { name: 'Home' } },
-        { divider: true },
-        { icon: 'home', title: 'Главная', to: { name: 'Home' } },
-        { divider: true },
-        { heading: 'Машины' },
-        { icon: 'directions_car', title: 'Все', to: { name: 'CompanyCars' } },
-        { icon: 'directions_car', title: 'Кузова', to: { name: 'Home' } },
-        { icon: 'directions_car', title: 'Модели', to: { name: 'Home' } },
-        { icon: 'directions_car', title: 'Марки', to: { name: 'Home' } },
-        { divider: true },
-        { heading: 'Водители' },
-        { icon: 'supervised_user_circle', title: 'Водители', to: { name: 'CompanyDrivers' } },
+        { icon: 'home', title: 'Главная', to: '/' },
       ],
       miniVariant: false,
       rightDrawer: false,

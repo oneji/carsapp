@@ -56,4 +56,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany('App\Company');
     }
+
+    /**
+     * Get user's stos.
+     * 
+     */
+    public function stos()
+    {
+        return $this->belongsToMany('App\Sto');
+    }
 }

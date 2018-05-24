@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Company;
+use App\Sto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class CompanyController extends Controller
+class StoController extends Controller
 {
-    /** 
-     * Get a list of all companies.
+    /**
      * 
-     * @return  \Illuminate\Http\Response
+     * Get a list of all stos.
      */
     public function get() 
     {
-        $companies = Company::all();
-        return response()->json($companies);
+        $stos = Sto::all();
+        return response()->json($stos);
     }
 
     /**
-     * Store a newly added company to database.
+     * Store a newly added sto to database.
      * 
-     * @param   \Illuminate\Http\Request
      * 
-     * @return  \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -34,35 +31,35 @@ class CompanyController extends Controller
             $filePath = $request->file('logo')->path();
             $fileExtension = $request->file('logo')->getClientOriginalExtension();
             $fileNameToStore = time().'.'.$fileExtension;
-            $path = $request->file('logo')->move(public_path('/uploads/logos/companies'), $fileNameToStore);  
-            $fileNameToStore = 'uploads/logos/companies/'.$fileNameToStore;
+            $path = $request->file('logo')->move(public_path('/uploads/logos/stos'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/logos/stos/'.$fileNameToStore;
         } else {
             $fileNameToStore = null;
         }
 
-        $company = new Company($request->all());
-        $company->logo = $fileNameToStore;
-        $company->slug = str_slug($request->company_name);
-        $company->save();
+        $sto = new Sto($request->all());
+        $sto->logo = $fileNameToStore;
+        $sto->slug = str_slug($request->sto_name);
+        $sto->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Компания успешно создана!',
-            'company' => $company
+            'message' => 'СТО успешно создано!',
+            'sto' => $sto
         ]);
     }
 
     /**
-     * Bind user to a company.
+     * Bind user to sto.
      * 
-     * @param   int $company_id
+     * @param   int $sto_id
      * @param   int $user_id
      * 
      * @return  \Illuminate\Http\Response
      */
-    public function bindUser($company_id, $user_id)
+    public function bindUser($sto_id, $user_id)
     {
-        $company = Company::find($company_id)->users()->sync($user_id);
+        $company = Sto::find($sto_id)->users()->sync($user_id);
         
         return response()->json([
             'success' => true,

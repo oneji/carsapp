@@ -10,7 +10,7 @@ import ACL from '@/pages/acl/index'
 
 const routes = [        
     { path: '/login', name: 'Login', component: Login },
-    { path: '/', component: AdminLayout, 
+    { path: '/', component: AdminLayout, meta: { requiresAuth: true },
         children: [
             { path: '/', name: 'Index', component: Home, meta: { requiresAuth: true, } },
             { path: '/companies', name: 'Companies', component: Companies, meta: { requiresAuth: true, } },
@@ -20,7 +20,6 @@ const routes = [
             { path: '/users/edit/:id', name: 'UserEdit', component: UserEdit, meta: { requiresAuth: true } },
             { path: '/acl', name: 'ACL', component: ACL, meta: { requiresAuth: true } },
         ],
-        meta: { requiresAuth: true },
     },
 ]
 

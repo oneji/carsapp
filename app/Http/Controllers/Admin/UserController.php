@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function getAll() 
     {
-        $users = User::where('deleted', 0)->with(['companies', 'roles', 'permissions'])->get();
+        $users = User::where('deleted', 0)->with(['companies', 'stos', 'roles', 'permissions'])->get();
         return response()->json($users);
     }
 

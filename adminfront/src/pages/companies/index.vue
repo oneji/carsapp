@@ -2,15 +2,16 @@
   <div>
     <v-layout row wrap>
       <v-flex xs12 sm12 md12 lg12>
-        <v-btn @click.native.stop="dialog = true" color="success">Создать компанию</v-btn>
+        <v-btn @click.native.stop="dialog.createC = true" color="success">Создать компанию</v-btn>
+        <v-btn @click.native.stop="dialog.bindUser = true" color="info">Привязать пользователя</v-btn>
         <!-- Create new company modal -->
-        <v-dialog v-model="dialog" max-width="500">
-          <v-card>
-            <v-card-title class="headline">Создать компанию</v-card-title>
-            <v-card-text>
-              <v-layout>
-                <v-flex xs12>
-                  <form>
+        <v-dialog v-model="dialog.createC" max-width="500">
+          <form @submit.prevent="createCompany" data-vv-scope="create-company-form">
+            <v-card>
+              <v-card-title class="headline">Создать компанию</v-card-title>
+              <v-card-text>
+                <v-layout>
+                  <v-flex xs12>                    
                     <v-text-field type="text" v-model="newCompany.company_name" name="company_name" label="Название компании" prepend-icon="business"                 
                       v-validate="'required'" 
                       data-vv-name="company_name" data-vv-as='"Название компании"' required
@@ -20,18 +21,51 @@
 
                     <img class="logo-preview" :src="newCompany.logo.url" height="150" v-if="newCompany.logo.url" />
                     <v-text-field label="Выберите логотип" @click="pickFile" v-model="newCompany.logo.name" prepend-icon="attach_file"></v-text-field>
-                    <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
-                  </form>
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-            
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat="flat" @click.native="dialog = false">Закрыть</v-btn>
-              <v-btn color="green darken-1" :loading="loading.button" flat="flat" @click.native="createCompany">Создать</v-btn>
-            </v-card-actions>
-          </v-card>
+                    <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">                    
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" flat="flat" @click.native="dialog.createC = false">Закрыть</v-btn>
+                <v-btn color="green darken-1" :loading="loading.button" flat="flat" type="submit">Создать</v-btn>
+              </v-card-actions>
+            </v-card>
+          </form>
+        </v-dialog>
+        <!-- Bind user company modal -->
+        <v-dialog v-model="dialog.bindUser" max-width="500">
+          <form @submit.prevent="bindUserToCompany" data-vv-scope="bind-user-form">
+            <v-card>
+              <v-card-title class="headline">Привязать пользователя</v-card-title>
+              <v-card-text>
+                <v-layout>
+                  <v-flex xs12>                    
+                    <v-select :items="users" v-model="bindUser.user_id" label="Выберите пользователя" prepend-icon="supervised_user_circle" persistent-hint
+                      name="user_id"
+                      v-validate="'required'" 
+                      :error-messages="errors.collect('user_id')"
+                      data-vv-name="user_id" data-vv-as='"Пользователь"'
+                    ></v-select>
+
+                    <v-select :items="companies" v-model="bindUser.company_id" label="Выберите компанию" prepend-icon="business" persistent-hint
+                      name="company_id"
+                      v-validate="'required'" 
+                      :error-messages="errors.collect('company_id')"
+                      data-vv-name="company_id" data-vv-as='"Компания"'
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" flat="flat" @click.native="dialog.bindUser = false">Закрыть</v-btn>
+                <v-btn color="green darken-1" :loading="loading.button" flat="flat" type="submit">Привязать</v-btn>
+              </v-card-actions>
+            </v-card>
+          </form>
         </v-dialog>
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
@@ -96,7 +130,10 @@ export default {
       return {
         // Controls
         selected: [],
-        dialog: false,  
+        dialog: {
+          createC: false,
+          bindUser: false
+        },  
         loading: {
           table: false,
           button: false
@@ -110,18 +147,24 @@ export default {
           timeout: 5000,
           color: ''
         },
+        bindUser: {
+          user_id: null,
+          company_id: null
+        },
 
         // API
         items: [],
         newCompany: {
-            company_name: '',
-            contact: '',
-            logo: {
-              name: '',
-              file: '',
-              url: ''
-            },
-        }
+          company_name: '',
+          contact: '',
+          logo: {
+            name: '',
+            file: '',
+            url: ''
+          },
+        },
+        users: [],
+        companies: []
       }
   },
   methods: {
@@ -130,17 +173,42 @@ export default {
           axios.get('/admin/companies')
               .then(response => {                    
                 this.items = response.data;
+                this.items.map(company => {
+                  this.companies.push({
+                    text: company.company_name,
+                    value: company.id
+                  });                
+                });
+
                 if(this.items.length === 0) {
                   this.alert.noCompanies = true;
                 }
               })
               .catch(error => {
-                  console.log(error);
+                console.log(error);
               });
       },
 
+      fetchUsers() {
+        axios.get('/admin/users')
+          .then(response => {
+            if(response.status === 200) {
+              let fullUsersInfo = response.data;
+
+              fullUsersInfo.map(user => {
+                this.users.push({
+                  text: user.fullname,
+                  value: user.id
+                });                
+              })
+            }
+          })
+          .catch(error => console.log(error));
+      },
+
       createCompany() {
-        this.$validator.validateAll()
+        this.loading.button = true;
+        this.$validator.validateAll('create-company-form')
           .then(success => {
             if(success) {
               let formData = new FormData();
@@ -150,6 +218,7 @@ export default {
 
               axios.post('/admin/companies', formData)
                 .then(response => {
+                  this.loading.button = false;
                   this.items.push(response.data.company);
                   this.alert.noCompanies = false;
                   this.snackbar.color = 'success';
@@ -157,9 +226,32 @@ export default {
                   this.snackbar.active = true;
                 })
                 .catch(error => console.log(error));
+            } else {
+              this.loading.button = false;
             }
           })
       },
+
+      bindUserToCompany() {
+        this.loading.button = true;
+        this.$validator.validateAll('bind-user-form')
+          .then(success => {
+            if(success) {
+              axios.post(`/admin/companies/${this.bindUser.company_id}/bind/${this.bindUser.user_id}`)
+                .then(response => {
+                  if(response.status === 200) {
+                    this.loading.button = false;
+                    this.snackbar.color = 'success';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                  }
+                })
+                .catch(error => console.log(error));
+            } else {
+              this.loading.button = false;
+            }
+          })       
+      },  
 
       pickFile () {
         this.$refs.image.click();
@@ -187,7 +279,8 @@ export default {
       }
   },
   created() {
-      this.fetchCompanies();
+    this.fetchCompanies();
+    this.fetchUsers();
   }
 }
 </script>

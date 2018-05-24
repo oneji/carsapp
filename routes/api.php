@@ -29,6 +29,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
         // Company routes
         Route::get('/companies', 'CompanyController@get');
         Route::post('/companies', 'CompanyController@store');
+        Route::post('/companies/{company}/bind/{user}', 'CompanyController@bindUser');
+        // Sto routes
+        Route::get('/stos', 'StoController@get');
+        Route::post('/stos', 'StoController@store');
+        Route::post('/stos/{sto}/bind/{user}', 'StoController@bindUser');
         // User routes
         Route::get('/users', 'UserController@getAll');
         Route::get('/users/{user}', 'UserController@getByID');
@@ -41,4 +46,21 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
         Route::post('/acl/roles', 'AclController@createRole');
         Route::post('/acl/permissions', 'AclController@createPermission');
     }); 
+});
+
+Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
+    Route::group(['middleware' => ['jwt.auth']], function() {
+        // Car routes
+        Route::get('/cars', 'CarController@get');
+        // Car body routes
+        Route::get('/cars/shapes', 'CarBodyController@getShapes');
+        Route::post('cars/shapes', 'CarBodyController@storeShapes');
+        Route::get('/cars/models', 'CarBodyController@getModels');
+        Route::post('cars/models', 'CarBodyController@storeModels');
+        Route::get('/cars/brands', 'CarBodyController@getBrands');
+        Route::post('cars/brands', 'CarBodyController@storeBrands');
+    });
+
+
+    
 });
