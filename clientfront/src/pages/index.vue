@@ -1,10 +1,12 @@
 <template>
     <div>
-        <v-layout row wrap>
+        <v-layout row>
             <v-flex xs12 sm12 md12 lg12>
                 <h1 class="headline">Выберите проект:</h1>
             </v-flex>
-            <v-flex xs12 sm12 md2 lg2 v-for="company in companies" :key="company.id" v-cloak>
+        </v-layout>
+        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
+            <v-flex xs12 sm6 md3 lg2 v-for="company in companies" :key="company.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
@@ -28,7 +30,7 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm12 md2 lg2 v-for="sto in stos" :key="sto.id" v-cloak>
+            <v-flex xs12 sm6 md3 lg2 v-for="sto in stos" :key="sto.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
@@ -51,7 +53,7 @@
                     </v-card-actions>
                 </v-card>
             </v-flex>
-        </v-layout>
+        </transition-group>
 
         <v-layout v-if="noProjects">
             <v-flex>
@@ -70,11 +72,17 @@ import config from '@/config'
 export default {
     computed: {
         companies() {
-            return this.$store.getters.user.companies;
+            if(this.$store.getters.user === null)
+                return {};
+            else
+                return this.$store.getters.user.companies
         },
 
         stos() {
-            return this.$store.getters.user.stos;
+            if(this.$store.getters.user === null)
+                return {};
+            else
+                return this.$store.getters.user.stos
         },
         
         assetURL() {

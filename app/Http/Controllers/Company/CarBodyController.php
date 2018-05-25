@@ -12,9 +12,28 @@ use Validator;
 class CarBodyController extends Controller
 {
     /**
+     * Get all car body info.
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function getCarBodyInfo() 
+    {
+        $shapes = CarShape::orderBy('shape_name')->get();
+        $brands = CarBrand::orderBy('brand_name')->get();
+        $models = CarModel::select(['car_models.id', 'car_models.model_name', 'car_brands.brand_name'])
+                            ->join('car_brands', 'car_brands.id', '=', 'car_models.brand_id')
+                            ->get();
+
+        return response()->json([
+            'shapes' => $shapes,
+            'brands' => $brands,
+            'models' => $models
+        ]);
+    }
+    /**
      * Get all car shapes.
      * 
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
     public function getShapes() 
     {
@@ -50,7 +69,25 @@ class CarBodyController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Кузов успешно создан'
+            'message' => 'Кузов успешно создан',
+            'shape' => $shape
+        ]);
+    }
+
+    /**
+     * Remove car shape from database.
+     * 
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function destroyShape($id)
+    {
+        $shape = CarShape::destroy($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Кузов успешно удален'
         ]);
     }
 
@@ -89,11 +126,30 @@ class CarBodyController extends Controller
 
         $model = new CarModel();
         $model->model_name = $request->model_name;
+        $model->brand_id = $request->brand_id;
         $model->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Модель успешно создан'
+            'message' => 'Модель успешно создан',
+            'model' => $model
+        ]);
+    }
+
+    /**
+     * Remove car model from database.
+     * 
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function destroyModel($id)
+    {
+        $model = CarModel::destroy($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Модель успешно удалена'
         ]);
     }
 
@@ -136,7 +192,25 @@ class CarBodyController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Бренд успешно создан'
+            'message' => 'Бренд успешно создан',
+            'brand' => $brand
+        ]);
+    }
+
+    /**
+     * Remove car brand from database.
+     * 
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function destroyBrand($id)
+    {
+        $brand = CarBrand::destroy($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Марка успешно удалена'
         ]);
     }
 }

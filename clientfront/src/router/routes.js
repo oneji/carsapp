@@ -6,9 +6,7 @@ import Home from '@/pages/index'
 import CompanyHome from '@/pages/company/index'
 import CompanyCars from '@/pages/company/cars/index'
 import CompanyCarsCreate from '@/pages/company/cars/create'
-import CompanyCarsShapes from '@/pages/company/cars/shapes'
-import CompanyCarsModels from '@/pages/company/cars/models'
-import CompanyCarsBrands from '@/pages/company/cars/brands'
+import CompanyCarsBody from '@/pages/company/cars/body'
 import CompanyDrivers from '@/pages/company/drivers/index'
 // STO pages
 
@@ -23,9 +21,7 @@ const routes = [
         children: [
             { path: 'cars', name: 'CompanyCars', component: CompanyCars, meta: { requiresAuth: true } },
             { path: 'cars/create', name: 'CompanyCarsCreate', component: CompanyCarsCreate, meta: { requiresAuth: true } },
-            { path: 'cars/shapes', name: 'CompanyCarsShapes', component: CompanyCarsShapes, meta: { requiresAuth: true } },
-            { path: 'cars/models', name: 'CompanyCarsModels', component: CompanyCarsModels, meta: { requiresAuth: true } },
-            { path: 'cars/brands', name: 'CompanyCarsBrands', component: CompanyCarsBrands, meta: { requiresAuth: true } },
+            { path: 'cars/body', name: 'CompanyCarsBody', component: CompanyCarsBody, meta: { requiresAuth: true } },
             { path: 'drivers', name: 'CompanyDrivers', component: CompanyDrivers, meta: { requiresAuth: true } },
         ]
     }

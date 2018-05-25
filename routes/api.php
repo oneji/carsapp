@@ -53,14 +53,15 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         // Car routes
         Route::get('/cars', 'CarController@get');
         // Car body routes
+        Route::get('/cars/body/info', 'CarBodyController@getCarBodyInfo');
         Route::get('/cars/shapes', 'CarBodyController@getShapes');
-        Route::post('cars/shapes', 'CarBodyController@storeShapes');
+        Route::post('cars/shapes', 'CarBodyController@storeShape');
+        Route::delete('/cars/shapes/{shape}', 'CarBodyController@destroyShape');
         Route::get('/cars/models', 'CarBodyController@getModels');
-        Route::post('cars/models', 'CarBodyController@storeModels');
+        Route::post('cars/models', 'CarBodyController@storeModel');
+        Route::delete('/cars/models/{model}', 'CarBodyController@destroyModel');
         Route::get('/cars/brands', 'CarBodyController@getBrands');
-        Route::post('cars/brands', 'CarBodyController@storeBrands');
-    });
-
-
-    
+        Route::post('cars/brands', 'CarBodyController@storeBrand');
+        Route::delete('/cars/brands/{brand}', 'CarBodyController@destroyBrand');
+    });    
 });

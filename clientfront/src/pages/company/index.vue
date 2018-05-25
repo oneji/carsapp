@@ -65,8 +65,8 @@
             </v-list>
         </v-navigation-drawer>
 
-        <v-footer fixed app>
-            <span>IT Nova &copy; 2018</span>
+        <v-footer fixed app inset>
+            <span class="pl-3">IT Nova &copy; 2018</span>
         </v-footer>
   </v-app>
 </template>
@@ -88,9 +88,7 @@ export default {
                 { divider: true },        
                 { heading: 'Машины', action: { name: 'CompanyCarsCreate' } },
                 { icon: 'directions_car', title: 'Все', to: { name: 'CompanyCars' } },
-                { icon: 'directions_car', title: 'Кузова', to: { name: 'CompanyCarsShapes' } },
-                { icon: 'directions_car', title: 'Модели', to: { name: 'CompanyCarsModels' } },
-                { icon: 'directions_car', title: 'Марки', to: { name: 'CompanyCarsBrands' } },
+                { icon: 'directions_car', title: 'Внешний вид', to: { name: 'CompanyCarsBody' } },
                 { divider: true },
                 { heading: 'Водители' },
                 { icon: 'supervised_user_circle', title: 'Водители', to: { name: 'CompanyDrivers' } },
