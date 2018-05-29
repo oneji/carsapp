@@ -29,7 +29,7 @@ const actions = {
                 if(response.status === 200) { 
                     if(response.data.success) {
                         commit('setUser', response.data.user);
-                        cookie.set('auth.token', response.data.token, { expires: 1 });
+                        cookie.set('auth.client.token', response.data.token, { expires: 1 });
                         cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
                         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         
@@ -46,7 +46,7 @@ const actions = {
         axios.post('/auth/logout')
             .then(response => {
                 commit('resetUser');
-                cookie.remove('auth.token');
+                cookie.remove('auth.client.token');
                 cookie.remove('user')
             })
             .catch(error => console.log(error));
@@ -54,7 +54,7 @@ const actions = {
 
     resetUser({ commit }) {
         commit('resetUser'); 
-        cookie.remove('auth.token');
+        cookie.remove('auth.client.token');
         cookie.remove('user')       
     },
 

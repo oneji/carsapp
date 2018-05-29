@@ -8,12 +8,11 @@ import cookie from 'js-cookie'
 Vue.use(Router)
 
 const router = new Router({
-    mode: 'history',
     routes,
 })
 
 router.beforeEach((to, from, next) => {    
-    const token = cookie.get('auth.token');
+    const token = cookie.get('auth.client.token');
 
     if(to.name.toLowerCase() !== 'login')  {
         store.dispatch('fetch')

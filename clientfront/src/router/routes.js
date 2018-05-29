@@ -8,6 +8,7 @@ import CompanyCars from '@/pages/company/cars/index'
 import CompanyCarsCreate from '@/pages/company/cars/create'
 import CompanyCarsBody from '@/pages/company/cars/body'
 import CompanyDrivers from '@/pages/company/drivers/index'
+import CompanyDriversCreate from '@/pages/company/drivers/create'
 // STO pages
 
 const routes = [        
@@ -23,6 +24,7 @@ const routes = [
             { path: 'cars/create', name: 'CompanyCarsCreate', component: CompanyCarsCreate, meta: { requiresAuth: true } },
             { path: 'cars/body', name: 'CompanyCarsBody', component: CompanyCarsBody, meta: { requiresAuth: true } },
             { path: 'drivers', name: 'CompanyDrivers', component: CompanyDrivers, meta: { requiresAuth: true } },
+            { path: 'drivers/create', name: 'CompanyDriversCreate', component: CompanyDriversCreate, meta: { requiresAuth: true } },
         ]
     }
 ]

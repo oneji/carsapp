@@ -1,5 +1,11 @@
 <template>
-    <h1>Водители</h1>
+    <div>
+        <v-layout row wrap>
+            <v-flex>
+                <v-btn color="success" :to="{ name: 'CompanyDriversCreate' }" append>Добавить водителя</v-btn>
+            </v-flex>
+        </v-layout>
+    </div>
 </template>
 
 <script>

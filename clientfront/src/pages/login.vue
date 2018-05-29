@@ -28,8 +28,7 @@
                                 v-validate="'required|min:6'"
                                 :error-messages="errors.collect('password')"
                                 data-vv-name="password" data-vv-as='"Пароль"' required 
-                            ></v-text-field>       
-                            <v-select :items="items" v-model="type" label="Выберите тип" single-line></v-select>                     
+                            ></v-text-field>                         
                             <v-btn :loading="loading" color="info" block large type="submit">Войти</v-btn>
                         </v-form>
                     </v-card-text> 
@@ -58,7 +57,7 @@ export default {
         showPassword: true,
         email: '',
         password: '',
-        type: '',
+        type: 1,
         items: [
             { text: 'Компания', value: 1 },
             { text: 'СТО', value: 2 },

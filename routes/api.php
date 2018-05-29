@@ -63,5 +63,7 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::get('/cars/brands', 'CarBodyController@getBrands');
         Route::post('cars/brands', 'CarBodyController@storeBrand');
         Route::delete('/cars/brands/{brand}', 'CarBodyController@destroyBrand');
+        // Driver routes
+        Route::post('/drivers', 'DriverController@store');
     });    
 });

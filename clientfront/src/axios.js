@@ -9,7 +9,7 @@ const instance = axios.create({
     baseURL: config.apiURL,
 });
 
-const token = cookie.get('auth.token');
+const token = cookie.get('auth.client.token');
 
 
 if (token !== undefined) {

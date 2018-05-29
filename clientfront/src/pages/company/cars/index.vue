@@ -9,18 +9,18 @@
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg2 v-for="car in cars" :key="car.id" v-cloak>
                 <v-card>
-                    <v-card-media src="/static/images/no-car-img.png" height="150px">
+                    <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : car.cover_image" height="150px">
                         
                     </v-card-media> 
                     <v-divider></v-divider>           
                     <v-card-title primary-title class="pt-3 pb-0">
                         <div>
                             <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }}</h3>
-                            <div>Контакта нет</div>
+                            <div>Водителя нет</div>
                         </div>
                     </v-card-title>
-                    <v-card-actions>
-                        <v-btn flat color="success">Просмотреть</v-btn>
+                    <v-card-actions class="mt-2">
+                        <v-btn block flat color="success">Просмотреть</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>
@@ -36,7 +36,7 @@ export default {
     computed: {
         assetsURL() {
             return config.assetsURL;
-        }
+        },
     },
     data() {
         return {
@@ -47,6 +47,7 @@ export default {
         fetchCars() {
             axios.get('/company/cars')
                 .then(response => {
+                    console.log(response.data);
                     this.cars = response.data;
                 })
                 .catch(error => console.log(error));
