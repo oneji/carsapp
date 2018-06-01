@@ -11,7 +11,6 @@ class UserController extends Controller
 {
     /**
      * Get all users from database.
-     * @param   int $currentUserID
      * 
      * @return  \Illuminate\Http\Response
      */
@@ -79,8 +78,8 @@ class UserController extends Controller
             $filePath = $request->file('avatar')->path();
             $fileExtension = $request->file('avatar')->getClientOriginalExtension();
             $fileNameToStore = time().'.'.$fileExtension;
-            $path = $request->file('avatar')->move(public_path('/uploads/avatars'), $fileNameToStore);  
-            $fileNameToStore = 'uploads/avatars/'.$fileNameToStore;
+            $path = $request->file('avatar')->move(public_path('/uploads/user_avatars'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/user_avatars/'.$fileNameToStore;
         } else {
             $fileNameToStore = null;
         }
@@ -131,8 +130,8 @@ class UserController extends Controller
             $filePath = $request->file('avatar')->path();
             $fileExtension = $request->file('avatar')->getClientOriginalExtension();
             $fileNameToStore = time().'.'.$fileExtension;
-            $path = $request->file('avatar')->move(public_path('/uploads/avatars'), $fileNameToStore);  
-            $fileNameToStore = 'uploads/avatars/'.$fileNameToStore;
+            $path = $request->file('avatar')->move(public_path('/uploads/user_avatars'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/user_avatars/'.$fileNameToStore;
         } else {
             $fileNameToStore = null;
         }

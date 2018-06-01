@@ -52,6 +52,7 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Car routes
         Route::get('/cars', 'CarController@get');
+        Route::post('/cars', 'CarController@store');
         // Car body routes
         Route::get('/cars/body/info', 'CarBodyController@getCarBodyInfo');
         Route::get('/cars/shapes', 'CarBodyController@getShapes');
@@ -65,5 +66,6 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::delete('/cars/brands/{brand}', 'CarBodyController@destroyBrand');
         // Driver routes
         Route::post('/drivers', 'DriverController@store');
+        Route::get('/drivers', 'DriverController@get');
     });    
 });

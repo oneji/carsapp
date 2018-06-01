@@ -20,6 +20,7 @@ class CreateDriversTable extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->dateTime('driver_license_date')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

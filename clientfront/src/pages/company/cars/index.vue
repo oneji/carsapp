@@ -9,9 +9,7 @@
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg2 v-for="car in cars" :key="car.id" v-cloak>
                 <v-card>
-                    <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : car.cover_image" height="150px">
-                        
-                    </v-card-media> 
+                    <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
                     <v-divider></v-divider>           
                     <v-card-title primary-title class="pt-3 pb-0">
                         <div>

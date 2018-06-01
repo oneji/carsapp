@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DriverAttachment extends Model
+class CarAttachment extends Model
 {
     /**
      * Indicates if the model should be timestamped.
@@ -19,14 +19,14 @@ class DriverAttachment extends Model
      * @var array
      */
     protected $fillable = [
-        'attachment', 'driver_id'
+        'attachment', 'car_id'
     ];
-
+    
     /**
-     * Get a driver which attachment is belonged to.
+     * Get a car which attachment is belonged to.
      */
-    public function driver()
+    public function car() 
     {
-        return $this->belongTo('App\Driver');
+        return $this->belongTo('App\Car');
     }
 }

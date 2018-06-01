@@ -1,9 +1,45 @@
 <template>
     <div>
         <v-layout row wrap>
-            <v-flex xs12 sm6 md4 lg4>
+            <v-flex xs12 sm12 md4 lg3>
                 <v-card>
-                    <v-form @submit.prevent="createUser">
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Фото</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <v-card-title primary-title>
+                        <v-container>
+                            <v-layout row wrap>
+                                <v-flex>
+                                    <img v-if="newDriver.photo.url" class="avatar-preview" :src="newDriver.photo.url" height="150" />                                    
+                                    <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-container class="pb-0 pt-3">
+                            <v-layout row wrap>
+                                <v-text-field label="Выберите фото" @click="pickFile" v-model="newDriver.photo.name" 
+                                    prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deletePhoto"
+                                ></v-text-field>
+                                <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
+                            </v-layout>
+                        </v-container>
+                    </v-card-actions>
+                </v-card>
+            </v-flex>
+
+            <v-flex xs12 sm12 md4 lg5>
+                <v-card>
+                    <v-form @submit.prevent="createDriver">
                         <v-card-media>
                             <v-container>
                                 <v-layout>
@@ -37,7 +73,7 @@
                                                 data-vv-name="email" data-vv-as='"Email"'                                    
                                             ></v-text-field> 
 
-                                            <v-text-field v-model="newDriver.email" name="phone" label="Телефон" type="text" prepend-icon="phone"
+                                            <v-text-field v-model="newDriver.phone" name="phone" label="Телефон" type="text" prepend-icon="phone"
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('phone')"
                                                 data-vv-name="phone" data-vv-as='"Телефон"'                                    
@@ -60,8 +96,7 @@
                                                         <v-btn flat color="primary" block @click="$refs.menu.save(date)">OK</v-btn>
                                                     </v-date-picker>
                                             </v-menu>
-                                        </v-container>
-                                        
+                                        </v-container>                                        
                                     </v-flex>
                                 </v-layout>
                             </v-container>
@@ -81,16 +116,33 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm6 md4 lg4>
-                <file-pond
-                    name="test"
-                    ref="pond"
-                    class-name="my-pond"
-                    label-idle="Кликните или перетащите файлы сюда..."
-                    allow-multiple="true"
-                    accepted-file-types="image/jpeg, image/png, image/svg+xml"/>
+            <v-flex xs12 sm12 md4 lg4>
+                <v-card>
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Файлы | Прикрепления</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <file-pond
+                        name="test"
+                        ref="pond"
+                        class-name="my-pond"
+                        label-idle="Кликните или перетащите файлы сюда..."
+                        allow-multiple="true"
+                        accepted-file-types="image/jpeg, image/png, image/svg+xml"/>
+                </v-card>
             </v-flex>
         </v-layout>
+
+        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
+            {{ snackbar.text }}
+            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
+        </v-snackbar>
     </div>
 </template>
 
@@ -117,43 +169,114 @@ export default {
                 fullname: '',
                 address: '',
                 email: '',
-                driver_licence_date: ''
+                driver_license_date: null,
+                photo: {
+                    name: '',
+                    file: '',
+                    url: ''
+                },
             },
             loading: false,
             date: null,
             menu: false,
+            snackbar: {
+                active: false,
+                text: '',
+                timeout: 5000,
+                color: ''
+            },
         }
     },
     components: {
         FilePond
     },
     methods: {
-        getFiles() {
-            this.attachments = this.$refs.pond.getFiles();
-            let fileList = [];
-            this.attachments.map(value => {
-                fileList.push(value.file);
+        createDriver() {
+            this.$validator.validateAll()
+                .then(success => {
+                    if(success) {                    
+                        this.loading = true;
+                        this.attachments = this.$refs.pond.getFiles();
+                        let fileList = [];
+                        this.attachments.map(value => {
+                            fileList.push(value.file);
+                        });
+
+                        console.log(fileList);
+
+                        let formData = new FormData();
+                        formData.append('fullname', this.newDriver.fullname);
+                        formData.append('address', this.newDriver.address);
+                        formData.append('email', this.newDriver.email);
+                        formData.append('phone', this.newDriver.phone);
+                        formData.append('driver_license_date', this.date);
+                        formData.append('photo', this.newDriver.photo.file);
+                        
+                        for(let i = 0; i < fileList.length; i++) {
+                            formData.append('attachments[]', fileList[i]);
+                        }
+
+                        axios.post('/company/drivers', formData)
+                            .then(response => {
+                                this.newDriver.fullname = '';
+                                this.newDriver.address = '';
+                                this.newDriver.email = '';
+                                this.newDriver.phone = '';
+                                this.date = '';
+                                this.newDriver.photo.url = '';
+                                this.newDriver.photo.file = '';
+                                this.newDriver.photo.name = '';
+
+                                this.loading = false;
+                                this.snackbar.color = 'success';
+                                this.snackbar.text = response.data.message;
+                                this.snackbar.active = true;
+                            })
+                            .catch(error => console.log(error));
+                }
             });
+        },
 
-            console.log(fileList);
+        pickFile () {
+            this.$refs.image.click();
+        },
 
-            let formData = new FormData();
-            formData.append('test', 'This is a test string!');
-            
-            for(let i = 0; i < fileList.length; i++) {
-                formData.append('attachments[]', fileList[i]);
-            }
+        onFilePicked (e) {
+            const files = e.target.files;
 
-            axios.post('/company/drivers', formData)
-                .then(response => {
-                    console.log(response);
+            if(files[0] !== undefined) {
+                this.newDriver.photo.name = files[0].name;
+
+                if(this.newDriver.photo.name.lastIndexOf('.') <= 0) {
+                    return
+                }
+
+                const fr = new FileReader();
+                fr.readAsDataURL(files[0])
+                fr.addEventListener('load', () => {
+                    this.newDriver.photo.url = fr.result;
+                    this.newDriver.photo.file = files[0];
                 })
-                .catch(error => console.log(error));
+            } else {
+                this.newDriver.photo.url = '';
+                this.newDriver.photo.name = '';
+                this.newDriver.photo.file = '';
+            }
+        },
+
+        deletePhoto() {
+            this.newDriver.photo.url = '';
+            this.newDriver.photo.name = '';
+            this.newDriver.photo.file = '';
         },
     },
 }
 </script>
 
 <style>
-
+    .avatar-preview {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+    }
 </style>

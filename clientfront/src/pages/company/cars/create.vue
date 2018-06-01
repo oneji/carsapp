@@ -1,17 +1,318 @@
 <template>
-    <v-layout row wrap>
-        <v-flex>
-            <h1>Создание машины</h1>
-        </v-flex>
-    </v-layout>
+    <div>
+        <v-layout row wrap>
+            <v-flex xs12 sm12 md4 lg3>
+                <v-card>
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Главное фото</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <v-card-media :src="newCar.cover_image.url ? newCar.cover_image.url : '/static/images/no-photo.png'" height="200px"></v-card-media>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-container class="pb-0 pt-3">
+                            <v-layout row wrap>
+                                <v-text-field label="Выберите главное фото" @click="pickFile" v-model="newCar.cover_image.name" 
+                                    prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deleteCoverImage"
+                                ></v-text-field>
+                                <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
+                            </v-layout>
+                        </v-container>
+                    </v-card-actions>
+                </v-card>
+            </v-flex>
+
+            <v-flex xs12 sm12 md4 lg5>
+                <v-card>
+                    <v-form @submit.prevent="createCar">
+                        <v-card-media>
+                            <v-container>
+                                <v-layout>
+                                    <v-flex>
+                                        <p class="subheading my-0">Информация</p>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-media>
+                        <v-divider></v-divider>                        
+                        <v-card-title>
+                            <v-container>
+                                <v-layout row wrap>
+                                    <v-flex xs12 sm12 md12 lg12 class="v-divider pr-4">                                        
+                                        <v-container grid-list-xs>
+                                            <v-menu
+                                                ref="menu"
+                                                :close-on-content-click="false"
+                                                v-model="menu"
+                                                :nudge-right="40"
+                                                :return-value.sync="year"
+                                                lazy
+                                                transition="scale-transition"
+                                                offset-y
+                                                full-width
+                                                min-width="290px">
+                                                    <v-text-field slot="activator" v-model="year" label="Выберите год" prepend-icon="event" readonly></v-text-field>
+                                                    <v-date-picker v-model="year" no-title scrollable locale="ru" type="month">
+                                                        <v-btn flat color="primary" block @click="menu = false">Закрыть</v-btn>
+                                                        <v-btn flat color="primary" block @click="$refs.menu.save(year)">OK</v-btn>
+                                                    </v-date-picker>
+                                            </v-menu>
+
+                                            <v-text-field type="text" v-model="newCar.number" name="number" label="Номер машины" prepend-icon="filter_2"                 
+                                                v-validate="'required'" 
+                                                data-vv-name="number" data-vv-as='"Номер"'
+                                                :error-messages="errors.collect('number')"
+                                            ></v-text-field>
+
+                                            <v-select autocomplete :items="shapes" v-model="newCar.shape_id" label="Выберите кузов" prepend-icon="category"
+                                                name="shape_id"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('shape_id')"
+                                                data-vv-name="shape_id" data-vv-as='"Кузов"'
+                                            ></v-select>
+
+                                            <v-select autocomplete :items="brands" v-model="newCar.brand_id" label="Выберите марку" prepend-icon="directions_car"
+                                                name="brand_id"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('brand_id')"
+                                                data-vv-name="brand_id" data-vv-as='"Марка"'
+                                            ></v-select>
+
+                                            <v-select autocomplete :items="models" v-model="newCar.model_id" label="Выберите модель" prepend-icon="directions_car"
+                                                name="model_id"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('model_id')"
+                                                data-vv-name="model_id" data-vv-as='"Модель"'
+                                            ></v-select>
+
+                                            <v-text-field v-model="newCar.milage" name="milage" label="Пробег" type="text" prepend-icon="swap_calls"
+                                                v-validate="'required'" suffix="км."
+                                                :error-messages="errors.collect('milage')"
+                                                data-vv-name="milage" data-vv-as='"Пробег"'                                    
+                                            ></v-text-field>
+
+                                            <v-text-field v-model="newCar.vin_code" name="vin_code" label="Вин код" type="text" prepend-icon="polymer"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('vin_code')"
+                                                data-vv-name="vin_code" data-vv-as='"Вин код"'                                    
+                                            ></v-text-field>                                             
+                                        </v-container>                                        
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                            <v-container class="py-1">
+                                <v-layout>
+                                    <v-flex>
+                                        <v-btn :loading="loading" color="success" type="submit">Создать</v-btn>
+                                        <v-btn color="info">Очистить</v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-actions>   
+                    </v-form> 
+                </v-card>
+            </v-flex>
+
+            <v-flex xs12 sm12 md4 lg4>
+                <v-card>
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Файлы | Прикрепления</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <file-pond
+                        name="test"
+                        ref="pond"
+                        class-name="my-pond"
+                        label-idle="Кликните или перетащите файлы сюда..."
+                        allow-multiple="true"
+                        accepted-file-types="image/jpeg, image/png, image/svg+xml"/>
+                </v-card>
+            </v-flex>
+        </v-layout>
+
+        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
+            {{ snackbar.text }}
+            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
+        </v-snackbar>
+    </div>
 </template>
 
 <script>
-export default {
+import vueFilePond from 'vue-filepond'
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
+import FilepondPluginImagePreview from 'filepond-plugin-image-preview';
 
+import 'filepond/dist/filepond.min.css'
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+
+const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImagePreview)
+
+import axios from '@/axios'
+
+export default {
+    $_veeValidate: {
+        validator: 'new'
+    },
+    data() {
+        return {
+            attachments: [],
+            newCar: {
+                year: null,
+                number: '',
+                shape_id: null,
+                brand_id: null,
+                model_id: null,
+                milage: null,
+                vin_code: '',
+                cover_image: {
+                    name: '',
+                    file: '',
+                    url: ''
+                },
+            },
+            loading: false,
+            year: null,
+            menu: false,
+            snackbar: {
+                active: false,
+                text: '',
+                timeout: 5000,
+                color: ''
+            },
+            shapes: [], 
+            brands: [], 
+            models: []
+        }
+    },
+    components: {
+        FilePond
+    },
+    methods: {
+        createCar() {
+            this.$validator.validateAll()
+                .then(success => {
+                    if(success) {                    
+                        this.loading = true;
+                        this.attachments = this.$refs.pond.getFiles();
+                        let fileList = [];
+                        this.attachments.map(value => {
+                            fileList.push(value.file);
+                        });
+
+                        console.log(fileList);
+
+                        let formData = new FormData();
+                        formData.append('year', this.year);
+                        formData.append('number', this.newCar.number);
+                        formData.append('shape_id', this.newCar.shape_id);
+                        formData.append('brand_id', this.newCar.brand_id);
+                        formData.append('model_id', this.newCar.model_id);
+                        formData.append('milage', this.newCar.milage);
+                        formData.append('vin_code', this.newCar.vin_code);
+                        formData.append('cover_image', this.newCar.cover_image.file);
+                        
+                        for(let i = 0; i < fileList.length; i++) {
+                            formData.append('attachments[]', fileList[i]);
+                        }
+
+                        axios.post('/company/cars', formData)
+                            .then(response => {
+                                console.log(response);
+                                this.loading = false;
+                                this.snackbar.color = 'success';
+                                this.snackbar.text = response.data.message;
+                                this.snackbar.active = true;
+                            })
+                            .catch(error => console.log(error));
+                }
+            });
+        },
+
+        fetchCarBodyInfo() {
+            axios.get('/company/cars/body/info')
+                .then(response => {
+                    response.data.shapes.map(value => {
+                        this.shapes.push({
+                            text: value.shape_name,
+                            value: value.id
+                        });
+                    }); 
+
+                    response.data.brands.map(value => {
+                        this.brands.push({
+                            text: value.brand_name,
+                            value: value.id
+                        });
+                    }); 
+
+                    response.data.models.map(value => {
+                        this.models.push({
+                            text: value.model_name,
+                            value: value.id
+                        });
+                    }); 
+                })
+                .catch(error => console.log(error));
+        },
+    
+        pickFile () {
+            this.$refs.image.click();
+        },
+
+        onFilePicked (e) {
+            const files = e.target.files;
+
+            if(files[0] !== undefined) {
+                this.newCar.cover_image.name = files[0].name;
+
+                if(this.newCar.cover_image.name.lastIndexOf('.') <= 0) {
+                    return
+                }
+
+                const fr = new FileReader();
+                fr.readAsDataURL(files[0])
+                fr.addEventListener('load', () => {
+                    this.newCar.cover_image.url = fr.result;
+                    this.newCar.cover_image.file = files[0];
+                })
+            } else {
+                this.newCar.cover_image.url = '';
+                this.newCar.cover_image.name = '';
+                this.newCar.cover_image.file = '';
+            }
+        },
+
+        deleteCoverImage() {
+            this.newCar.cover_image.url = '';
+            this.newCar.cover_image.name = '';
+            this.newCar.cover_image.file = '';
+        },
+    },
+    created() {
+        this.fetchCarBodyInfo();
+    }
 }
 </script>
 
 <style>
-
+    .avatar-preview {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+    }
 </style>
