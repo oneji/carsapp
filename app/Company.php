@@ -23,4 +23,13 @@ class Company extends Model
     {
         return $this->belongsToMany('App\User');
     }
+    
+    /**
+     * Get cars which belong to a company.
+     * 
+     */
+    public function cars()
+    {
+        return $this->belongsToMany('App\Car');
+    }
 }

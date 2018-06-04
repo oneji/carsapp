@@ -230,7 +230,7 @@ export default {
                             formData.append('attachments[]', fileList[i]);
                         }
 
-                        axios.post('/company/cars', formData)
+                        axios.post(`/company/${this.$route.params.slug}/cars`, formData)
                             .then(response => {
                                 console.log(response);
                                 this.loading = false;

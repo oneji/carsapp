@@ -51,8 +51,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
 Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Car routes
-        Route::get('/cars', 'CarController@get');
-        Route::post('/cars', 'CarController@store');
+        Route::get('/{slug}/cars', 'CarController@get');
+        Route::post('/{slug}/cars', 'CarController@store');
         // Car body routes
         Route::get('/cars/body/info', 'CarBodyController@getCarBodyInfo');
         Route::get('/cars/shapes', 'CarBodyController@getShapes');

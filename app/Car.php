@@ -23,10 +23,19 @@ class Car extends Model
     ];
     
     /**
-     * Get all attachment for a car.
+     * Get all attachments for a car.
      */
     public function attachments() 
     {
         return $this->hasMany('App\CarAttachment');
     }
+
+    /**
+     * Get all companies for a car.
+     * 
+     */
+     public function cars()
+     {
+        return $this->belongsToMany('App\Company');
+     }
 }

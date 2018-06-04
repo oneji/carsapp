@@ -219,6 +219,10 @@ export default {
                     .then(response => {
                         this.loading.button = false;
                         this.items.push(response.data.sto);
+                        this.stos.push({
+                            text: response.data.sto.sto_name,
+                            value: response.data.sto.id
+                        });
                         this.alert.noSTOs = false;
                         this.snackbar.color = 'success';
                         this.snackbar.text = response.data.message;

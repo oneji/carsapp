@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Car;
 use App\CarAttachment;
+use App\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -15,14 +16,18 @@ class CarController extends Controller
      * 
      * @return \Illuminate\Http\Response
      */
-    public function get()
+    public function get($company_slug)
     {
-        $cars = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image')
-                    ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
-                    ->join('car_models', 'car_models.id', '=', 'cars.model_id')
-                    ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')->get();
-
-        return response()->json($cars);
+        $company = Company::where('slug', $company_slug)->with([
+            'cars' => function($query) {
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')->get();
+            }
+        ])->first();
+        
+        return response()->json($company);
     }
 
     /**
@@ -32,8 +37,10 @@ class CarController extends Controller
      * 
      * @return  \Illuminate\Http\Reponse
      */
-    public function store(Request $request) 
+    public function store(Request $request, $company_slug) 
     {   
+        $company = Company::where('slug', $company_slug)->first();
+
         if($request->hasFile('cover_image')) {
             $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
             $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
@@ -49,7 +56,9 @@ class CarController extends Controller
         $car = new Car($request->all());
         $car->year = Carbon::parse($request->year)->year;
         $car->cover_image = $coverImageNameToStore;
-        $car->save(); 
+        $car->save();       
+        
+        $company->cars()->attach($car->id);
 
         $carAttachments = array();
         if($request->hasFile('attachments')) {            

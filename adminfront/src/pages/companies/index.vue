@@ -220,6 +220,10 @@ export default {
                 .then(response => {
                   this.loading.button = false;
                   this.items.push(response.data.company);
+                  this.companies.push({
+                    text: response.data.company.company_name,
+                    value: response.data.company.id
+                  });                  
                   this.alert.noCompanies = false;
                   this.snackbar.color = 'success';
                   this.snackbar.text = response.data.message;

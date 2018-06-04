@@ -6,7 +6,7 @@
             </v-flex>
         </v-layout>
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg2 v-for="company in companies" :key="company.id" v-cloak>
+            <v-flex xs12 sm6 md3 lg3 v-for="company in companies" :key="company.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
@@ -30,7 +30,7 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm6 md3 lg2 v-for="sto in stos" :key="sto.id" v-cloak>
+            <v-flex xs12 sm6 md3 lg3 v-for="sto in stos" :key="sto.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
