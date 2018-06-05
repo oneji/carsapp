@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Driver;
+use App\Company;
 use App\DriverAttachment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -13,10 +14,10 @@ class DriverController extends Controller
     /**
      * Get all drivers of a company. 
      */
-    public function get() 
+    public function get($company_slug) 
     {
-        $drivers = Driver::with('attachments')->get();
-        return response()->json($drivers);
+        $company = Company::where('slug', $company_slug)->with(['drivers'])->first();
+        return response()->json($company);
     }
 
     /**
@@ -24,10 +25,12 @@ class DriverController extends Controller
      * 
      * @param   \Illuminate\Http\Request $request
      * 
-     * @return  \Illuminate\Http\Reponse
+     * @return  \Illuminate\Http\Response
      */
-    public function store(Request $request) 
+    public function store(Request $request, $company_slug) 
     {    
+        $company = Company::where('slug', $company_slug)->first();
+
         if($request->hasFile('photo')) {
             $photoFullName = $request->file('photo')->getClientOriginalName(); 
             $photoname = pathinfo($photoFullName, PATHINFO_FILENAME);
@@ -47,6 +50,7 @@ class DriverController extends Controller
 
         $driver->photo = $photoNameToStore;
         $driver->save(); 
+        $company->drivers()->attach($driver->id);
 
         $driverAttachments = array();
         if($request->hasFile('attachments')) {            

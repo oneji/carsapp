@@ -24,6 +24,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('/me', 'AuthController@user');    
 }); 
 
+// Admin routes
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Company routes
@@ -48,11 +49,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
     }); 
 });
 
+// Company routes
 Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Car routes
         Route::get('/{slug}/cars', 'CarController@get');
         Route::post('/{slug}/cars', 'CarController@store');
+        Route::post('/{slug}/cars/drivers', 'CarController@bindDriver');
         // Car body routes
         Route::get('/cars/body/info', 'CarBodyController@getCarBodyInfo');
         Route::get('/cars/shapes', 'CarBodyController@getShapes');
@@ -65,7 +68,20 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::post('cars/brands', 'CarBodyController@storeBrand');
         Route::delete('/cars/brands/{brand}', 'CarBodyController@destroyBrand');
         // Driver routes
-        Route::post('/drivers', 'DriverController@store');
-        Route::get('/drivers', 'DriverController@get');
+        Route::get('/{slug}/drivers', 'DriverController@get');
+        Route::post('/{slug}/drivers', 'DriverController@store');
+        // Request routes
+        Route::get('/{slug}/requests', 'StoRequestController@get');
+        Route::post('/{slug}/requests/{sto}', 'StoRequestController@store');
+        Route::delete('/{slug}/requests/{request}', 'StoRequestController@cancel');
     });    
+});
+
+// Sto routes
+Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
+    Route::group(['middleware' => ['jwt.auth']], function() {
+        // Request routes
+        Route::get('/{slug}/requests', 'StoRequestController@get');
+        Route::put('/{slug}/requests/{request}', 'StoRequestController@accept');
+    });
 });

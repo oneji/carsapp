@@ -19,7 +19,7 @@ class Car extends Model
      * @var array
      */
     protected $fillable = [
-        'number', 'shape_id', 'brand_id', 'model_id', 'milage', 'vin_code'
+        'number', 'shape_id', 'brand_id', 'model_id', 'milage', 'vin_code', 'engine_type_id', 'transmission_id'
     ];
     
     /**
@@ -34,8 +34,24 @@ class Car extends Model
      * Get all companies for a car.
      * 
      */
-     public function cars()
-     {
+    public function companies()
+    {
         return $this->belongsToMany('App\Company');
-     }
+    }
+
+    /**
+     * Get all drivers for a car.
+     */
+    public function drivers() 
+    {
+        return $this->belongsToMany('App\Driver');
+    }
+
+    /**
+     * Get all equipment for a car.
+     */
+    public function equipments() 
+    {
+        return $this->belongsToMany('App\CarEquipment');
+    }
 }

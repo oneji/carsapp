@@ -216,7 +216,7 @@ export default {
                             formData.append('attachments[]', fileList[i]);
                         }
 
-                        axios.post('/company/drivers', formData)
+                        axios.post(`/company/${this.$route.params.slug}/drivers`, formData)
                             .then(response => {
                                 this.newDriver.fullname = '';
                                 this.newDriver.address = '';

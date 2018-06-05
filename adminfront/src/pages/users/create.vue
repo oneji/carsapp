@@ -165,8 +165,7 @@ export default {
             showPasswordConfirmation: false,
             userTypes: [
                 { text: 'Администратор', value: 0 },
-                { text: 'Компания', value: 1 },
-                { text: 'СТО', value: 2 },
+                { text: 'Клиент', value: 1 },
             ],
 
             newUser: {

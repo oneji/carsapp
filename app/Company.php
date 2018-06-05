@@ -32,4 +32,13 @@ class Company extends Model
     {
         return $this->belongsToMany('App\Car');
     }
+    
+    /**
+     * Get drivers which belong to a company.
+     * 
+     */
+    public function drivers()
+    {
+        return $this->belongsToMany('App\Driver');
+    }
 }

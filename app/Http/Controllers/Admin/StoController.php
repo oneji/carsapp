@@ -59,7 +59,7 @@ class StoController extends Controller
      */
     public function bindUser($sto_id, $user_id)
     {
-        $company = Sto::find($sto_id)->users()->sync($user_id);
+        $company = Sto::find($sto_id)->users()->attach($user_id);
         
         return response()->json([
             'success' => true,

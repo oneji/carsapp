@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Car;
 use App\CarAttachment;
 use App\Company;
+use App\Driver;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -23,7 +24,10 @@ class CarController extends Controller
                 $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
-                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')->get();
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                        ->with('drivers')->get();
             }
         ])->first();
         
@@ -41,6 +45,8 @@ class CarController extends Controller
     {   
         $company = Company::where('slug', $company_slug)->first();
 
+        // return response()->json($request->all());
+
         if($request->hasFile('cover_image')) {
             $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
             $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
@@ -56,6 +62,7 @@ class CarController extends Controller
         $car = new Car($request->all());
         $car->year = Carbon::parse($request->year)->year;
         $car->cover_image = $coverImageNameToStore;
+        $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
         $car->save();       
         
         $company->cars()->attach($car->id);
@@ -87,6 +94,27 @@ class CarController extends Controller
             'success' => true,
             'message' => 'Машина успешно создана.',
             'files' => $carAttachments
+        ]);
+    }
+
+    /**
+     * Bind driver to a car.
+     * 
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response 
+     */
+    public function bindDriver(Request $request)
+    {
+        $car = Car::find($request->car_id);
+        $car->drivers()->attach($request->driver_id);
+
+        $driver = Driver::find($request->driver_id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Водитель успешно привязан.',
+            'driver' => $driver
         ]);
     }
 }

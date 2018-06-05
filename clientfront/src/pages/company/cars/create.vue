@@ -64,9 +64,9 @@
                                                     </v-date-picker>
                                             </v-menu>
 
-                                            <v-text-field type="text" v-model="newCar.number" name="number" label="Номер машины" prepend-icon="filter_2"                 
+                                            <v-text-field type="text" v-model="newCar.number" name="number" label="Гос номер машины" prepend-icon="filter_2"                 
                                                 v-validate="'required'" 
-                                                data-vv-name="number" data-vv-as='"Номер"'
+                                                data-vv-name="number" data-vv-as='"Гос номер"'
                                                 :error-messages="errors.collect('number')"
                                             ></v-text-field>
 
@@ -101,7 +101,27 @@
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('vin_code')"
                                                 data-vv-name="vin_code" data-vv-as='"Вин код"'                                    
-                                            ></v-text-field>                                             
+                                            ></v-text-field>  
+
+                                            <v-text-field v-model="newCar.engine_capacity" name="engine_capacity" label="Объём двигателя" type="text" prepend-icon="polymer"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('engine_capacity')"
+                                                data-vv-name="engine_capacity" data-vv-as='"Объём двигателя"'                                    
+                                            ></v-text-field> 
+
+                                            <v-select :items="engine_types" v-model="newCar.engine_type_id" label="Выберите тип двигателя" prepend-icon="directions_car"
+                                                name="engine_type_id"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('engine_type_id')"
+                                                data-vv-name="engine_type_id" data-vv-as='"Тип двигателя"'
+                                            ></v-select>   
+
+                                            <v-select :items="transmissions" v-model="newCar.transmission_id" label="Выберите КПП" prepend-icon="directions_car"
+                                                name="transmission_id"
+                                                v-validate="'required'" 
+                                                :error-messages="errors.collect('transmission_id')"
+                                                data-vv-name="transmission_id" data-vv-as='"Коробка передач"'
+                                            ></v-select>                                            
                                         </v-container>                                        
                                     </v-flex>
                                 </v-layout>
@@ -184,6 +204,9 @@ export default {
                     file: '',
                     url: ''
                 },
+                engine_capacity: '',
+                engine_type_id: null,
+                transmission_id: null 
             },
             loading: false,
             year: null,
@@ -196,7 +219,9 @@ export default {
             },
             shapes: [], 
             brands: [], 
-            models: []
+            models: [],
+            engine_types: [],
+            transmissions: []
         }
     },
     components: {
@@ -225,6 +250,9 @@ export default {
                         formData.append('milage', this.newCar.milage);
                         formData.append('vin_code', this.newCar.vin_code);
                         formData.append('cover_image', this.newCar.cover_image.file);
+                        formData.append('engine_capacity', this.newCar.engine_capacity);
+                        formData.append('engine_type_id', this.newCar.engine_type_id);
+                        formData.append('transmission_id', this.newCar.transmission_id);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);
@@ -263,6 +291,20 @@ export default {
                     response.data.models.map(value => {
                         this.models.push({
                             text: value.model_name,
+                            value: value.id
+                        });
+                    }); 
+
+                    response.data.engine_types.map(value => {
+                        this.engine_types.push({
+                            text: value.engine_type_name,
+                            value: value.id
+                        });
+                    }); 
+
+                    response.data.transmissions.map(value => {
+                        this.transmissions.push({
+                            text: value.transmission_name,
                             value: value.id
                         });
                     }); 

@@ -75,9 +75,6 @@
 import axios from '@/axios'
 
 export default {
-    computed: {
-
-    },
     data() {
         return {
             drawer: true,
@@ -85,6 +82,7 @@ export default {
             items: [
                 { icon: 'dashboard', title: 'Все проекты', to: { name: 'Home' } },
                 { icon: 'home', title: 'Главная', to: { name: 'CompanyHome' } },
+                { icon: 'assignment', title: 'Заявки СТО', to: { name: 'CompanyStoRequests' } },
                 { divider: true },        
                 { heading: 'Машины', action: { name: 'CompanyCarsCreate' } },
                 { icon: 'directions_car', title: 'Все', to: { name: 'CompanyCars' } },
@@ -95,15 +93,12 @@ export default {
             ],
             miniVariant: false,
             rightDrawer: false,
-    };
-  },
+        };
+    },
     methods: {
         logout() {
             this.$store.dispatch('logout');
         }
-  },
-    mounted() {
-        console.log(this.$router.matched);
-    }
+    }, 
 };
 </script>

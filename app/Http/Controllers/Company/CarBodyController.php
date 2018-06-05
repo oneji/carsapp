@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Company;
 use App\CarShape;
 use App\CarModel;
 use App\CarBrand;
+use App\EngineType;
+use App\Transmission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
@@ -23,11 +25,15 @@ class CarBodyController extends Controller
         $models = CarModel::select(['car_models.id', 'car_models.model_name', 'car_brands.brand_name'])
                             ->join('car_brands', 'car_brands.id', '=', 'car_models.brand_id')
                             ->get();
+        $engine_types = EngineType::orderBy('engine_type_name')->get();
+        $transmissions = Transmission::orderBy('transmission_name')->get();
 
         return response()->json([
             'shapes' => $shapes,
             'brands' => $brands,
-            'models' => $models
+            'models' => $models,
+            'engine_types' => $engine_types,
+            'transmissions' => $transmissions
         ]);
     }
     /**
