@@ -90,5 +90,8 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
         Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
         Route::post('/{slug}/services/types', 'ServiceController@storeService');
+        // Car routes
+        Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
+        Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
     });
 });

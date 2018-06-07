@@ -54,4 +54,12 @@ class Car extends Model
     {
         return $this->belongsToMany('App\EquipmentType');
     }
+
+    /**
+     * Get a card for a car.
+     */
+    public function card()
+    {
+        return $this->hasOne('App\CarCard');
+    }
 }

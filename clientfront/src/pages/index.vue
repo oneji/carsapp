@@ -25,7 +25,7 @@
                         </div>
                     </v-card-title>
                     <v-card-actions>
-                        <v-btn flat color="success" :to="{ name: 'CompanyHome', params: { slug: company.slug } }">Войти</v-btn>
+                        <v-btn flat block color="success" :to="{ name: 'CompanyHome', params: { slug: company.slug } }">Войти</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>
@@ -49,7 +49,7 @@
                         </div>
                     </v-card-title>
                     <v-card-actions>
-                        <v-btn flat color="success" :to="{ name: 'StoHome', params: { slug: sto.slug } }">Войти</v-btn>
+                        <v-btn flat block color="success" :to="{ name: 'StoHome', params: { slug: sto.slug } }">Войти</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>

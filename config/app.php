@@ -180,6 +180,7 @@ return [
         Barryvdh\Cors\ServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Laratrust\LaratrustServiceProvider::class,
+        Clockwork\Support\Laravel\ClockworkServiceProvider::class
 
     ],
 
@@ -233,6 +234,7 @@ return [
         'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
         'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
         'Laratrust'   => Laratrust\LaratrustFacade::class,
+        'Clockwork' => Clockwork\Support\Laravel\Facade::class,
 
     ],
 
