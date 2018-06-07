@@ -83,5 +83,12 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         // Request routes
         Route::get('/{slug}/requests', 'StoRequestController@get');
         Route::put('/{slug}/requests/{request}', 'StoRequestController@accept');
+        // Company routes
+        Route::get('/{slug}/companies', 'CompanyController@get');
+        Route::get('/{slug}/companies/{company}/cars', 'CompanyController@getCars');
+        // Services routes
+        Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
+        Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
+        Route::post('/{slug}/services/types', 'ServiceController@storeService');
     });
 });

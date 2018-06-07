@@ -50,8 +50,8 @@ class Car extends Model
     /**
      * Get all equipment for a car.
      */
-    public function equipments() 
+    public function equipment()
     {
-        return $this->belongsToMany('App\CarEquipment');
+        return $this->belongsToMany('App\EquipmentType');
     }
 }

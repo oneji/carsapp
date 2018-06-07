@@ -23,4 +23,12 @@ class Sto extends Model
     {
         return $this->belongsToMany('App\User');
     }
+
+    /**
+     * Get sto companies.
+     */
+    public function companies() 
+    {
+        return $this->belongsToMany('App\Company');
+    }
 }

@@ -1,4 +1,4 @@
 export default {
-    apiURL: 'http://localhost:8000/api/',
-    assetsURL: 'http://localhost:8000'
+    apiURL: 'http://55cars.loc/api/',
+    assetsURL: 'http://55cars.loc'
 }

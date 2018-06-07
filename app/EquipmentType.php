@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CarEquipment extends Model
+class EquipmentType extends Model
 {
     /**
      * Indicates if the model should be timestamped.
@@ -14,9 +14,9 @@ class CarEquipment extends Model
     public $timestamps = false;
 
     /**
-     * 
+     * Get all cars for equipment.
      */
-    public function cars()
+    public function cars() 
     {
         return $this->belongsToMany('App\Car');
     }

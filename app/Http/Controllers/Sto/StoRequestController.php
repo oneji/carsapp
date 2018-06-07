@@ -54,9 +54,13 @@ class StoRequestController extends Controller
         $req->status = $status;
         $req->save();
 
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $sto->companies()->attach($req->company_id);
+
         return response()->json([
             'success' => true,
-            'message' => $message
+            'message' => $message,
+            'sto' => $sto
         ]);
     }
 }

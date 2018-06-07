@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCarEquipmentTable extends Migration
+class CreateDefectOptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateCarEquipmentTable extends Migration
      */
     public function up()
     {
-        Schema::create('car_equipment', function (Blueprint $table) {
+        Schema::create('defect_options', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('car_id')->unsigned();
-            $table->integer('equipment_id')->unsigned();
+            $table->string('defect_option_name');
+            $table->integer('defect_id')->unsigned();
 
-            $table->foreign('car_id')->references('id')->on('cars');
-            $table->foreign('equipment_id')->references('id')->on('car_equipments');
+            $table->foreign('defect_id')->references('id')->on('defects');
         });
     }
 
@@ -30,6 +29,6 @@ class CreateCarEquipmentTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('defect_options');
     }
 }

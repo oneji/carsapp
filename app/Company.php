@@ -16,8 +16,7 @@ class Company extends Model
     ];
 
     /**
-     * Get users which belong to a company.
-     * 
+     * Get users which belong to a company. 
      */
     public function users() 
     {
@@ -25,8 +24,7 @@ class Company extends Model
     }
     
     /**
-     * Get cars which belong to a company.
-     * 
+     * Get cars which belong to a company. 
      */
     public function cars()
     {
@@ -34,11 +32,18 @@ class Company extends Model
     }
     
     /**
-     * Get drivers which belong to a company.
-     * 
+     * Get drivers which belong to a company. 
      */
     public function drivers()
     {
         return $this->belongsToMany('App\Driver');
+    }
+
+    /**
+     * Get company stos.
+     */
+    public function stos()
+    {
+        return $this->belongsToMany('App\Sto');
     }
 }
