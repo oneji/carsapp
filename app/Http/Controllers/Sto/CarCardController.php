@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sto;
 
 use App\Car;
 use App\CarCard;
+use App\DefectType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -57,8 +58,6 @@ class CarCardController extends Controller
      */
     public function getInfo($sto_slug, $car_id)
     {
-        // $car = Car::where('id', $car_id)->with('card.defect_options.defect')->first();
-
         $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
@@ -66,8 +65,30 @@ class CarCardController extends Controller
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                         ->with('card.defect_options.defect', 'attachments')
-                        ->where('cars.id', $car_id)->first(); 
+                        ->where('cars.id', $car_id)->with('drivers')->first(); 
+        $defect_info = DefectType::with('defects.defect_options')->get();
+
+        return response()->json([
+            'car' => $car,
+            'defects_info' => $defect_info
+        ]);
+    }
+
+    /**
+     * Save a newly added defects.
+     */
+    public function saveDefects(Request $request, $sto_slug, $card_id)
+    {
+        $card = CarCard::where('id', $card_id)->first();
+        $defectOptions = $request->all();
         
-        return response()->json($car);
+        foreach($defectOptions as $option)
+            $card->defect_options()->sync($option);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Сохранено.',
+            'data' => $request->all()
+        ]);
     }
 }

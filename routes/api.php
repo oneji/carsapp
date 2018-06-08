@@ -93,5 +93,7 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         // Car routes
         Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
+        // Car card routes
+        Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
     });
 });
