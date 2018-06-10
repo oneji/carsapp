@@ -6,7 +6,15 @@
             </v-flex>
         </v-layout>
 
-        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
+        <v-layout v-if="requests.length === 0">
+            <v-flex>
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Вы пока не отправляли ни одной заявки.
+                </v-alert>
+            </v-flex>
+        </v-layout>
+
+        <transition-group v-else tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(request, index) in requests" :key="request.id" v-cloak>
                 <v-card>
                     <v-card-title primary-title class="py-0 px-0">

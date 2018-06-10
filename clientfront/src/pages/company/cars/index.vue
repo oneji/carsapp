@@ -6,8 +6,16 @@
                 <v-btn color="primary" append @click.native="driver.dialog = true">Привязать водителя</v-btn>
             </v-flex>
         </v-layout>
+        
+        <v-layout v-if="noCars">
+            <v-flex>
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Ни одной машины не зарегистрировано.
+                </v-alert>
+            </v-flex>
+        </v-layout>
 
-        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
+        <transition-group v-else tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
                 <v-card>
                     <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
@@ -79,6 +87,13 @@ export default {
         assetsURL() {
             return config.assetsURL;
         },
+
+        noCars() {
+            if(this.cars.length > 0)
+                return false;
+            else 
+                return true;
+        }
     },
     data() {
         return {
@@ -103,6 +118,7 @@ export default {
         fetchCars() {
             axios.get(`/company/${this.$route.params.slug}/cars`)
                 .then(response => {
+                    console.log(response);
                     this.cars = response.data.cars;
                     this.cars.map(car => {
                         this.driver.selectCarItems.push({

@@ -272,7 +272,7 @@ export default {
         },
 
         fetchCarBodyInfo() {
-            axios.get('/company/cars/body/info')
+            axios.get('/admin/cars/body/info')
                 .then(response => {
                     response.data.shapes.map(value => {
                         this.shapes.push({

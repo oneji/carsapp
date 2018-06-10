@@ -6,7 +6,15 @@
             </v-flex>
         </v-layout>
 
-        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
+        <v-layout v-if="drivers.length === 0">
+            <v-flex>
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Ни одного водителя не зарегистрировано.
+                </v-alert>
+            </v-flex>
+        </v-layout>
+
+        <transition-group v-else tag="v-layout" class="row wrap" name="slide-x-transition">     
             <v-flex v-for="(driver, index) in drivers" :key="driver.id" xs12 sm6 md3 lg2>
                 <v-card>
                     <v-card-media>                        

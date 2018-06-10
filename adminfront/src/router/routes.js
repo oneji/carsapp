@@ -7,6 +7,7 @@ import UsersIndex from '@/pages/users/index'
 import UserCreate from '@/pages/users/create'
 import UserEdit from '@/pages/users/edit'
 import ACL from '@/pages/acl/index'
+import CarBody from '@/pages/cars/body'
 
 const routes = [        
     { path: '/login', name: 'Login', component: Login },
@@ -19,6 +20,7 @@ const routes = [
             { path: '/users/create', name: 'UserCreate', component: UserCreate, meta: { requiresAuth: true } },
             { path: '/users/edit/:id', name: 'UserEdit', component: UserEdit, meta: { requiresAuth: true } },
             { path: '/acl', name: 'ACL', component: ACL, meta: { requiresAuth: true } },
+            { path: '/car-body', name: 'CarBody', component: CarBody, meta: { requiresAuth: true } },
         ],
     },
 ]

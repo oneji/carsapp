@@ -6,7 +6,6 @@ import Home from '@/pages/index'
 import CompanyHome from '@/pages/company/index'
 import CompanyCars from '@/pages/company/cars/index'
 import CompanyCarsCreate from '@/pages/company/cars/create'
-import CompanyCarsBody from '@/pages/company/cars/body'
 import CompanyDrivers from '@/pages/company/drivers/index'
 import CompanyDriversCreate from '@/pages/company/drivers/create'
 import CompanyStoRequests from '@/pages/company/requests/index'
@@ -31,7 +30,6 @@ const routes = [
         children: [
             { path: 'cars', name: 'CompanyCars', component: CompanyCars, meta: { requiresAuth: true } },
             { path: 'cars/create', name: 'CompanyCarsCreate', component: CompanyCarsCreate, meta: { requiresAuth: true } },
-            { path: 'cars/body', name: 'CompanyCarsBody', component: CompanyCarsBody, meta: { requiresAuth: true } },
             { path: 'drivers', name: 'CompanyDrivers', component: CompanyDrivers, meta: { requiresAuth: true } },
             { path: 'drivers/create', name: 'CompanyDriversCreate', component: CompanyDriversCreate, meta: { requiresAuth: true } },
             { path: 'requests', name: 'CompanyStoRequests', component: CompanyStoRequests, meta: { requiresAuth: true } },

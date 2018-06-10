@@ -46,16 +46,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
         Route::put('/acl', 'AclController@update');
         Route::post('/acl/roles', 'AclController@createRole');
         Route::post('/acl/permissions', 'AclController@createPermission');
-    }); 
-});
-
-// Company routes
-Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
-    Route::group(['middleware' => ['jwt.auth']], function() {
-        // Car routes
-        Route::get('/{slug}/cars', 'CarController@get');
-        Route::post('/{slug}/cars', 'CarController@store');
-        Route::post('/{slug}/cars/drivers', 'CarController@bindDriver');
         // Car body routes
         Route::get('/cars/body/info', 'CarBodyController@getCarBodyInfo');
         Route::get('/cars/shapes', 'CarBodyController@getShapes');
@@ -67,6 +57,16 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::get('/cars/brands', 'CarBodyController@getBrands');
         Route::post('cars/brands', 'CarBodyController@storeBrand');
         Route::delete('/cars/brands/{brand}', 'CarBodyController@destroyBrand');
+    }); 
+});
+
+// Company routes
+Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
+    Route::group(['middleware' => ['jwt.auth']], function() {
+        // Car routes
+        Route::get('/{slug}/cars', 'CarController@get');
+        Route::post('/{slug}/cars', 'CarController@store');
+        Route::post('/{slug}/cars/drivers', 'CarController@bindDriver');        
         // Driver routes
         Route::get('/{slug}/drivers', 'DriverController@get');
         Route::post('/{slug}/drivers', 'DriverController@store');

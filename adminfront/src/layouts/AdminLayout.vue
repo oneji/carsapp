@@ -77,7 +77,8 @@ export default {
                         to: '/users/create'
                     }
                 }, 
-                { icon: 'lock', title: 'Роли и права доступа', to: '/acl' }
+                { icon: 'lock', title: 'Роли и права доступа', to: '/acl' },
+                { icon: 'directions_car', title: 'Внешний вид автомобиля', to: '/car-body' }
             ],
             miniVariant: false,
             rightDrawer: false

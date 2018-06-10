@@ -145,7 +145,6 @@
                 </v-card>
             </form>
         </v-dialog>
-
         <!-- Create new brand modal -->
         <v-dialog v-model="brand.dialog" max-width="500">
             <form @submit.prevent="createCarBrand" data-vv-scope="create-brand-form">
@@ -171,7 +170,6 @@
                 </v-card>
             </form>
         </v-dialog>
-
         <!-- Create new model modal -->
         <v-dialog v-model="model.dialog" max-width="500">
             <form @submit.prevent="createCarModel" data-vv-scope="create-model-form">
@@ -206,8 +204,8 @@
         </v-dialog>
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-          {{ snackbar.text }}
-          <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
+            {{ snackbar.text }}
+            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
     </div>
 </template>
@@ -282,7 +280,7 @@ export default {
             this.shape.loading.table = true;
             this.brand.loading.table = true;
             this.model.loading.table = true;
-            axios.get('/company/cars/body/info')
+            axios.get('/admin/cars/body/info')
                 .then(response => {
                     this.shape.items = response.data.shapes;
                     this.shape.loading.table = false;
@@ -308,7 +306,7 @@ export default {
             this.$validator.validateAll('create-shape-form')
                 .then(success => {
                     if(success) {
-                        axios.post('/company/cars/shapes', { 'shape_name': this.shape.shape_name })
+                        axios.post('/admin/cars/shapes', { 'shape_name': this.shape.shape_name })
                             .then(response => {
                                 this.shape.loading.button = false;
                                 this.shape.items.push(response.data.shape);
@@ -327,7 +325,7 @@ export default {
         },
         
         deleteCarShape(shape_id) {
-            axios.delete('/company/cars/shapes/' + shape_id)
+            axios.delete('/admin/cars/shapes/' + shape_id)
                 .then(response => {
                     this.fetchCarBodyInfo();
 
@@ -343,7 +341,7 @@ export default {
             this.$validator.validateAll('create-brand-form')
                 .then(success => {
                     if(success) {
-                        axios.post('/company/cars/brands', { 'brand_name': this.brand.brand_name })
+                        axios.post('/admin/cars/brands', { 'brand_name': this.brand.brand_name })
                             .then(response => {
                                 this.brand.loading.button = false;
                                 this.brand.items.push(response.data.brand);
@@ -362,7 +360,7 @@ export default {
         },
 
         deleteCarBrand(brand_id) {
-            axios.delete('/company/cars/brands/' + brand_id)
+            axios.delete('/admin/cars/brands/' + brand_id)
                 .then(response => {
                     this.fetchCarBodyInfo();
 
@@ -378,7 +376,7 @@ export default {
             this.$validator.validateAll('create-model-form')
                 .then(success => {
                     if(success) {
-                        axios.post('/company/cars/models', {
+                        axios.post('/admin/cars/models', {
                             'model_name': this.model.model_name,
                             'brand_id': this.model.brand_id
                         })
@@ -399,7 +397,7 @@ export default {
         },
 
         deleteCarModel(model_id) {
-            axios.delete('/company/cars/models/' + model_id)
+            axios.delete('/admin/cars/models/' + model_id)
                 .then(response => {
                     this.fetchCarBodyInfo();
 
