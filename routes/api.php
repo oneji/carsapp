@@ -89,11 +89,17 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         // Services routes
         Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
         Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
+        Route::get('/{slug}/services/types', 'ServiceController@getTypes');
         Route::post('/{slug}/services/types', 'ServiceController@storeService');
+        Route::post('/{slug}/services/invoice', 'ServiceController@invoice');
         // Car routes
         Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
         // Car card routes
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
+        // Defect routes
+        Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
+        Route::get('/{slug}/defects/types', 'DefectController@getTypes');
+        Route::get('/{slug}/defects/info', 'DefectController@getFullInfo');        
     });
 });

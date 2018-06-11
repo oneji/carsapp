@@ -18,8 +18,10 @@ class CreateServiceTypesTable extends Migration
             $table->string('service_type_name');
             $table->double('service_price')->nullable();
             $table->integer('service_category_id')->unsigned();
+            $table->integer('sto_id')->unsigned();
 
             $table->foreign('service_category_id')->references('id')->on('service_categories');
+            $table->foreign('sto_id')->references('id')->on('stos');
         });
     }
 

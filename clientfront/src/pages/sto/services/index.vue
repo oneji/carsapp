@@ -7,6 +7,82 @@
             </v-flex>
         </v-layout>
 
+        <v-layout row wrap>
+            <v-flex xs12 sm6 md8 lg8>
+                <v-card>
+                    <v-card-title class="py-1">
+                        Услуги
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="types.search"
+                            append-icon="search"
+                            label="Поиск"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table :loading="types.loading.table" :headers="types.headers" :items="types.items" :search="types.search">
+                        <template slot="items" slot-scope="props">
+                            <td>{{ props.item.service_type_name }}</td>
+                            <td>{{ props.item.service_category_name }}</td>
+                            <td>{{ props.item.service_price }} сом.</td>
+                            <!-- <td class="justify-center">
+                                <v-btn icon class="mx-0" @click="deleteCarShape(props.item.id)">
+                                    <v-icon color="pink">delete</v-icon>
+                                </v-btn>
+                            </td> -->
+                        </template>
+                        <!-- No data slot -->
+                        <template slot="no-data">
+                            <v-alert :value="true" outline color="info" icon="warning">
+                                Нет данных для отображения.
+                            </v-alert>
+                        </template>
+                        <!-- No results slot -->
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                            Нет результатов для "{{ types.search }}".
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+
+            <v-flex xs12 sm6 md4 lg4>
+                <v-card>
+                    <v-card-title class="py-1">
+                        Категории услуг
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="categories.search"
+                            append-icon="search"
+                            label="Поиск"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table :loading="categories.loading.table" :headers="categories.headers" :items="categories.items" :search="categories.search">
+                        <template slot="items" slot-scope="props">
+                            <td>{{ props.item.service_category_name }}</td>
+                            <!-- <td class="justify-center">
+                                <v-btn icon class="mx-0" @click="deleteCarShape(props.item.id)">
+                                    <v-icon color="pink">delete</v-icon>
+                                </v-btn>
+                            </td> -->
+                        </template>
+                        <!-- No data slot -->
+                        <template slot="no-data">
+                            <v-alert :value="true" outline color="info" icon="warning">
+                                Нет данных для отображения.
+                            </v-alert>
+                        </template>
+                        <!-- No results slot -->
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                            Нет результатов для "{{ categories.search }}".
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>
+        </v-layout>
+
         <!-- Service category modal -->
         <v-dialog v-model="serviceCategory.dialog" max-width="500">
             <form @submit.prevent="addCategory" data-vv-scope="create-service-category-form">
@@ -59,6 +135,13 @@
                                     :error-messages="errors.collect('service_type_id')"
                                     data-vv-name="service_type_id" data-vv-as='"Категория"'
                                 ></v-select>
+
+                                <v-select autocomplete :items="defectOptions.selectItems" v-model="serviceType.defectOptionID" label="Выберите дефект" prepend-icon="category"
+                                    name="defect_option_id"
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('defect_option_id')"
+                                    data-vv-name="defect_option_id" data-vv-as='"Дефект"'
+                                ></v-select>
                             </v-flex>
                         </v-layout>
                     </v-card-text>
@@ -88,6 +171,30 @@ export default {
     },
     data() {
         return {
+            categories: {
+                items: [],
+                headers: [
+                    { text: 'Категория услуги', value: 'service_category_name' }
+                ],
+
+                search: '',
+                loading: {
+                    table: false
+                }
+            },
+            types: {
+                items: [],
+                headers: [
+                    { text: 'Услуга', value: 'service_type_name' }, 
+                    { text: 'Категория', value: 'service_category_name' }, 
+                    { text: 'Цена', value: 'service_price' }, 
+                ],
+
+                search: '',
+                loading: {
+                    table: false
+                }
+            },
             serviceCategory: {
                 name: '',
                 dialog: false,
@@ -98,13 +205,20 @@ export default {
             },
             serviceType: {
                 name: '',
-                categoryID: '',
                 price: null,
+                categoryID: '',
+                defectOptionID: '',
                 approximatePrice: '',
                 dialog: false,
                 loading: {
                     button: false
                 }
+            },
+            defectTypes: [],
+            defects: [],
+            defectOptions: {
+                items: [],
+                selectItems: []
             },
 
             snackbar: {
@@ -123,6 +237,7 @@ export default {
                     if(result) {
                         axios.post(`/sto/${this.$route.params.slug}/services/categories`, { 'service_category_name': this.serviceCategory.name })
                         .then(response => {
+                            this.categories.items.push(response.data.category);
                             this.serviceCategory.loading.button = false;
                             this.serviceCategory.selectItems.push({
                                 text: response.data.category.service_category_name,
@@ -138,15 +253,17 @@ export default {
         },
 
         getCategories() {
+            this.categories.loading.table = true;
             axios.get(`/sto/${this.$route.params.slug}/services/categories`)
                 .then(response => {
-                    console.log(response);
+                    this.categories.items = response.data;
                     response.data.map(category => {
                         this.serviceCategory.selectItems.push({
                             text: category.service_category_name,
                             value: category.id
                         });
                     });
+                    this.categories.loading.table = false;
                 })
                 .catch(error => console.log(error));
         },
@@ -160,10 +277,12 @@ export default {
                             'service_type_name': this.serviceType.name,
                             'service_price': this.serviceType.price,
                             'service_category_id': this.serviceType.categoryID,
+                            'defect_option_id': this.serviceType.defectOptionID,
                             'approximate': this.serviceType.approximatePrice    
                         })
                         .then(response => {
                             console.log(response);
+                            this.getServices();
                             this.serviceType.loading.button = false;
                             this.snackbar.color = 'success';
                             this.snackbar.text = response.data.message;
@@ -172,10 +291,46 @@ export default {
                         .catch(error => console.log(error));
                     }
                 });
+        },
+
+        getServices() {
+            this.types.loading.table = true;
+            axios.get(`/sto/${this.$route.params.slug}/services/types`)
+                .then(response => {
+                    this.types.items = response.data;
+                    this.types.loading.table = false;   
+                })
+                .catch(error => console.log(error));
+        },
+
+        getFullDefectInfo() {
+            axios.get(`/sto/${this.$route.params.slug}/defects/info`)
+                .then(response => {
+                    console.log(response.data);
+                    let defectInfo = response.data.defect_info;
+
+                    defectInfo.map(type => {                        
+                        this.defectTypes.push(type);
+
+                        type.defects.map(defect => {
+                            this.defects.push(defect);
+
+                            defect.defect_options.map(option => {
+                                this.defectOptions.selectItems.push({
+                                    text: defect.defect_name + ': ' + option.defect_option_name,
+                                    value: option.id
+                                });
+                            });
+                        });
+                    });
+                })
+                .catch(error => console.log(error));
         }
     },
     created() {
         this.getCategories();
+        this.getServices();
+        this.getFullDefectInfo();
     }
 }
 </script>

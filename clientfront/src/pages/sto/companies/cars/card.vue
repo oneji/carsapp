@@ -2,7 +2,7 @@
     <div>
         <v-layout>
             <v-flex>
-                <v-btn color="success" append @click="$router.go(-1)">Назад</v-btn>           
+                <v-btn color="success" append @click="$router.back()">Назад</v-btn>           
             </v-flex>
         </v-layout>
 
@@ -14,7 +14,7 @@
             </transition>
             
             <transition name="fade-transition" mode="out-in">
-                <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
+                <v-flex xs12 sm12 md4 lg4 v-if="!loading.pageLoad" v-cloak>
                     <v-card>
                         <v-card-media>
                             <v-container>
@@ -56,10 +56,11 @@
             </transition>
 
             <transition name="fade-transition" mode="out-in"> 
-                <v-flex xs12 sm12 md5 lg5 v-if="!loading.pageLoad" v-cloak>
+                <v-flex xs12 sm12 md5 lg6 v-if="!loading.pageLoad" v-cloak>
                     <v-card>
                         <v-tabs v-model="active" color="light-blue" dark slider-color="white" show-arrows>
                             <v-tab :key="1" ripple>Дефектный акт</v-tab>
+                            <v-tab :key="2" ripple>Ремонтные работы</v-tab>
                             <v-tab-item :key="1">
                                 <v-card flat>
                                     <v-card-text class="px-0 py-0">
@@ -79,7 +80,7 @@
                                                             ></v-select>
 
                                                             <v-select
-                                                                :items="selects.defectOptions[selected.defects - 1]"
+                                                                :items="selects.defectOptions[selected.defects]"
                                                                 v-model="selected.defectOptions"
                                                                 label="Опция дефекта"
                                                                 single-line
@@ -96,10 +97,57 @@
                                     </v-card-text>
                                 </v-card>
                             </v-tab-item>
+                            <v-tab-item :key="2">
+                                <v-card flat></v-card>
+                            </v-tab-item>
                         </v-tabs>
                     </v-card>
                 </v-flex>            
             </transition>
+        </v-layout>
+
+        <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
+            <v-flex xs12 sm12 md12 lg12>
+                <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>           
+                <v-btn color="primary" append @click="getTotal">Итого к оплате</v-btn>           
+            </v-flex>
+
+            <transition name="fade-transition" mode="out-in">
+                <div class="loading-block" v-if="loading.invoice" v-cloak>
+                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
+                </div>
+            </transition>
+
+            <v-flex xs12 sm12 md6 lg6 v-if="invoice.length > 0">         
+                <v-card>
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Примерная цена на услуги</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <v-list two-line>
+                        <template v-for="(item, index) in invoice">
+                            <v-list-tile :key="item.title" avatar ripple @click="toggle(index)">
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{ item.service_type_name }}</v-list-tile-title>
+                                    <v-list-tile-sub-title>Категория: {{ item.service_category_name }}</v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-action>
+                                    <v-list-tile-action-text>{{ item.service_price }} сом.</v-list-tile-action-text>
+                                    <v-icon v-if="selectedServices.indexOf(index) < 0" color="grey lighten-1">star_border</v-icon>
+                                    <v-icon v-else color="yellow darken-2">star</v-icon>
+                                </v-list-tile-action>
+                            </v-list-tile>
+                            <v-divider v-if="index + 1 < invoice.length" :key="index"></v-divider>
+                        </template>
+                    </v-list>
+                </v-card>
+            </v-flex>
         </v-layout>
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
@@ -121,12 +169,16 @@ export default {
     },
     data() {
         return {
+            selectedServices: [],
+            invoice: [],
+            totalSum: 0,
             car: {
                 cover_image: '/dasd/'
             },
             loading: {
                 pageLoad: false,
-                saveDefects: false
+                saveDefects: false,
+                invoice: false
             },
             active: null,
             active_2: null,
@@ -179,9 +231,9 @@ export default {
                                     options.push({
                                         text: option.defect_option_name,
                                         value: option.id
-                                    });                                    
+                                    });                                                                       
                                 });
-                                this.selects.defectOptions.push(options);
+                                this.selects.defectOptions[defect.id] = options;
                             });
                             this.selects.defects.push(defects);
                         }                        
@@ -190,6 +242,7 @@ export default {
                 })
                 .catch(error => console.log(error));
         },
+
         saveDefects() {
             this.loading.saveDefects = true;
             axios.post(`/sto/${this.$route.params.slug}/cards/${this.car.card.id}/defects`, { 
@@ -203,6 +256,43 @@ export default {
                 this.snackbar.active = true;
             })
             .catch(error => console.log(error));
+        },
+
+        getInvoice() {
+            this.loading.invoice = true;
+            axios.post(`/sto/${this.$route.params.slug}/services/invoice`, { 'defect_options': this.selected.defectOptions })
+                .then(response => {
+                    console.log(response);
+                    this.selectedServices = [];
+                    this.invoice = response.data;
+                    this.invoice.map((item, index) => {
+                        this.selectedServices.push(index);
+                    });
+                    this.loading.invoice = false;
+                })
+                .catch(error => console.log(error));
+        },
+
+        toggle(index) {
+            const i = this.selectedServices.indexOf(index)
+
+            if (i > -1) {
+                this.selectedServices.splice(i, 1)
+            } else {
+                this.selectedServices.push(index)
+            }
+        },
+
+        getTotal() {
+            this.totalSum = 0;
+            this.selectedServices.map(serviceIndex => {
+                this.invoice.map((item, index) => {
+                    if(index === serviceIndex) {
+                        this.totalSum += item.service_price;
+                    }
+                });
+            });
+            console.log('Итого к выплате: ' + this.totalSum + ' сомони.');
         }
     },
     created() {

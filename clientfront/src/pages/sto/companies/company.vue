@@ -2,8 +2,8 @@
     <div>
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" append @click="$router.go(-1)">Назад</v-btn>  
-                <v-btn color="info" append @click="$router.go(+1)">Вперед</v-btn>               
+                <v-btn color="success" append @click="$router.back()">Назад</v-btn>  
+                <v-btn color="info" append @click="$router.forward()">Вперед</v-btn>               
             </v-flex>
         </v-layout>
 
@@ -99,6 +99,7 @@ export default {
     },
     created() {
         this.fetchCompanyCars();
+        console.log(this.$router);
     }
 }
 </script>

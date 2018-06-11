@@ -1,14 +1,20 @@
 <template>
     <div>
-        <v-layout v-if="requests.length === 0">
-            <v-flex>
+        <v-layout style="position: relative;">
+            <v-flex v-if="requests.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
                     Заявок от компаний не найдено.
                 </v-alert>
             </v-flex>
+
+            <transition name="fade-transition" mode="out-in">
+                <div class="loading-block" v-if="loading.pageLoad" v-cloak>
+                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
+                </div>
+            </transition>
         </v-layout>
 
-        <transition-group v-else tag="v-layout" class="row wrap" name="slide-x-transition">               
+        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(request, index) in requests" :key="request.id" v-cloak>
                 <v-card>
                     <v-card-title primary-title class="py-0 px-0">
@@ -69,7 +75,8 @@ export default {
             dialog: false,
             loading: {
                 accept: false,
-                reject: false
+                reject: false,
+                pageLoad: false
             },
             snackbar: {
                 active: false,
@@ -86,10 +93,11 @@ export default {
     },
     methods: {
         fetchRequests() {
+            this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/requests`)
                 .then(response => {
-                    console.log(response);
                     this.requests = response.data;
+                    this.loading.pageLoad = false;
                 })
                 .catch(error => console.error());           
         },
@@ -102,7 +110,6 @@ export default {
 
             axios.put(`/sto/${this.$route.params.slug}/requests/${request_id}`, { type })
                 .then(response => {
-                    console.log(response);
                     this.loading.accept = false;
                     this.loading.reject = false;
                     this.requests.splice(index, 1);
@@ -112,10 +119,6 @@ export default {
                 })
                 .catch(error => console.log(error));
         },
-
-        rejectRequest(request_id, index) {
-            console.log('...');
-        }
     },
     created() {
         this.fetchRequests();

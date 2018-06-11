@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sto;
 use App\Car;
 use App\CarCard;
 use App\DefectType;
+use App\Sto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -58,6 +59,7 @@ class CarCardController extends Controller
      */
     public function getInfo($sto_slug, $car_id)
     {
+        $sto = Sto::where('slug', $sto_slug)->first();
         $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
@@ -66,7 +68,7 @@ class CarCardController extends Controller
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                         ->with('card.defect_options.defect', 'attachments')
                         ->where('cars.id', $car_id)->with('drivers')->first(); 
-        $defect_info = DefectType::with('defects.defect_options')->get();
+        $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
 
         return response()->json([
             'car' => $car,
@@ -87,8 +89,7 @@ class CarCardController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Сохранено.',
-            'data' => $request->all()
+            'message' => 'Сохранено.'
         ]);
     }
 }

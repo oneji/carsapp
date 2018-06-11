@@ -6,15 +6,21 @@
             </v-flex>
         </v-layout>
 
-        <v-layout v-if="requests.length === 0">
-            <v-flex>
+        <v-layout style="position: relative;">  
+            <v-flex v-if="requests.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
                     Вы пока не отправляли ни одной заявки.
                 </v-alert>
             </v-flex>
-        </v-layout>
+            
+            <transition name="fade-transition" mode="out-in">
+                <div class="loading-block" v-if="loading.pageLoad" v-cloak>
+                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
+                </div>
+            </transition>
+        </v-layout>        
 
-        <transition-group v-else tag="v-layout" class="row wrap" name="slide-x-transition">               
+        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(request, index) in requests" :key="request.id" v-cloak>
                 <v-card>
                     <v-card-title primary-title class="py-0 px-0">
@@ -104,7 +110,8 @@ export default {
             dialog: false,
             loading: {
                 create: false,
-                cancel: false
+                cancel: false,
+                pageLoad: false
             },
             snackbar: {
                 active: false,
@@ -121,10 +128,12 @@ export default {
     },
     methods: {
         fetchRequests() {
+            this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/requests`)
                 .then(response => {
                     console.log(response);
                     this.requests = response.data;
+                    this.loading.pageLoad = false;
                 })
                 .catch(error => console.error());           
         },
@@ -197,5 +206,15 @@ export default {
     }
     .label-danger {
         background-color: #f96a74;
+    }
+    .loading-block {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
