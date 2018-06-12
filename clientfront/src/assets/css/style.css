@@ -1,0 +1,131 @@
+@font-face {
+  font-family: 'a_fonts';
+  src:  url('../fonts/a_fonts.eot?5e9bqw');
+  src:  url('../fonts/a_fonts.eot?5e9bqw#iefix') format('embedded-opentype'),
+        url('../fonts/a_fonts.ttf?5e9bqw') format('truetype'),
+        url('../fonts/a_fonts.woff?5e9bqw') format('woff'),
+        url('../fonts/a_fonts.svg?5e9bqw#a_fonts') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="ic-"], [class*=" ic-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'a_fonts' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ic-somoni:before {
+  content: "\e901";
+}
+.ic-money:before {
+  content: "\e905";
+}
+.ic-marker:before {
+  content: "\e909";
+}
+.ic-touchscreen2:before {
+  content: "\e90e";
+}
+.ic-morgue:before {
+  content: "\e910";
+}
+.ic-color3:before {
+  content: "\e915";
+}
+.ic-vulcanization:before {
+  content: "\e916";
+}
+.ic-services:before {
+  content: "\e917";
+}
+.ic-washing:before {
+  content: "\e918";
+}
+.ic-auto_services:before {
+  content: "\e919";
+}
+.ic-auto_parts:before {
+  content: "\e91a";
+}
+.ic-fuel3:before {
+  content: "\e91b";
+}
+.ic-engine:before {
+  content: "\e900";
+}
+.ic-fuel:before {
+  content: "\e902";
+}
+.ic-fuel2:before {
+  content: "\e903";
+}
+.ic-transmission:before {
+  content: "\e904";
+}
+.ic-speedometer:before {
+  content: "\e906";
+}
+.ic-wheel:before {
+  content: "\e907";
+}
+.ic-carbody:before {
+  content: "\e908";
+}
+.ic-color2:before {
+  content: "\e90a";
+}
+.ic-pulse:before {
+  content: "\e90b";
+}
+.ic-pulse2:before {
+  content: "\e90c";
+}
+.ic-location:before {
+  content: "\e90d";
+}
+.ic-view:before {
+  content: "\e90f";
+}
+.ic-view2:before {
+  content: "\e911";
+}
+.ic-calendar:before {
+  content: "\e912";
+}
+.ic-user:before {
+  content: "\e913";
+}
+.ic-phone:before {
+  content: "\e914";
+}
+.ic-music:before {
+  content: "\e91c";
+}
+.ic-bargain:before {
+  content: "\e91d";
+}
+.ic-exchange_1:before {
+  content: "\e91e";
+}
+.ic-pdd:before {
+  content: "\e91f";
+}
+.ic-announcement:before {
+  content: "\e920";
+}
+.ic-car:before {
+  content: "\e921";
+}
+.ic-wallet:before {
+  content: "\e922";
+}

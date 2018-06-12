@@ -14,7 +14,7 @@
             </transition>
             
             <transition name="fade-transition" mode="out-in">
-                <v-flex xs12 sm12 md4 lg4 v-if="!loading.pageLoad" v-cloak>
+                <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
                     <v-card>
                         <v-card-media>
                             <v-container>
@@ -26,7 +26,7 @@
                             </v-container>
                         </v-card-media>
                         <v-divider></v-divider>
-                        <v-card-media :src="car.cover_image !== '' ? assetsURL + '/' + car.cover_image : '/static/images/no-photo.png'" height="200px"></v-card-media>
+                        <v-card-media :src="car.cover_image !== null ? assetsURL + '/' + car.cover_image : '/static/images/no-photo.png'" height="200px"></v-card-media>
                         <v-divider></v-divider>
                         <v-card-title primary-title class="pt-3 pb-0">
                             <div>
@@ -38,15 +38,33 @@
                             </div>
                         </v-card-title>
                         <v-card-actions class="pr-0 pl-0">
-                            <v-container class="pt-0">
+                            <v-container class="pt-2 pb-2">
                                 <v-layout row wrap>
                                     <v-flex>
-                                        <div><strong>Пробег:</strong> {{ car.milage }} км.</div>
-                                        <div><strong>Год выпуска:</strong> {{ car.year }}</div>
-                                        <div><strong>Vin код:</strong> {{ car.vin_code }}</div>
-                                        <div><strong>Гос номер:</strong> {{ car.number }}</div>
-                                        <div><strong>Объем двигателя:</strong> {{ car.engine_capacity }}</div>
-                                        <div><strong>Тип ДВС:</strong> {{ car.engine_type_name }}</div>
+                                        <div class="car-details-block subheading mb-2">
+                                            <i class="ic-speedometer car-icon"></i>
+                                            <strong>Пробег:</strong> {{ car.milage }} км.
+                                        </div>
+                                        <div class="car-details-block subheading mb-2">
+                                            <i class="ic-car car-icon"></i>
+                                            <strong>Vin код:</strong> {{ car.vin_code }}
+                                        </div>
+                                        <div class="car-details-block subheading mb-2">
+                                            <i class="ic-wheel car-icon"></i>
+                                            <strong>Гос номер:</strong> {{ car.number }}
+                                        </div>
+                                        <div class="car-details-block subheading mb-2">
+                                            <i class="ic-engine car-icon"></i>
+                                            <strong>Объем двигателя:</strong> {{ car.engine_capacity }} л.
+                                        </div>
+                                        <div class="car-details-block subheading mb-2">
+                                            <i class="ic-fuel car-icon"></i>
+                                            <strong>Тип ДВС:</strong> {{ car.engine_type_name }}
+                                        </div>
+                                        <div class="car-details-block subheading">
+                                            <i class="ic-transmission car-icon"></i>
+                                            <strong>Трансмиссия:</strong> {{ car.transmission_name }}
+                                        </div>
                                     </v-flex>
                                 </v-layout>
                             </v-container>
@@ -56,11 +74,10 @@
             </transition>
 
             <transition name="fade-transition" mode="out-in"> 
-                <v-flex xs12 sm12 md5 lg6 v-if="!loading.pageLoad" v-cloak>
+                <v-flex xs12 sm12 md8 lg9 v-if="!loading.pageLoad" v-cloak>
                     <v-card>
                         <v-tabs v-model="active" color="light-blue" dark slider-color="white" show-arrows>
                             <v-tab :key="1" ripple>Дефектный акт</v-tab>
-                            <v-tab :key="2" ripple>Ремонтные работы</v-tab>
                             <v-tab-item :key="1">
                                 <v-card flat>
                                     <v-card-text class="px-0 py-0">
@@ -108,8 +125,7 @@
 
         <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
             <v-flex xs12 sm12 md12 lg12>
-                <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>           
-                <v-btn color="primary" append @click="getTotal">Итого к оплате</v-btn>           
+                <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>      
             </v-flex>
 
             <transition name="fade-transition" mode="out-in">
@@ -118,13 +134,20 @@
                 </div>
             </transition>
 
-            <v-flex xs12 sm12 md6 lg6 v-if="invoice.length > 0">         
+            <v-flex v-if="!loading.pageLoad && totalSum === 0"> 
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Сумма и услуги расчитаны не были.
+                </v-alert>
+            </v-flex>
+
+            <v-flex xs12 sm12 md12 lg12 v-if="invoice.length > 0">         
                 <v-card>
                     <v-card-media>
                         <v-container>
                             <v-layout>
                                 <v-flex>
-                                    <p class="subheading my-0">Примерная цена на услуги</p>
+                                    <p class="subheading my-0" style="float: left;">Примерная цена на услуги</p>
+                                    <p class="title my-0" style="float: right;"><strong>Итого:</strong> <span class="red--text">{{ totalSum }} сомони</span></p>   
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -138,7 +161,7 @@
                                     <v-list-tile-sub-title>Категория: {{ item.service_category_name }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-action>
-                                    <v-list-tile-action-text>{{ item.service_price }} сом.</v-list-tile-action-text>
+                                    <v-list-tile-action-text class="body-2">{{ item.service_price }} сом.</v-list-tile-action-text>
                                     <v-icon v-if="selectedServices.indexOf(index) < 0" color="grey lighten-1">star_border</v-icon>
                                     <v-icon v-else color="yellow darken-2">star</v-icon>
                                 </v-list-tile-action>
@@ -160,8 +183,10 @@
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
+    mixins: [ snackbar ],
     computed: {
         assetsURL() {
             return config.assetsURL;
@@ -194,12 +219,6 @@ export default {
             selected: {
                 defects: null,
                 defectOptions: []
-            },
-            snackbar: {
-                active: false,
-                text: '',
-                timeout: 5000,
-                color: ''
             },
         }
     },
@@ -249,7 +268,6 @@ export default {
                 'defect_options': this.selected.defectOptions 
             })
             .then(response => {
-                console.log(response);
                 this.loading.saveDefects = false;
                 this.snackbar.color = 'success';
                 this.snackbar.text = response.data.message;
@@ -262,25 +280,28 @@ export default {
             this.loading.invoice = true;
             axios.post(`/sto/${this.$route.params.slug}/services/invoice`, { 'defect_options': this.selected.defectOptions })
                 .then(response => {
-                    console.log(response);
                     this.selectedServices = [];
                     this.invoice = response.data;
                     this.invoice.map((item, index) => {
                         this.selectedServices.push(index);
+                        this.getTotal();
                     });
                     this.loading.invoice = false;
                 })
                 .catch(error => console.log(error));
+
+            
         },
 
         toggle(index) {
             const i = this.selectedServices.indexOf(index)
 
-            if (i > -1) {
-                this.selectedServices.splice(i, 1)
-            } else {
-                this.selectedServices.push(index)
-            }
+            if (i > -1)
+                this.selectedServices.splice(i, 1);
+            else
+                this.selectedServices.push(index);            
+
+            this.getTotal();
         },
 
         getTotal() {
@@ -292,7 +313,6 @@ export default {
                     }
                 });
             });
-            console.log('Итого к выплате: ' + this.totalSum + ' сомони.');
         }
     },
     created() {
@@ -311,5 +331,17 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .car-icon {
+        font-size: 150%;
+        margin-right: 8px;
+    }
+    .car-details-block {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+    .car-details-block strong {
+        margin-right: 5px;
     }
 </style>

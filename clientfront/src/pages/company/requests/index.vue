@@ -98,8 +98,10 @@
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
+    mixins: [ snackbar ],
     computed: {
         assetsURL() {
             return config.assetsURL;
@@ -112,12 +114,6 @@ export default {
                 create: false,
                 cancel: false,
                 pageLoad: false
-            },
-            snackbar: {
-                active: false,
-                text: '',
-                timeout: 5000,
-                color: ''
             },
 
             requests: [],

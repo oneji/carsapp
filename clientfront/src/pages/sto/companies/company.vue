@@ -22,20 +22,44 @@
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn flat block color="success" v-if="car.card === null" @click="createCard(car.id, index)" :loading="card.loading">Создать карточку</v-btn>
+                        <v-btn flat block color="success" v-if="car.card === null" @click="createCard(car.id, index)" :loading="card.loading === car.id">Создать карточку</v-btn>
                         <v-btn flat block color="primary" v-else :to="{ name: 'StoCarCard', params: { car: car.id,  } }">Карточка</v-btn>
-                        <v-btn icon @click.native="card.showInfo = !card.showInfo">
-                            <v-icon>{{ card.showInfo ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
+                        <v-btn icon @click.native="card.showInfo = car.id" v-if="card.showInfo !== car.id">
+                            <v-icon>keyboard_arrow_down</v-icon>
+                        </v-btn>
+                        <v-btn icon @click.native="card.showInfo = null" v-if="card.showInfo === car.id">
+                            <v-icon>keyboard_arrow_up</v-icon>
                         </v-btn>
                     </v-card-actions>
                     <v-slide-y-transition>
-                        <v-card-text v-show="card.showInfo" class="pt-1">
-                            <div><strong>Пробег:</strong> {{ car.milage }} км.</div>
-                            <div><strong>Год выпуска:</strong> {{ car.year }}</div>
-                            <div><strong>Vin код:</strong> {{ car.vin_code }}</div>
-                            <div><strong>Гос номер:</strong> {{ car.number }}</div>
-                            <div><strong>Объем двигателя:</strong> {{ car.engine_capacity }}</div>
-                            <div><strong>Тип ДВС:</strong> {{ car.engine_type_name }}</div>
+                        <!-- Car info -->
+                        <v-card-text v-show="card.showInfo === car.id" class="pt-1">
+                            <v-flex>
+                                <div class="car-details-block subheading mb-2">
+                                    <i class="ic-speedometer car-icon"></i>
+                                    <strong>Пробег:</strong> {{ car.milage }} км.
+                                </div>
+                                <div class="car-details-block subheading mb-2">
+                                    <i class="ic-car car-icon"></i>
+                                    <strong>Vin код:</strong> {{ car.vin_code }}
+                                </div>
+                                <div class="car-details-block subheading mb-2">
+                                    <i class="ic-wheel car-icon"></i>
+                                    <strong>Гос номер:</strong> {{ car.number }}
+                                </div>
+                                <div class="car-details-block subheading mb-2">
+                                    <i class="ic-engine car-icon"></i>
+                                    <strong>Объем двигателя:</strong> {{ car.engine_capacity }} л.
+                                </div>
+                                <div class="car-details-block subheading mb-2">
+                                    <i class="ic-fuel car-icon"></i>
+                                    <strong>Тип ДВС:</strong> {{ car.engine_type_name }}
+                                </div>
+                                <div class="car-details-block subheading">
+                                    <i class="ic-transmission car-icon"></i>
+                                    <strong>Трансмиссия:</strong> {{ car.transmission_name }}
+                                </div>
+                            </v-flex>
                         </v-card-text>
                     </v-slide-y-transition>
                 </v-card>
@@ -52,8 +76,10 @@
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
+    mixins: [ snackbar ],
     computed: {
         assetsURL() {
             return config.assetsURL;
@@ -63,15 +89,8 @@ export default {
         return {
             cars: [],
             card: {
-                loading: false,
-                showInfo: false
-            },
-
-            snackbar: {
-                active: false,
-                text: '',
-                timeout: 5000,
-                color: ''
+                loading: null,
+                showInfo: null
             },
         }
     },
@@ -85,7 +104,7 @@ export default {
         },
 
         createCard(car_id, index) {
-            this.card.loading = true;
+            this.card.loading = car_id;
             axios.post(`/sto/${this.$route.params.slug}/cars/${car_id}/card`)
                 .then(response => {
                     this.fetchCompanyCars();
@@ -99,11 +118,21 @@ export default {
     },
     created() {
         this.fetchCompanyCars();
-        console.log(this.$router);
     }
 }
 </script>
 
 <style>
-
+    .car-icon {
+        font-size: 150%;
+        margin-right: 8px;
+    }
+    .car-details-block {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+    }
+    .car-details-block strong {
+        margin-right: 5px;
+    }
 </style>

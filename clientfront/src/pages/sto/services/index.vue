@@ -164,11 +164,13 @@
 
 <script>
 import axios from '@/axios'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
+    mixins: [ snackbar ],
     data() {
         return {
             categories: {
@@ -219,13 +221,6 @@ export default {
             defectOptions: {
                 items: [],
                 selectItems: []
-            },
-
-            snackbar: {
-                active: false,
-                text: '',
-                timeout: 5000,
-                color: ''
             },
         }
     },

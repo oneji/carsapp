@@ -157,11 +157,13 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImagePreview)
 
 import axios from '@/axios'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
+    mixins: [ snackbar ],
     data() {
         return {
             attachments: [],
@@ -179,12 +181,6 @@ export default {
             loading: false,
             date: null,
             menu: false,
-            snackbar: {
-                active: false,
-                text: '',
-                timeout: 5000,
-                color: ''
-            },
         }
     },
     components: {
