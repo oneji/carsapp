@@ -97,6 +97,7 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
         // Car card routes
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
+        Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
         // Defect routes
         Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
         Route::get('/{slug}/defects/types', 'DefectController@getTypes');

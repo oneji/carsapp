@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Sto;
 
 use App\Car;
 use App\CarCard;
+use App\CarCardComment;
 use App\DefectType;
 use App\Sto;
+use JWTAuth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -66,7 +68,7 @@ class CarCardController extends Controller
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('card.defect_options.defect', 'attachments')
+                        ->with('card.defect_options.defect', 'attachments', 'card.comments')
                         ->where('cars.id', $car_id)->with('drivers')->first(); 
         $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
 
@@ -78,6 +80,12 @@ class CarCardController extends Controller
 
     /**
      * Save a newly added defects.
+     * 
+     * @param   string $sto_slug
+     * @param   int $card_id
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
      */
     public function saveDefects(Request $request, $sto_slug, $card_id)
     {
@@ -89,7 +97,33 @@ class CarCardController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Сохранено.'
+            'message' => 'Дефектный акт сохранен.'
+        ]);
+    }
+
+    /**
+     * Store a newly created comment in the database.
+     * 
+     * @param   string $sto_slug
+     * @param   int $card_id
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function storeComment(Request $request, $sto_slug, $card_id)
+    {
+        $card = CarCard::where('id', $card_id)->first();
+        $user = JWTAuth::parseToken()->authenticate();
+        $comment = new CarCardComment();
+        $comment->comment = $request->comment;
+        $comment->car_card_id = $card->id;
+        $comment->user_id = $user->id;  
+        $comment->save();     
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Комментарий успешно добавлен.',
+            'comment' => $comment
         ]);
     }
 }

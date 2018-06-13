@@ -13,6 +13,7 @@
                 </div>
             </transition>
             
+            <!-- Car card -->
             <transition name="fade-transition" mode="out-in">
                 <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
                     <v-card>
@@ -72,22 +73,21 @@
                     </v-card>
                 </v-flex>
             </transition>
-
+            
+            <!-- Defect act -->
             <transition name="fade-transition" mode="out-in"> 
-                <v-flex xs12 sm12 md8 lg9 v-if="!loading.pageLoad" v-cloak>
-                    <v-card>
+                <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
+                    <v-card class="mb-3">
                         <v-tabs v-model="active" color="light-blue" dark slider-color="white" show-arrows>
                             <v-tab :key="1" ripple>Дефектный акт</v-tab>
                             <v-tab-item :key="1">
                                 <v-card flat>
                                     <v-card-text class="px-0 py-0">
                                         <v-tabs v-model="active_2" color="light-blue" dark slider-color="white">
-                                            <v-tab v-for="(type, index) in defects" :key="index" ripple>
-                                                {{ type.defect_type_name }}
-                                            </v-tab>
+                                            <v-tab v-for="(type, index) in defects" :key="index" ripple>{{ type.defect_type_name }}</v-tab>
                                             <v-tab-item v-for="(type, index) in defects" :key="index">
                                                 <v-card flat>
-                                                    <v-card-text>
+                                                    <v-card-text class="px-4 pb-0 pt-2">
                                                         <v-form>
                                                             <v-select
                                                                 :items="selects.defects[index]"
@@ -101,7 +101,7 @@
                                                                 v-model="selected.defectOptions"
                                                                 label="Опция дефекта"
                                                                 single-line
-                                                                multiple
+                                                                multiple                                                                
                                                             ></v-select>
                                                         </v-form>
                                                     </v-card-text>
@@ -114,15 +114,50 @@
                                     </v-card-text>
                                 </v-card>
                             </v-tab-item>
-                            <v-tab-item :key="2">
-                                <v-card flat></v-card>
-                            </v-tab-item>
                         </v-tabs>
+                    </v-card>
+
+                    <v-card>
+                        <v-card-media>
+                            <v-container>
+                                <v-layout>
+                                    <v-flex>
+                                        <p class="subheading my-0">Комментарии к автомобилю</p>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-media>
+                        <v-divider></v-divider>
+                        <v-card-text primary-title class="pt-3 pb-0">
+                            <v-layout>
+                                <v-flex class="px-3 py-0">
+                                    <v-text-field
+                                        name="car_card_comment"
+                                        label="Введите комментарий"
+                                        multi-line 
+                                        clearable
+                                        no-resize
+                                        v-model="newComment"
+                                    ></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="success" block flat @click="storeComment" :loading="loading.comments">Сохранить комментарий</v-btn>
+                        </v-card-actions>
                     </v-card>
                 </v-flex>            
             </transition>
+
+            <v-flex v-if="comments.length === 0  && !loading.pageLoad"> 
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Комментариев к автомобилю нет.
+                </v-alert>
+            </v-flex>
         </v-layout>
 
+
+        <!-- Services price -->
         <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
             <v-flex xs12 sm12 md12 lg12>
                 <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>      
@@ -139,7 +174,8 @@
                     Сумма и услуги расчитаны не были.
                 </v-alert>
             </v-flex>
-
+            
+            <!-- Invoice list -->
             <v-flex xs12 sm12 md12 lg12 v-if="invoice.length > 0">         
                 <v-card>
                     <v-card-media>
@@ -203,7 +239,8 @@ export default {
             loading: {
                 pageLoad: false,
                 saveDefects: false,
-                invoice: false
+                invoice: false,
+                comments: false
             },
             active: null,
             active_2: null,
@@ -212,6 +249,8 @@ export default {
                 { text: 'Ремонтные работы' },
             ],
             defects: [],
+            comments: [],
+            newComment: '',
             selects: {
                 defects: [],
                 defectOptions: []
@@ -230,6 +269,9 @@ export default {
                     console.log(response);
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
+                    this.comments = this.car.card.comments;
+
+                    console.log(this.comments);
 
                     let defect_options = response.data.car.card.defect_options;
                     defect_options.map(option => {
@@ -313,6 +355,20 @@ export default {
                     }
                 });
             });
+        },
+
+        storeComment() {
+            this.loading.comments = true;
+            axios.post(`/sto/${this.$route.params.slug}/cards/${this.car.card.id}/comments`, { comment: this.newComment })
+                .then(response => {
+                    this.comments.push(response.data.comment);
+                    this.loading.comments = false;
+                    this.newComment = '';
+                    this.snackbar.color = 'success';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                }) 
+                .catch(error => console.log(error));
         }
     },
     created() {

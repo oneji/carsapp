@@ -21,4 +21,12 @@ class CarCard extends Model
     {
         return $this->belongsToMany('App\DefectOption');
     }
+
+    /**
+     * Get all comments for car card.
+     */
+    public function comments()
+    {
+        return $this->hasMany('App\CarCardComment');
+    }
 }
