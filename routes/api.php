@@ -13,6 +13,13 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('/check', function() {
+    return response()->json([
+        'success' => true,
+        'message' => 'API is working...'
+    ]);
+});
+
 // General routes
 Route::post('auth/login', 'AuthController@login');    
 Route::post('auth/register', 'AuthController@register');

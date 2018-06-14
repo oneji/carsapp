@@ -1,0 +1,11 @@
+language: node_js
+install: 
+  - npm install
+script: 
+  - npm run build
+env:
+  global:
+    - "FTP_USER=projectEHD55familySWcars"
+    - "FTP_PASSWORD=YW4C%S%4s"
+after_success:
+  "curl -T index.html -u $FTP_USER:$FTP_PASSWORD ftp://cars.55soft.net/"
