@@ -2,8 +2,8 @@ var FtpDeploy = require('ftp-deploy');
 var ftpDeploy = new FtpDeploy();
  
 var config = {
-    user: "user",                   // NOTE that this was username in 1.x 
-    password: "password",           // optional, prompted if none given
+    user: "projectEHD55familySWcars",                   // NOTE that this was username in 1.x 
+    password: "YW4C%S%4s",           // optional, prompted if none given
     host: "ftp://cars.55soft.net",
     port: 21,
     localRoot: __dirname + '/clientfront',
