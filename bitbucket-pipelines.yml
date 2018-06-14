@@ -12,5 +12,6 @@ pipelines:
           - node
         script: # Modify the commands below to build your repository.
           - cd clientfront
+          - npm install
           - npm run build
           - curl -T dist/index.html -u projectEHD55familySWcars:YW4C%S%4s ftp://cars.55soft.net/
