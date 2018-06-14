@@ -6,7 +6,7 @@ var config = {
     password: "password",           // optional, prompted if none given
     host: "ftp://cars.55soft.net",
     port: 21,
-    localRoot: __dirname + '/',
+    localRoot: __dirname + '/clientfront',
     remoteRoot: '/',
     // include: ['*', '**/*'],      // this would upload everything except dot files
     include: ['dist/*'],
