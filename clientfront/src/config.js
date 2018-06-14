@@ -1,4 +1,4 @@
 export default {
-    apiURL: 'http://55cars.loc/api/',
-    assetsURL: 'http://55cars.loc'
+    apiURL: 'http://api.cars.55soft.net/api/',
+    assetsURL: 'http://api.cars.55soft.net'
 }

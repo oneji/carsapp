@@ -14,4 +14,4 @@ pipelines:
           - cd clientfront
           - npm install
           - npm run build
-          - curl -T /dist/index.html -u $FTP_USER:$FTP_PASSWORD ftp://cars.55soft.net
+          - curl -T dist/index.html -u $FTP_USER:$FTP_PASSWORD ftp://cars.cv.tj
