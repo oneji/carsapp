@@ -12,6 +12,5 @@ pipelines:
           - node
         script: # Modify the commands below to build your repository.
           - cd clientfront
-          - npm install
           - npm run build
           - node deploy.js
