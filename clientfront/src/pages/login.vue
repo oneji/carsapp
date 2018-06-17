@@ -69,22 +69,27 @@ export default {
         loading: false
     }),
     methods: {
-        login() {
-            this.loading = true;
-            let credentials = {
-                email: this.email,
-                password: this.password,
-                type: this.type
-            }
-            this.$store.dispatch('login', credentials).then(response => {
-                this.loading = false;
-                this.$router.push('/');
-            })
-            .catch(error => {
-                this.loading = false;
-                this.alert.message = error.data.message;
-                this.alert.show = true;
-            })        
+        login() {            
+            this.$validator.validateAll()
+                .then(success => {
+                    if(success) {
+                        this.loading = true;
+                        let credentials = {
+                            email: this.email,
+                            password: this.password,
+                            type: this.type
+                        }
+                        this.$store.dispatch('login', credentials).then(response => {
+                            this.loading = false;
+                            this.$router.push('/');
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            this.alert.message = error.data.message;
+                            this.alert.show = true;
+                        })        
+                    }
+                });                
         }
     }, 
 };

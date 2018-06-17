@@ -5,7 +5,24 @@
                 <h1 class="headline">Выберите проект:</h1>
             </v-flex>
         </v-layout>
-        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
+
+        <v-layout style="position: relative;">
+            <transition name="fade-transition" mode="out-in">
+                <div class="loading-block" v-if="loading" v-cloak>
+                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
+                </div>
+            </transition>
+        </v-layout>
+
+        <v-layout v-if="noProjects && !loading">
+            <v-flex>
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Вы пока не привязаны ни к одному проекту.
+                </v-alert>
+            </v-flex>
+        </v-layout>
+
+        <transition-group tag="v-layout" class="row wrap" name="fade-transition">                        
             <v-flex xs12 sm6 md3 lg3 v-for="company in companies" :key="company.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
@@ -53,15 +70,7 @@
                     </v-card-actions>
                 </v-card>
             </v-flex>
-        </transition-group>
-
-        <v-layout v-if="noProjects">
-            <v-flex>
-                <v-alert outline transition="scale-transition" type="info" :value="true">
-                    Вы пока не привязаны ни к одному проекту.
-                </v-alert>
-            </v-flex>
-        </v-layout>
+        </transition-group>        
     </div>
 </template>
 
@@ -70,21 +79,7 @@ import axios from "@/axios"
 import config from '@/config'
 
 export default {
-    computed: {
-        companies() {
-            if(this.$store.getters.user === null)
-                return {};
-            else
-                return this.$store.getters.user.companies
-        },
-
-        stos() {
-            if(this.$store.getters.user === null)
-                return {};
-            else
-                return this.$store.getters.user.stos
-        },
-        
+    computed: {        
         assetURL() {
             return config.assetsURL;
         },
@@ -100,11 +95,40 @@ export default {
     },
     data() {
         return {
-            
+            companies: [],
+            stos: [],
+            loading: false
         }
     },
     methods: {
-
+        fetchUserProjects() {
+            this.loading = true;
+            axios.get('/projects')
+                .then(response => {
+                    console.log(response);
+                    this.companies = response.data.companies;
+                    this.stos = response.data.stos;
+                    this.loading = false;
+                })
+                .catch(error => console.error());
+        }
+    },
+    created() {
+        this.fetchUserProjects();
     }
 };
 </script>
+
+<style>
+    .loading-block {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+

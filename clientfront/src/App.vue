@@ -12,6 +12,9 @@ import cookies from 'js-cookie'
 
 export default {
   name: 'App',
+  created() {
+    console.log('...')
+  }
 }
 </script>
 

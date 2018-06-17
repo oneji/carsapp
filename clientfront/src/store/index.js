@@ -11,7 +11,6 @@ export default new Vuex.Store({
     state: {
         user: null,
         isLogged: false,
-        token: null
     },
     getters,
     mutations,

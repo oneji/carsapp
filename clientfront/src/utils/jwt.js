@@ -18,7 +18,7 @@ export function isTokenExpired(token) {
 
     if(expirationTime < todayTime) {
         return true;
+    } else {
+        return false;
     }
-
-    return false;
 }

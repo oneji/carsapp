@@ -16,11 +16,13 @@ if (token !== undefined) {
     instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 
+// Response interceptor
 instance.interceptors.response.use(function(response) {
     return response;
 }, function(error) {
     if(error.response.status === 401) {
         store.dispatch('resetUser');
+        router.push('/login');
     }
 });
 

@@ -29,6 +29,7 @@ Route::get('/token/check', 'AuthController@checkToken');
 Route::group(['middleware' => ['jwt.auth']], function() {
     Route::post('auth/logout', 'AuthController@logout');
     Route::get('/me', 'AuthController@user');    
+    Route::get('/projects', 'ClientHomeController@fetchUserProjects');
 }); 
 
 // Admin routes

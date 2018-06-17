@@ -47,7 +47,8 @@ const actions = {
             .then(response => {
                 commit('resetUser');
                 cookie.remove('auth.client.token');
-                cookie.remove('user')
+                cookie.remove('user');
+                router.push('/login');
             })
             .catch(error => console.log(error));
     },

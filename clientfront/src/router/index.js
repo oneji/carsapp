@@ -12,22 +12,27 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {    
-    const token = cookie.get('auth.client.token');
+    const token = cookie.get('auth.client.token');    
 
     if(to.name.toLowerCase() !== 'login')  {
-        store.dispatch('fetch')
-            .then(() => {
-                const user = store.getters.user;
-                if(to.meta.roles !== undefined) {                
-                    let requiredRoles = to.meta.roles.split('|');
+        if(token === undefined) {
+            next('/login');
+        }
+
+        // store.dispatch('fetch')
+        //     .then(() => {
+        //         const user = store.getters.user;
+        //         if(to.meta.roles !== undefined) {                
+        //             let requiredRoles = to.meta.roles.split('|');
             
-                    if(hasRole(user.roles, requiredRoles)) {
-                        next()
-                    } else {
-                        console.log('Route is not allowed');
-                    }
-                }
-            })        
+        //             if(hasRole(user.roles, requiredRoles)) {
+        //                 next()
+        //             } else {
+        //                 console.log('Route is not allowed');
+        //             }
+        //         }
+        //     })   
+        next()     
     }
 
     next()   

@@ -158,11 +158,13 @@
 
 
         <!-- Services price -->
-        <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
+        <v-layout row wrap v-if="!loading.pageLoad">
             <v-flex xs12 sm12 md12 lg12>
                 <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>      
             </v-flex>
+        </v-layout>
 
+        <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
             <transition name="fade-transition" mode="out-in">
                 <div class="loading-block" v-if="loading.invoice" v-cloak>
                     <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>

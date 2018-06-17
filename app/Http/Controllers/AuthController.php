@@ -53,17 +53,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
-        $validator = Validator::make($credentials, [
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
-
-        if($validator->fails()) {
-            $error = $validator->messages()->toJson();
-            return response()->json([ 'false' => true, 'message' => $error ]);
-        }
-
+        
         $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with(['roles', 'permissions', 'companies', 'stos'])->first();
         if(!$user) {
             return response()->json([

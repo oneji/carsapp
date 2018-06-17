@@ -10,7 +10,6 @@ const mutations = {
     [RESET_USER] (state) {
         state.user = null;
         state.isLogged = false;
-        router.push('/login');
     },
 
     [REFRESH_TOKEN] (state, token) {
