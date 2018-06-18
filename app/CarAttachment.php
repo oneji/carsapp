@@ -19,7 +19,7 @@ class CarAttachment extends Model
      * @var array
      */
     protected $fillable = [
-        'attachment', 'car_id'
+        'attachment', 'attachment_ext', 'car_id'
     ];
     
     /**

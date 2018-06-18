@@ -16,22 +16,10 @@ router.beforeEach((to, from, next) => {
 
     if(to.name.toLowerCase() !== 'login')  {
         if(token === undefined) {
+            console.log('....')
             next('/login');
         }
 
-        // store.dispatch('fetch')
-        //     .then(() => {
-        //         const user = store.getters.user;
-        //         if(to.meta.roles !== undefined) {                
-        //             let requiredRoles = to.meta.roles.split('|');
-            
-        //             if(hasRole(user.roles, requiredRoles)) {
-        //                 next()
-        //             } else {
-        //                 console.log('Route is not allowed');
-        //             }
-        //         }
-        //     })   
         next()     
     }
 

@@ -13,4 +13,12 @@ class CarCardComment extends Model
     {
         return $this->belongsTo('App\CarCard');
     }
+
+    /**
+     * Get user that owns a comment. 
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
 }

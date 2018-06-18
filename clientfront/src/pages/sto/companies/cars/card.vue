@@ -122,39 +122,89 @@
                             <v-container>
                                 <v-layout>
                                     <v-flex>
-                                        <p class="subheading my-0">Комментарии к автомобилю</p>
+                                        <p class="subheading my-0">Вложения</p>
                                     </v-flex>
                                 </v-layout>
                             </v-container>
                         </v-card-media>
                         <v-divider></v-divider>
-                        <v-card-text primary-title class="pt-3 pb-0">
-                            <v-layout>
-                                <v-flex class="px-3 py-0">
-                                    <v-text-field
-                                        name="car_card_comment"
-                                        label="Введите комментарий"
-                                        multi-line 
-                                        clearable
-                                        no-resize
-                                        v-model="newComment"
-                                    ></v-text-field>
-                                </v-flex>
-                            </v-layout>
+                        <v-card-text primary-title>
+                            <v-alert outline transition="scale-transition" type="info" :value="true" v-if="attachments.length === 0  && !loading.pageLoad">
+                                Вложений нет.
+                            </v-alert>
+                            
+                            <lightbox
+                                id="car_attachments"
+                                :images="lightboxImages"
+                                :image_class="'card_attachment'"
+                                :album_class="'my-album-class'">
+                            </lightbox>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="success" block flat @click="storeComment" :loading="loading.comments">Сохранить комментарий</v-btn>
+                            <v-btn color="success" block flat class="py-0">Добавить вложения</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>            
             </transition>
 
-            <v-flex v-if="comments.length === 0  && !loading.pageLoad"> 
-                <v-alert outline transition="scale-transition" type="info" :value="true">
-                    Комментариев к автомобилю нет.
-                </v-alert>
-            </v-flex>
+            <transition name="fade-transition" mode="out-in"> 
+                <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
+                    <v-card>
+                        <v-card-media>
+                            <v-container>
+                                <v-layout>
+                                    <v-flex>
+                                        <p class="subheading my-0">Комментарии</p>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-media>
+                        <v-divider></v-divider>
+                        <v-card-text primary-title class="pt-1 pb-0">
+                            <v-list two-line>
+                                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="comments.length === 0  && !loading.pageLoad">
+                                    Комментариев к автомобилю нет.
+                                </v-alert>
+                                <template v-for="comment in comments">
+                                    <v-list-tile :key="comment.title" avatar>
+                                        <v-list-tile-avatar>
+                                            <img v-if="comment.user.avatar !== null" :src="assetsURL + '/' + comment.user.avatar">
+                                            <img v-else src="/static/images/user.png">
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title v-html="comment.comment"></v-list-tile-title>
+                                            <v-list-tile-sub-title v-html="comment.user.fullname + ': ' + comment.created_at"></v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </template>
+                            </v-list>
+                        </v-card-text>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                            <v-container class="py-0 pb-2">
+                                <v-layout row wrap>
+                                    <v-flex xs12 sm12 md12 lg12>
+                                        <v-text-field
+                                            name="car_card_comment"
+                                            label="Введите комментарий"
+                                            multi-line 
+                                            clearable
+                                            no-resize
+                                            v-model="newComment"
+                                            rows="3"
+                                        ></v-text-field>                                
+                                    </v-flex>
+                                    <v-flex xs12 sm12 md12 lg12>
+                                        <v-btn color="success" block flat @click="storeComment" :loading="loading.comments" class="py-0">Сохранить комментарий</v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+            </transition>
         </v-layout>
+        
 
 
         <!-- Services price -->
@@ -186,7 +236,7 @@
                                 <v-flex>
                                     <p class="subheading my-0" style="float: left;">Примерная цена на услуги</p>
                                     <p class="title my-0" style="float: right;"><strong>Итого:</strong> <span class="red--text">{{ totalSum }} сомони</span></p>   
-                                </v-flex>
+                                </v-flex>                                
                             </v-layout>
                         </v-container>
                     </v-card-media>
@@ -222,6 +272,7 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import Lightbox from 'vue-simple-lightbox'
 
 export default {
     mixins: [ snackbar ],
@@ -229,6 +280,9 @@ export default {
         assetsURL() {
             return config.assetsURL;
         }
+    },
+    components: {
+        Lightbox
     },
     data() {
         return {
@@ -252,6 +306,7 @@ export default {
             ],
             defects: [],
             comments: [],
+            attachments: [],
             newComment: '',
             selects: {
                 defects: [],
@@ -261,6 +316,8 @@ export default {
                 defects: null,
                 defectOptions: []
             },
+
+            lightboxImages: []
         }
     },
     methods: {
@@ -272,8 +329,16 @@ export default {
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
+                    this.attachments = this.car.attachments;
 
-                    console.log(this.comments);
+                    console.log(this.attachments);
+
+                    this.attachments.map(file => {
+                        this.lightboxImages.push({
+                            src: this.assetsURL + '/' + file.attachment,
+                            title: 'БЛА БЛА'
+                        });
+                    });
 
                     let defect_options = response.data.car.card.defect_options;
                     defect_options.map(option => {
@@ -401,5 +466,12 @@ export default {
     }
     .car-details-block strong {
         margin-right: 5px;
+    }
+    .card_attachment {
+        margin-right: 5px;
+        border: 1px solid #ccc !important;
+        padding: 3px;
+        width: 19% !important;
+        float: none !important;
     }
 </style>

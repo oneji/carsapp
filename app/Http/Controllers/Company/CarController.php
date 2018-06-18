@@ -80,6 +80,7 @@ class CarController extends Controller
                 
                 array_push($carAttachments, new CarAttachment([
                     'attachment' => $fileNameToStore,
+                    'attachment_ext' => strtolower($fileExtension),
                     'car_id' => $car->id
                 ]));
             }

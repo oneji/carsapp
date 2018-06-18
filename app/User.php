@@ -65,4 +65,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany('App\Sto');
     }
+
+    /**
+     * Get car card comments.
+     */
+    public function comments() 
+    {
+        return $this->hasMany('App\CarCardComment');
+    }
 }
