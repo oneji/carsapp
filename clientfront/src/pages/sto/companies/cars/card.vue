@@ -137,7 +137,8 @@
                                 id="car_attachments"
                                 :images="lightboxImages"
                                 :image_class="'card_attachment'"
-                                :album_class="'my-album-class'">
+                                :album_class="'my-album-class'"
+                                :options="{ history: false }">
                             </lightbox>
                         </v-card-text>
                         <v-card-actions>
