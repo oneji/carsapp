@@ -90,7 +90,7 @@ class CarCardController extends Controller
     public function saveDefects(Request $request, $sto_slug, $card_id)
     {
         $card = CarCard::where('id', $card_id)->first();
-        $defectOptions = $request->all();
+        $defectOptions = $request->only('defect_options');
         
         foreach($defectOptions as $option)
             $card->defect_options()->sync($option);

@@ -114,7 +114,6 @@ export default {
         fetchCars() {
             axios.get(`/company/${this.$route.params.slug}/cars`)
                 .then(response => {
-                    console.log(response);
                     this.cars = response.data.cars;
                     this.cars.map(car => {
                         this.driver.selectCarItems.push({

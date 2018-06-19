@@ -7,6 +7,14 @@
             </v-flex>
         </v-layout>
 
+        <v-layout style="position: relative;">
+            <loading :loading="loading" />
+
+            <v-flex v-if="cars.length === 0 && !loading">
+                <alert message="Автомобилей в компании не зарегистрировано." type="info" />
+            </v-flex>
+        </v-layout>
+
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(car, index) in cars" :key="car.id" v-cloak>
                 <v-card>
@@ -77,9 +85,14 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import Loading from '@/components/Loading'
+import Alert from '@/components/Alert'
 
 export default {
     mixins: [ snackbar ],
+    components: {
+        Loading, Alert
+    },
     computed: {
         assetsURL() {
             return config.assetsURL;
@@ -92,13 +105,16 @@ export default {
                 loading: null,
                 showInfo: null
             },
+            loading: false
         }
     },
     methods: {
         fetchCompanyCars() {
+            this.loading = true;
             axios.get(`/sto/${this.$route.params.slug}/companies/${this.$route.params.company}/cars`)
                 .then(response => {
                     this.cars = response.data.cars;
+                    this.loading = false;
                 })
                 .catch(error => console.log(error));
         },

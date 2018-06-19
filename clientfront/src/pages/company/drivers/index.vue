@@ -77,7 +77,6 @@ export default {
         fetchDrivers() {
             axios.get(`/company/${this.$route.params.slug}/drivers`)
                 .then(response => {
-                    console.log(response);
                     this.drivers = response.data.drivers;
                 })
                 .catch(error => console.log(error));

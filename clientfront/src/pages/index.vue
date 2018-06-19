@@ -7,11 +7,7 @@
         </v-layout>
 
         <v-layout style="position: relative;">
-            <transition name="fade-transition" mode="out-in">
-                <div class="loading-block" v-if="loading" v-cloak>
-                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
-                </div>
-            </transition>
+            <loading :loading="loading" />
         </v-layout>
 
         <v-layout v-if="noProjects && !loading">
@@ -77,8 +73,12 @@
 <script>
 import axios from "@/axios"
 import config from '@/config'
+import Loading from '@/components/Loading'
 
 export default {
+    components: {
+        Loading  
+    },
     computed: {        
         assetURL() {
             return config.assetsURL;
@@ -105,7 +105,6 @@ export default {
             this.loading = true;
             axios.get('/projects')
                 .then(response => {
-                    console.log(response);
                     this.companies = response.data.companies;
                     this.stos = response.data.stos;
                     this.loading = false;

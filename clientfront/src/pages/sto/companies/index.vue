@@ -1,11 +1,13 @@
 <template>
     <div>
-        <v-layout v-if="companies.length === 0">
+        <v-layout style="position: relative;">
             <v-flex>
-                <v-alert outline transition="scale-transition" type="info" :value="true">
+                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="companies.length === 0 && !loading">
                     Компаний не найдено.
                 </v-alert>
             </v-flex>
+            
+            <loading :loading="loading" />
         </v-layout>
         <!-- A list of companies -->
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
@@ -40,8 +42,12 @@
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import Loading from '@/components/Loading'
 
 export default {
+    components: {
+        Loading
+    },
     computed: {
         assetURL() {
             return config.assetsURL;
@@ -49,15 +55,17 @@ export default {
     },
     data() {
         return {
-            companies: []
+            companies: [],
+            loading: false
         }
     },
     methods: {
         fetchCompanies() {
+            this.loading = true;
             axios.get(`/sto/${this.$route.params.slug}/companies`)
                 .then(response => {
-                    console.log(response);
                     this.companies = response.data.companies;
+                    this.loading = false;
                 }) 
                 .catch(error => console.error());
         }
@@ -69,5 +77,14 @@ export default {
 </script>
 
 <style>
-
+    .loading-block {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>

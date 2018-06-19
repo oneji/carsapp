@@ -235,8 +235,6 @@ export default {
                             fileList.push(value.file);
                         });
 
-                        console.log(fileList);
-
                         let formData = new FormData();
                         formData.append('year', this.year);
                         formData.append('number', this.newCar.number);
@@ -256,7 +254,6 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/cars`, formData)
                             .then(response => {
-                                console.log(response);
                                 this.loading = false;
                                 this.snackbar.color = 'success';
                                 this.snackbar.text = response.data.message;

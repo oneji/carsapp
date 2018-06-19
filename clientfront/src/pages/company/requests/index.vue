@@ -127,7 +127,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/requests`)
                 .then(response => {
-                    console.log(response);
                     this.requests = response.data;
                     this.loading.pageLoad = false;
                 })

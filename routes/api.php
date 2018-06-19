@@ -107,8 +107,13 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
         Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
         // Defect routes
+        Route::get('/{slug}/defects/all', 'DefectController@getAll');
         Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
         Route::get('/{slug}/defects/types', 'DefectController@getTypes');
-        Route::get('/{slug}/defects/info', 'DefectController@getFullInfo');        
+        Route::get('/{slug}/defects/info', 'DefectController@getFullInfo'); 
+
+        Route::post('/{slug}/defects', 'DefectController@storeDefect');   
+        Route::post('/{slug}/defects/types', 'DefectController@storeType');   
+        Route::post('/{slug}/defects/options', 'DefectController@storeOption');   
     });
 });

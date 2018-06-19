@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sto;
 use App\Sto;
 use App\DefectOption;
 use App\DefectType;
+use App\Defect;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -55,6 +56,96 @@ class DefectController extends Controller
         return response()->json([
             'success' => true,
             'defect_info' => $defect_info
+        ]);
+    }
+
+    /**
+     * Store a newly created defect option in a database.
+     * 
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function storeOption(Request $request, $sto_slug)
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $option = new DefectOption();
+        $option->defect_option_name = $request->defect_option_name;
+        $option->defect_id = $request->defect_id;
+        $option->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Вид дефекта успешно создан.',
+            'option' => $option
+        ]);
+    }
+
+    /**
+     * Store a newly created defect type in a database.
+     * 
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function storeType(Request $request, $sto_slug)
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $type = new DefectType();
+        $type->defect_type_name = $request->defect_type_name;
+        $type->sto_id = $sto->id;
+        $type->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Тип дефекта успешно создан.',
+            'type' => $type
+        ]);
+    }
+    
+    public function getAll($sto_slug)
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $types = DefectType::where('sto_id', $sto->id)->get();
+        
+        $options = DefectOption::select('defect_options.id as id', 'defect_option_name', 'defect_name')
+                                ->join('defects', 'defects.id', '=', 'defect_options.defect_id')
+                                ->get();
+
+        $defects = Defect::select('defects.id as id', 'defect_name', 'defect_type_name')
+                            ->join('defect_types', 'defect_types.id', '=', 'defects.defect_type_id')
+                            ->get();
+
+        return response()->json([
+            'success' => true,
+            'types' => $types,
+            'defects' => $defects,
+            'options' => $options
+        ]);
+    }
+
+    /**
+     * Store a newly created defect in a database.
+     * 
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function storeDefect(Request $request, $sto_slug)
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $defect = new Defect();
+        $defect->defect_name = $request->defect_name;
+        $defect->defect_type_id = $request->defect_type_id;
+        $defect->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Дефект успешно создан.',
+            'defect' => $defect
         ]);
     }
 }

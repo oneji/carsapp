@@ -198,8 +198,6 @@ export default {
                             fileList.push(value.file);
                         });
 
-                        console.log(fileList);
-
                         let formData = new FormData();
                         formData.append('fullname', this.newDriver.fullname);
                         formData.append('address', this.newDriver.address);

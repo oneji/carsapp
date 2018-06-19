@@ -16,7 +16,6 @@ router.beforeEach((to, from, next) => {
 
     if(to.name.toLowerCase() !== 'login')  {
         if(token === undefined) {
-            console.log('....')
             next('/login');
         }
 

@@ -86,7 +86,7 @@ export default {
                 { icon: 'assignment', title: 'Заявки от компаний', to: { name: 'StoRequests' } },
                 { icon: 'business', title: 'Компании', to: { name: 'StoCompanies' } },
                 { icon: 'work', title: 'Услуги', to: { name: 'StoServices' } },
-                { icon: 'list_alt', title: 'Прайлист', to: { name: 'StoPricelist' } },
+                { icon: 'list_alt', title: 'Дефекты', to: { name: 'StoDefects' } },
             ],
             miniVariant: false,
             rightDrawer: false,

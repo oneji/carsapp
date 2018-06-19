@@ -6,12 +6,8 @@
                     Заявок от компаний не найдено.
                 </v-alert>
             </v-flex>
-
-            <transition name="fade-transition" mode="out-in">
-                <div class="loading-block" v-if="loading.pageLoad" v-cloak>
-                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
-                </div>
-            </transition>
+            
+            <loading :loading="loading.pageLoad" />
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
@@ -64,9 +60,13 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import Loading from '@/components/Loading'
 
 export default {
     mixins: [ snackbar ],
+    components: {
+        Loading
+    },
     computed: {
         assetsURL() {
             return config.assetsURL;

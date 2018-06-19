@@ -276,7 +276,6 @@ export default {
                             'approximate': this.serviceType.approximatePrice    
                         })
                         .then(response => {
-                            console.log(response);
                             this.getServices();
                             this.serviceType.loading.button = false;
                             this.snackbar.color = 'success';
@@ -301,7 +300,6 @@ export default {
         getFullDefectInfo() {
             axios.get(`/sto/${this.$route.params.slug}/defects/info`)
                 .then(response => {
-                    console.log(response.data);
                     let defectInfo = response.data.defect_info;
 
                     defectInfo.map(type => {                        

@@ -326,18 +326,15 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response);
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
 
-                    console.log(this.attachments);
-
                     this.attachments.map(file => {
                         this.lightboxImages.push({
                             src: this.assetsURL + '/' + file.attachment,
-                            title: 'БЛА БЛА'
+                            title: file.attachment_name
                         });
                     });
 
@@ -446,16 +443,6 @@ export default {
 </script>
 
 <style>
-    .loading-block {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
     .car-icon {
         font-size: 150%;
         margin-right: 8px;
