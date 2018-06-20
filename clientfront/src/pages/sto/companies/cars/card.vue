@@ -326,6 +326,7 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
+                    // console.log(response.data);
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
@@ -343,27 +344,28 @@ export default {
                         this.selected.defectOptions.push(option.id);
                     });
 
-                    this.defects.map((item, index) => {                        
-                        if(item.defects.length > 0) {
-                            let defects = [];
-                            
-                            item.defects.map((defect, index) => {                      
-                                defects.push({
-                                    text: defect.defect_name,
-                                    value: defect.id
-                                });
-                                let options = [];
-                                defect.defect_options.map(option => {
-                                    options.push({
-                                        text: option.defect_option_name,
-                                        value: option.id
-                                    });                                                                       
-                                });
-                                this.selects.defectOptions[defect.id] = options;
+                    this.defects.map(item => {            
+                        let defects = [];
+                        
+                        item.defects.map(defect => {                      
+                            defects.push({
+                                text: defect.defect_name,
+                                value: defect.id
                             });
-                            this.selects.defects.push(defects);
-                        }                        
+                            
+                            let options = [];
+                            defect.defect_options.map(option => {
+                                options.push({
+                                    text: option.defect_option_name,
+                                    value: option.id
+                                });                                                                       
+                            });
+                            this.selects.defectOptions[defect.id] = options;
+                        });
+                        this.selects.defects.push(defects);                      
                     });
+                    console.log(this.selects.defects);
+                    console.log(this.selects.defectOptions);
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));

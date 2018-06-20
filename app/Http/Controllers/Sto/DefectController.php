@@ -143,4 +143,70 @@ class DefectController extends Controller
             'defect' => $defect
         ]);
     }
+
+    /**
+     * Update defect type.
+     * 
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
+     */
+    public function updateType(Request $request, $sto_slug, $id) 
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $defectType = DefectType::find($id);
+        $defectType->defect_type_name = $request->defect_type_name;
+        $defectType->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Тип дефекта успешно изменен.'
+        ]);
+    }
+
+    /**
+     * Update defect.
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
+     */
+    public function updateDefect(Request $request, $sto_slug, $id) 
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $defect = Defect::find($id);
+        $defect->defect_name = $request->defect_name;
+        $defect->defect_type_id = $request->defect_type_id;
+        $defect->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Дефект успешно изменен.'
+        ]);
+    }
+
+    /**
+     * Update defect option.
+     * @param   string $sto_slug
+     * @param   \Illuminate\Http\Request $request
+     * @param   int $id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
+     */
+    public function updateOption(Request $request, $sto_slug, $id) 
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+        $defectOption = DefectOption::find($id);
+        $defectOption->defect_option_name = $request->defect_option_name;
+        $defectOption->defect_id = $request->defect_id;
+        $defectOption->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Вид дефекта успешно изменен.'
+        ]);
+    }
 }

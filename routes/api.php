@@ -116,5 +116,9 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/defects', 'DefectController@storeDefect');   
         Route::post('/{slug}/defects/types', 'DefectController@storeType');   
         Route::post('/{slug}/defects/options', 'DefectController@storeOption');   
+        
+        Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
+        Route::put('/{slug}/defects/{defect}', 'DefectController@updateDefect');
+        Route::put('/{slug}/defects/options/{option}', 'DefectController@updateOption');
     });
 });

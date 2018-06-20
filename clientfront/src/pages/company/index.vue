@@ -37,9 +37,49 @@
             </v-btn>
             <v-toolbar-title></v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-                <v-icon>menu</v-icon>
-            </v-btn>
+            <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+                <v-icon>notifications</v-icon>
+            </v-btn> -->
+            <!-- User menu -->
+            <v-menu :close-on-content-click="false" offset-x>
+                <v-btn icon large slot="activator">
+                    <v-avatar size="36px" tile>
+                        <img :src="user.avatar !== null ? assetsURL + '/' + user.avatar : '/static/images/default_user.png'" alt="User avatar" class="user-avatar" />
+                    </v-avatar>
+                </v-btn>
+                <v-card>
+                    <v-list>
+                        <v-list-tile avatar>
+                            <v-list-tile-avatar>
+                                <img :src="user.avatar !== null ? assetsURL + '/' + user.avatar : '/static/images/default_user.png'" alt="User avatar" class="user-avatar" />
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ user.fullname }}</v-list-tile-title>
+                                <v-list-tile-sub-title>{{ user.email }}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list>
+                    <v-divider></v-divider>
+                    <v-list>
+                        <v-list-tile @click="passwords.dialog = true">
+                            <v-list-tile-action>
+                                <v-icon light>lock_open</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Изменить пароль</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                        <v-list-tile @click="logout">
+                            <v-list-tile-action>
+                                <v-icon light>power_settings_new</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Выйти</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list>
+                </v-card>
+            </v-menu>   
         </v-toolbar>
 
         <!-- Main content -->
@@ -73,8 +113,19 @@
 
 <script>
 import axios from '@/axios'
+import cookies from 'js-cookie'
+import config from '@/config'
 
 export default {
+    computed: {
+        user() {
+            return cookies.get('user') !== undefined ? JSON.parse(cookies.get('user')) : {};
+        },
+
+        assetsURL() {
+            return config.assetsURL;
+        }
+    },
     data() {
         return {
             drawer: true,

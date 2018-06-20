@@ -79,7 +79,7 @@
 
         <!-- Change password modal -->
         <v-dialog v-model="passwords.dialog" max-width="500">
-            <form @submit.prevent="changePassword" data-vv-scope="create-defect-type-form">
+            <form @submit.prevent="changePassword" data-vv-scope="change-password-form">
                 <v-card>
                     <v-card-title class="headline">Изменить пароль</v-card-title>
                     <v-card-text>
@@ -91,18 +91,18 @@
                                     :error-messages="errors.collect('old_password')"
                                 ></v-text-field>
                                 <v-text-field v-model="passwords.new" name="new_password" label="Новый пароль" hint="Минимум 6 символов" prepend-icon="lock_open"  
-                                    :append-icon="passwords.showNewPassword ? 'visibility' : 'visibility_off'"
+                                    :append-icon="passwords.showNewPassword ? 'visibility_off' : 'visibility'"
                                     :append-icon-cb="() => (passwords.showNewPassword = !passwords.showNewPassword)"
-                                    :type="passwords.showNewPassword ? 'password' : 'text'"
+                                    :type="passwords.showNewPassword ? 'text' : 'password'"
                                     v-validate="'required|min:6'"
                                     :error-messages="errors.collect('new_password')"
                                     data-vv-name="new_password" data-vv-as='"Пароль"' required 
                                 ></v-text-field> 
                                 <v-text-field v-model="passwords.new_confirmation" name="new_confimation_password" label="Повторите новый пароль" hint="Минимум 6 символов" prepend-icon="lock_open"  
-                                    :append-icon="passwords.showNewConfPassword ? 'visibility' : 'visibility_off'"
+                                    :append-icon="passwords.showNewConfPassword ? 'visibility_off' : 'visibility'"
                                     :append-icon-cb="() => (passwords.showNewConfPassword = !passwords.showNewConfPassword)"
-                                    :type="passwords.showNewConfPassword ? 'password' : 'text'"
-                                    v-validate="'required|confirmed:new_password'"
+                                    :type="passwords.showNewConfPassword ? 'text' : 'password'"
+                                    v-validate="{ required: true, confirmed: passwords.new }"
                                     :error-messages="errors.collect('new_confimation_password')"
                                     data-vv-name="new_confimation_password" data-vv-as='"Пароль"' required 
                                 ></v-text-field> 
@@ -118,6 +118,11 @@
                 </v-card>
             </form>
         </v-dialog>
+
+        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
+            {{ snackbar.text }}
+            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
+        </v-snackbar>
      </v-app>
 </template>
 
@@ -125,8 +130,13 @@
 import axios from '@/axios'
 import cookies from 'js-cookie'
 import config from '@/config'
+import snackbar from '@/components/mixins/snackbar'
 
 export default {
+    $_veeValidate: {
+        validator: 'new'
+    },
+    mixins: [ snackbar ],
     computed: {
         user() {
             return cookies.get('user') !== undefined ? JSON.parse(cookies.get('user')) : {};
@@ -152,7 +162,7 @@ export default {
                 new_confirmation: '',
                 dialog: false,
                 loading: false,
-                showNewPassword: true, 
+                showNewPassword: false, 
                 showNewConfPassword: false, 
             }
         };
@@ -163,16 +173,29 @@ export default {
         },
 
         changePassword() {
-            axios.put('/password/change', {
-                'old_password': this.passwords.old,
-                'new_password': this.passwords.new,
-                'new_password_confirmation': this.passwords.new_confirmation
-                
-            })
-            .then(response => {
-                console.log(response);
-            })
-            .catch(error => console.error());
+            this.$validator.validateAll('change-password-form')
+                .then(success => {
+                    if(success) {
+                        axios.put('/password/change', {
+                            'old_password': this.passwords.old,
+                            'new_password': this.passwords.new,
+                            'new_password_confirmation': this.passwords.new_confirmation                
+                        })
+                        .then(response => {
+                            if(response.data.success) {
+                                this.passwords.old = this.passwords.new = this.passwords.new_confirmation = ''                             
+                                this.snackbar.color = 'success';
+                                this.snackbar.text = response.data.message;
+                                this.snackbar.active = true;
+                            } else {
+                                this.snackbar.color = 'error';
+                                this.snackbar.text = response.data.message;
+                                this.snackbar.active = true;
+                            }
+                        })
+                        .catch(error => console.error());
+                    }
+                });            
         }
     },
 };

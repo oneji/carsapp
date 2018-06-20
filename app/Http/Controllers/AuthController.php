@@ -7,6 +7,7 @@ use App\User;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Validator;
+use Hash;
 
 use Illuminate\Http\Request;
 
@@ -161,7 +162,22 @@ class AuthController extends Controller
      */
     public function changePassword(Request $request) 
     {
-        return response()->json($request->all());
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if(! Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Старый пароль введен неверно.',
+            ]);
+        }
+
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Пароль успешно изменен.'
+        ]);
     }
 }
 
