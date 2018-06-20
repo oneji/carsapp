@@ -178,7 +178,7 @@
         </v-dialog>
         <!-- Defect options modal -->
         <v-dialog v-model="defectOption.dialog" max-width="500">
-            <form @submit.prevent="addOption" data-vv-scope="create-defect-form">
+            <form @submit.prevent="addOption" data-vv-scope="create-defect-option-form">
                 <v-card>
                     <v-card-title class="headline">Добавить дефект</v-card-title>
                     <v-card-text>
@@ -313,7 +313,6 @@ export default {
         },
         
         addDefect() {
-            this.defect.loading.button = true;
             this.$validator.validateAll('create-defect-form')
                 .then(success => {
                     if(success) {
@@ -334,29 +333,38 @@ export default {
                             this.snackbar.active = true;
                         })
                         .catch(error => console.log(error));
+                    } else {
+                        console.log('validation...')
                     }
             });
         },
 
         addOption() {
-            this.defectOption.loading.button = true;
-            axios.post(`/sto/${this.$route.params.slug}/defects/options`, {
-                'defect_option_name': this.defectOption.defect_option_name,
-                'defect_id': this.defectOption.defect_id
-            })
-            .then(response => {
-                this.options.items.push(response.data.option);
-                this.options.selectItems.push({
-                    text: response.data.option.defect_option_name,
-                    value: response.data.option.id
-                });
-                this.defectOption.loading.button = false;
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
+            this.$validator.validateAll('create-defect-option-form')
+                .then(success => {
+                    if(success) {
+                        this.defectOption.loading.button = true;
+                        axios.post(`/sto/${this.$route.params.slug}/defects/options`, {
+                            'defect_option_name': this.defectOption.defect_option_name,
+                            'defect_id': this.defectOption.defect_id
+                        })
+                        .then(response => {
+                            this.options.items.push(response.data.option);
+                            this.options.selectItems.push({
+                                text: response.data.option.defect_option_name,
+                                value: response.data.option.id
+                            });
+                            this.defectOption.loading.button = false;
+                            this.snackbar.color = 'success';
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
 
-            })
-            .catch(error => console.log(error));
+                        })
+                        .catch(error => console.log(error));
+                    } else {
+                        console.log('options validation...');
+                    }
+                });
         },
 
         getFullInfo() {
@@ -366,28 +374,30 @@ export default {
 
             axios.get(`/sto/${this.$route.params.slug}/defects/all`)
                 .then(response => {
-                    this.types.items = response.data.types;
-                    this.defects.items = response.data.defects;
-                    this.options.items = response.data.options;
+                    this.types.items = response.data.allDefects;
+                    this.defects.items = [];
+                    this.options.items = [];
 
-                    response.data.types.map(type => {
+                    response.data.allDefects.map(type => {
                         this.types.selectItems.push({
                             text: type.defect_type_name,
                             value: type.id
                         });
-                    });
 
-                    response.data.defects.map(defect => {
-                        this.defects.selectItems.push({
-                            text: defect.defect_name,
-                            value: defect.id
-                        });
-                    });
+                        type.defects.map(defect => {
+                            this.defects.items.push(defect);
+                            this.defects.selectItems.push({
+                                text: defect.defect_name,
+                                value: defect.id
+                            });
 
-                    response.data.options.map(option => {
-                        this.options.selectItems.push({
-                            text: option.defect_name,
-                            value: option.id
+                            defect.defect_options.map(option => {
+                                this.options.items.push(option);
+                                this.options.selectItems.push({
+                                    text: option.defect_option_name,
+                                    value: option.id
+                                });
+                            });
                         });
                     });
 

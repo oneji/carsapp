@@ -107,22 +107,17 @@ class DefectController extends Controller
     
     public function getAll($sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
-        $types = DefectType::where('sto_id', $sto->id)->get();
-        
-        $options = DefectOption::select('defect_options.id as id', 'defect_option_name', 'defect_name')
-                                ->join('defects', 'defects.id', '=', 'defect_options.defect_id')
-                                ->get();
+        $sto = Sto::where('slug', $sto_slug)->first(); 
 
-        $defects = Defect::select('defects.id as id', 'defect_name', 'defect_type_name')
-                            ->join('defect_types', 'defect_types.id', '=', 'defects.defect_type_id')
-                            ->get();
+        $allDefects = DefectType::where('sto_id', $sto->id)->with([
+            'defects' => function($query) {
+                $query->with('defect_options')->get();
+            }
+        ])->get();
 
         return response()->json([
             'success' => true,
-            'types' => $types,
-            'defects' => $defects,
-            'options' => $options
+            'allDefects' => $allDefects,
         ]);
     }
 

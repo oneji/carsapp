@@ -155,5 +155,13 @@ class AuthController extends Controller
             ], 500);
         }
     } 
+
+    /**
+     * Change password.
+     */
+    public function changePassword(Request $request) 
+    {
+        return response()->json($request->all());
+    }
 }
 

@@ -9,7 +9,7 @@ const actions = {
             axios.get('/me')
                 .then(response => { 
                     commit(mTypes.SET_USER, response.data.user);
-                    cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
+                    cookie.set('admin.user', JSON.stringify(response.data.user), { expires: 1 });
                     resolve(response);
                 })
                 .catch(error => {
@@ -31,7 +31,7 @@ const actions = {
                     if(response.data.success) {
                         commit(mTypes.SET_USER, response.data.user);
                         cookie.set('auth.token', response.data.token, { expires: 1 });
-                        cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
+                        cookie.set('admin.user', JSON.stringify(response.data.user), { expires: 1 });
                         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         
                         resolve(response);
@@ -48,7 +48,7 @@ const actions = {
             .then(response => {
                 commit(mTypes.RESET_USER);
                 cookie.remove('auth.token');
-                cookie.remove('user')
+                cookie.remove('admin.user')
             })
             .catch(error => console.log(error));
     },
@@ -56,7 +56,7 @@ const actions = {
     resetUser({ commit }) {
         commit(mTypes.RESET_USER); 
         cookie.remove('auth.token');
-        cookie.remove('user')       
+        cookie.remove('admin.user')       
     },
 
     userToEdit({ commit }, user) {
