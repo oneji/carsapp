@@ -120,6 +120,23 @@
                         </v-alert>
                     </v-data-table>
                 </v-card>
+            </v-flex>            
+        </v-layout>
+
+        <v-layout row wrap>
+            <v-flex>
+                <v-btn color="success" @click.native="createEngineType = true" append>Добавить ДВС</v-btn>
+                <v-btn color="primary" @click.native="createTransmission = true" append>Добавить трансмиссию</v-btn>
+            </v-flex>
+        </v-layout>
+
+        <v-layout>
+            <v-flex xs12 sm6 md4 lg4>
+                <engine-type :create="createEngineType" @close-create-modal="createEngineType = false" />
+            </v-flex>
+
+            <v-flex xs12 sm6 md4 lg4>
+                <engine-transmission :create="createTransmission" @close-create-modal="createTransmission = false" />
             </v-flex>
         </v-layout>
 
@@ -315,11 +332,18 @@
 import axios from '@/axios'
 import snackbar from '@/components/mixins/snackbar'
 
+import EngineType from '@/components/Engine/EngineType'
+import EngineTransmission from '@/components/Engine/EngineTransmission'
+
 export default {
     $_veeValidate: {
         validator: 'new'
     },
     mixins: [ snackbar ],
+    components: {
+        'engine-type': EngineType,
+        'engine-transmission': EngineTransmission
+    },
     data() {
         return {
             types: {
@@ -405,6 +429,8 @@ export default {
                     index: ''
                 }
             },
+            createEngineType: false,
+            createTransmission: false
         }
     },
     methods: {
@@ -579,7 +605,6 @@ export default {
 
             axios.get(`/sto/${this.$route.params.slug}/defects/all`)
                 .then(response => {
-                    console.log(response.data);
                     this.types.items = response.data.allDefects;
                     this.defects.items = [];
                     this.options.items = [];

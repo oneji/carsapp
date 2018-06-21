@@ -97,13 +97,17 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/companies/{company}/cars', 'CompanyController@getCars');
         // Services routes
         Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
-        Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
         Route::get('/{slug}/services/types', 'ServiceController@getTypes');
+        
+        Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
         Route::post('/{slug}/services/types', 'ServiceController@storeService');
         Route::post('/{slug}/services/invoice', 'ServiceController@invoice');
         // Car routes
-        Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
+        Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
+        Route::post('/{slug}/cars/{car}/attachments', 'CarController@addAttachments');
+        
+        Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
         // Car card routes
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
         Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
@@ -120,5 +124,14 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
         Route::put('/{slug}/defects/{defect}', 'DefectController@updateDefect');
         Route::put('/{slug}/defects/options/{option}', 'DefectController@updateOption');
+        // Engine routes
+        Route::get('/{slug}/engine/types', 'EngineTypeController@get');
+        Route::get('/{slug}/engine/transmissions', 'TransmissionController@get');
+
+        Route::post('/{slug}/engine/types', 'EngineTypeController@store');
+        Route::post('/{slug}/engine/transmissions', 'TransmissionController@store');
+
+        Route::put('/{slug}/engine/types/{type}', 'EngineTypeController@update');
+        Route::put('/{slug}/engine/transmissions/{transmission}', 'TransmissionController@update');
     });
 });

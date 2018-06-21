@@ -129,7 +129,7 @@
                         </v-card-media>
                         <v-divider></v-divider>
                         <v-card-text primary-title>
-                            <v-alert outline transition="scale-transition" type="info" :value="true" v-if="attachments.length === 0  && !loading.pageLoad">
+                            <v-alert outline transition="scale-transition" type="info" :value="true" v-if="attachments.length === 0 && !loading.pageLoad">
                                 Вложений нет.
                             </v-alert>
                             
@@ -142,7 +142,7 @@
                             </lightbox>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="success" block flat class="py-0">Добавить вложения</v-btn>
+                            <v-btn color="success" block flat class="py-0" @click.native="newAttachments.dialog = true">Добавить вложения</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>            
@@ -266,6 +266,28 @@
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
+
+        <!-- Add attachment modal -->
+        <v-dialog v-model="newAttachments.dialog" max-width="500">
+            <form @submit.prevent="addAttachments" data-vv-scope="add-attachments-type-form">
+                <v-card>
+                    <v-card-title class="headline">Добавить вложения</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12 sm12 md12 lg12>     
+                                <file-upload @files-changed="getAttachments" :remove-files="newAttachments.removeAll" />
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="newAttachments.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="newAttachments.loading" flat="flat" type="submit">Добавить</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
     </div>
 </template>
 
@@ -274,6 +296,7 @@ import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Lightbox from 'vue-simple-lightbox'
+import FileUpload from '@/components/FileUpload'
 
 export default {
     mixins: [ snackbar ],
@@ -283,7 +306,7 @@ export default {
         }
     },
     components: {
-        Lightbox
+        Lightbox, FileUpload
     },
     data() {
         return {
@@ -318,7 +341,13 @@ export default {
                 defectOptions: []
             },
 
-            lightboxImages: []
+            lightboxImages: [],
+            newAttachments: {
+                dialog: false,
+                loading: false,
+                items: [],
+                removeAll: false
+            }
         }
     },
     methods: {
@@ -326,7 +355,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    // console.log(response.data);
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
@@ -364,8 +392,6 @@ export default {
                         });
                         this.selects.defects.push(defects);                      
                     });
-                    console.log(this.selects.defects);
-                    console.log(this.selects.defectOptions);
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
@@ -436,6 +462,51 @@ export default {
                     this.snackbar.active = true;
                 }) 
                 .catch(error => console.log(error));
+        },
+        
+        getAttachments(file) {
+            this.attachments.items = file;
+        },
+
+        addAttachments() {
+            if(this.attachments.items !== undefined) {
+                this.newAttachments.loading = true;
+                console.log(this.attachments.items);
+    
+                let formData = new FormData();
+                let fileList = [];
+    
+                this.attachments.items.map(value => {
+                    fileList.push(value.file);
+                });
+                
+                for(let i = 0; i < fileList.length; i++) {
+                    formData.append('attachments[]', fileList[i]);
+                }
+                
+                axios.post(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/attachments`, formData)
+                    .then(response => {
+                        console.log(response);
+                        response.data.files.map(file => {
+                            this.lightboxImages.push({
+                                src: this.assetsURL + '/' + file.attachment,
+                                title: file.attachment_name
+                            });
+                        });
+                        this.newAttachments.removeAll = true;
+                        console.log(this.newAttachments.removeAll)
+
+                        this.newAttachments.loading = false;   
+                        this.snackbar.color = 'success';
+                        this.snackbar.text = response.data.message;
+                        this.snackbar.active = true;                 
+                    })
+                    .catch(error => console.log(error));
+            } else {
+                this.snackbar.color = 'success';
+                this.snackbar.text = 'Выберите хотя бы одно вложение.';
+                this.snackbar.active = true;
+            } 
         }
     },
     created() {

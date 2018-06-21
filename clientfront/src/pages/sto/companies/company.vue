@@ -4,6 +4,7 @@
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn>  
                 <v-btn color="info" append @click="$router.forward()">Вперед</v-btn>               
+                <v-btn color="info" append :to="{ name: 'StoCarCreate' }">Добавить автомобиль</v-btn>               
             </v-flex>
         </v-layout>
 
@@ -18,7 +19,7 @@
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(car, index) in cars" :key="car.id" v-cloak>
                 <v-card>
-                    <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
+                    <v-card-media :src="car.cover_image === null ? '/static/images/no-photo.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
                     <v-divider></v-divider>           
                     <v-card-title primary-title class="pt-3 pb-0">
                         <div>
@@ -130,7 +131,7 @@ export default {
                     this.snackbar.active = true;
                 })
                 .catch(error => console.log(error));
-        }
+        },    
     },
     created() {
         this.fetchCompanyCars();

@@ -18,6 +18,7 @@ import StoPricelist from '@/pages/sto/pricelist/index'
 import StoServices from '@/pages/sto/services/index'
 import StoDefects from '@/pages/sto/defects/index'
 import StoCarCard from '@/pages/sto/companies/cars/card'
+import StoCarCreate from '@/pages/sto/companies/cars/create'
 
 const routes = [        
     { path: '/login', name: 'Login', component: Login },
@@ -43,6 +44,7 @@ const routes = [
             { path: 'companies', name: 'StoCompanies', component: StoCompanies, meta: { requiresAuth: true } },
             { path: 'companies/:company', name: 'StoCompany', component: StoCompany, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card', name: 'StoCarCard', component: StoCarCard, meta: { requiresAuth: true } },
+            { path: 'companies/:company/cars/create', name: 'StoCarCreate', component: StoCarCreate, meta: { requiresAuth: true } },
 
             { path: 'pricelist', name: 'StoPricelist', component: StoPricelist, meta: { requiresAuth: true } },
             { path: 'services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true } },
