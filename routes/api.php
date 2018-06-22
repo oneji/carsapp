@@ -111,6 +111,9 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         // Car card routes
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
         Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
+        // Defect act 
+        Route::get('/{slug}/cards/{card}/defects/acts', 'DefectActController@get');
+        Route::post('/{slug}/cards/{card}/defects/acts', 'DefectActController@store');
         // Defect routes
         Route::get('/{slug}/defects/all', 'DefectController@getAll');
         Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
@@ -121,8 +124,8 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/defects/types', 'DefectController@storeType');   
         Route::post('/{slug}/defects/options', 'DefectController@storeOption');   
         
-        Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
         Route::put('/{slug}/defects/{defect}', 'DefectController@updateDefect');
+        Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
         Route::put('/{slug}/defects/options/{option}', 'DefectController@updateOption');
         // Engine routes
         Route::get('/{slug}/engine/types', 'EngineTypeController@get');

@@ -28,4 +28,12 @@ class DefectOption extends Model
     {
         return $this->belongsToMany('App\CarCard');
     }
+
+    /**
+     * Get all car cards defect acts that include a defect option.
+     */
+    public function defect_acts()
+    {
+        return $this->belongsToMany('App\DefectAct');
+    }
 }

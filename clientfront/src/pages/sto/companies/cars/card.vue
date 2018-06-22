@@ -3,15 +3,12 @@
         <v-layout>
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn>           
+                <v-btn color="primary" append @click.native="createDefectActModal = true">Создать дефектный акт</v-btn>           
             </v-flex>
         </v-layout>
 
         <v-layout row wrap style="position: relative">
-            <transition name="fade-transition" mode="out-in">
-                <div class="loading-block" v-if="loading.pageLoad" v-cloak>
-                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
-                </div>
-            </transition>
+            <loading :loading="loading.pageLoad" />
             
             <!-- Car card -->
             <transition name="fade-transition" mode="out-in">
@@ -77,45 +74,7 @@
             <!-- Defect act -->
             <transition name="fade-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
-                    <v-card class="mb-3">
-                        <v-tabs v-model="active" color="light-blue" dark slider-color="white" show-arrows>
-                            <v-tab :key="1" ripple>Дефектный акт</v-tab>
-                            <v-tab-item :key="1">
-                                <v-card flat>
-                                    <v-card-text class="px-0 py-0">
-                                        <v-tabs v-model="active_2" color="light-blue" dark slider-color="white">
-                                            <v-tab v-for="(type, index) in defects" :key="index" ripple>{{ type.defect_type_name }}</v-tab>
-                                            <v-tab-item v-for="(type, index) in defects" :key="index">
-                                                <v-card flat>
-                                                    <v-card-text class="px-4 pb-0 pt-2">
-                                                        <v-form>
-                                                            <v-select
-                                                                :items="selects.defects[index]"
-                                                                v-model="selected.defects"
-                                                                label="Вид дефекта"
-                                                                single-line
-                                                            ></v-select>
-
-                                                            <v-select
-                                                                :items="selects.defectOptions[selected.defects]"
-                                                                v-model="selected.defectOptions"
-                                                                label="Опция дефекта"
-                                                                single-line
-                                                                multiple                                                                
-                                                            ></v-select>
-                                                        </v-form>
-                                                    </v-card-text>
-                                                    <v-card-actions>
-                                                        <v-btn color="success" block flat @click="saveDefects" :loading="loading.saveDefects">Сохранить</v-btn>
-                                                    </v-card-actions>
-                                                </v-card>
-                                            </v-tab-item>
-                                        </v-tabs>
-                                    </v-card-text>
-                                </v-card>
-                            </v-tab-item>
-                        </v-tabs>
-                    </v-card>
+                    <defect-act-list v-if="!loading.pageLoad" :items="defectActs" />
 
                     <v-card>
                         <v-card-media>
@@ -288,15 +247,27 @@
                 </v-card>
             </form>
         </v-dialog>
+
+        <create-defect-act v-if="!loading.pageLoad"
+            :open-defect-act-modal="createDefectActModal" 
+            @close-defect-act-modal="createDefectActModal = false" 
+            :selects="selects" 
+            :defects="defects" 
+            :selected="selected" 
+            :card-id="car.card !== undefined ? Number(car.card.id) : 0" />
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import Loading from '@/components/Loading'
 import snackbar from '@/components/mixins/snackbar'
 import Lightbox from 'vue-simple-lightbox'
 import FileUpload from '@/components/FileUpload'
+import CreateDefectAct from '@/components/CarCard/Defect/CreateDefectAct'
+import DefectAct from '@/components/CarCard/Defect/DefectAct'
+import DefectActList from '@/components/CarCard/Defect/DefectActList'
 
 export default {
     mixins: [ snackbar ],
@@ -306,16 +277,14 @@ export default {
         }
     },
     components: {
-        Lightbox, FileUpload
+        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList
     },
     data() {
         return {
             selectedServices: [],
             invoice: [],
             totalSum: 0,
-            car: {
-                cover_image: '/dasd/'
-            },
+            car: {},
             loading: {
                 pageLoad: false,
                 saveDefects: false,
@@ -330,6 +299,7 @@ export default {
             ],
             defects: [],
             comments: [],
+            defectActs: [],
             attachments: [],
             newComment: '',
             selects: {
@@ -347,7 +317,8 @@ export default {
                 loading: false,
                 items: [],
                 removeAll: false
-            }
+            },
+            createDefectActModal: false
         }
     },
     methods: {
@@ -355,10 +326,12 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
+                    console.log(response);
                     this.car = response.data.car;
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
+                    this.defectActs =  this.car.card.defect_acts;
 
                     this.attachments.map(file => {
                         this.lightboxImages.push({
@@ -395,21 +368,7 @@ export default {
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
-        },
-
-        saveDefects() {
-            this.loading.saveDefects = true;
-            axios.post(`/sto/${this.$route.params.slug}/cards/${this.car.card.id}/defects`, { 
-                'defect_options': this.selected.defectOptions 
-            })
-            .then(response => {
-                this.loading.saveDefects = false;
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
-            })
-            .catch(error => console.log(error));
-        },
+        },        
 
         getInvoice() {
             this.loading.invoice = true;

@@ -68,7 +68,7 @@ class CarCardController extends Controller
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('card.defect_options.defect', 'attachments', 'card.comments.user')
+                        ->with('card.defect_options.defect', 'attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect')
                         ->where('cars.id', $car_id)->with('drivers')->first(); 
         $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
 

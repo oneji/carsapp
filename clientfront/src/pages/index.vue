@@ -49,7 +49,7 @@
                         <v-layout row justify-center align-center>
                         <v-flex xs6 sm6 md6 lg6>
                             <img v-if="sto.logo" :src="`${assetURL}/${sto.logo}`" :alt="`Логотип ${sto.sto_name}`">
-                            <img v-else src="/static/images/no-logo.png" alt="Нет логотипа">
+                            <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
                         </v-flex>
                         </v-layout>
                     </v-card-media> 

@@ -15,7 +15,7 @@ class CarCard extends Model
     }
 
     /**
-     * Get all cars defect options.
+     * 
      */
     public function defect_options()
     {
@@ -28,5 +28,13 @@ class CarCard extends Model
     public function comments()
     {
         return $this->hasMany('App\CarCardComment');
+    }
+
+    /**
+     * Get all defect acts for car card.
+     */
+    public function defect_acts() 
+    {
+        return $this->hasMany('App\DefectAct');
     }
 }
