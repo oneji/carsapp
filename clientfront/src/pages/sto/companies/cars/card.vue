@@ -74,7 +74,7 @@
             <!-- Defect act -->
             <transition name="fade-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
-                    <defect-act-list v-if="!loading.pageLoad" :items="defectActs" />
+                    <defect-act-list v-if="!loading.pageLoad" :items="defectActs" :car="car" />
 
                     <v-card>
                         <v-card-media>
@@ -163,8 +163,7 @@
                     </v-card>
                 </v-flex>
             </transition>
-        </v-layout>
-        
+        </v-layout>       
 
 
         <!-- Services price -->
@@ -248,13 +247,16 @@
             </form>
         </v-dialog>
 
+        <defect-act />
+
         <create-defect-act v-if="!loading.pageLoad"
             :open-defect-act-modal="createDefectActModal" 
             @close-defect-act-modal="createDefectActModal = false" 
             :selects="selects" 
-            :defects="defects" 
-            :selected="selected" 
-            :card-id="car.card !== undefined ? Number(car.card.id) : 0" />
+            :defects="defects"  
+            :card-id="car.card.id"
+            :equipment="equipment"
+            @act-created="onDefectActCreated" />
     </div>
 </template>
 
@@ -301,6 +303,7 @@ export default {
             comments: [],
             defectActs: [],
             attachments: [],
+            equipment: [],
             newComment: '',
             selects: {
                 defects: [],
@@ -328,21 +331,18 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.car = response.data.car;
+                    this.$store.dispatch('setCar', response.data.car);
                     this.defects = response.data.defects_info;
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
                     this.defectActs =  this.car.card.defect_acts;
+                    this.equipment = response.data.equipment;
 
                     this.attachments.map(file => {
                         this.lightboxImages.push({
                             src: this.assetsURL + '/' + file.attachment,
                             title: file.attachment_name
                         });
-                    });
-
-                    let defect_options = response.data.car.card.defect_options;
-                    defect_options.map(option => {
-                        this.selected.defectOptions.push(option.id);
                     });
 
                     this.defects.map(item => {            
@@ -430,7 +430,6 @@ export default {
         addAttachments() {
             if(this.attachments.items !== undefined) {
                 this.newAttachments.loading = true;
-                console.log(this.attachments.items);
     
                 let formData = new FormData();
                 let fileList = [];
@@ -466,7 +465,11 @@ export default {
                 this.snackbar.text = 'Выберите хотя бы одно вложение.';
                 this.snackbar.active = true;
             } 
-        }
+        },
+
+        onDefectActCreated(act) {
+            this.defectActs.push(act);
+        },
     },
     created() {
         this.fetchCarCardInfo();

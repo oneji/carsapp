@@ -8,6 +8,7 @@ use App\CarCardComment;
 use App\DefectType;
 use App\Sto;
 use JWTAuth;
+use App\EquipmentType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -68,13 +69,15 @@ class CarCardController extends Controller
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('card.defect_options.defect', 'attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect')
+                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment')
                         ->where('cars.id', $car_id)->with('drivers')->first(); 
         $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
+        $equipment = EquipmentType::all();
 
         return response()->json([
             'car' => $car,
-            'defects_info' => $defect_info
+            'defects_info' => $defect_info,
+            'equipment' => $equipment
         ]);
     }
 

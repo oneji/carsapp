@@ -13,7 +13,11 @@ import cookies from 'js-cookie'
 export default {
   name: 'App',
   created() {
-    console.log('...')
+    this.$moment.updateLocale('ru', {
+      months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    });
+
+    this.$moment.locale('ru');
   }
 }
 </script>

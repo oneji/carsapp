@@ -20,4 +20,12 @@ class EquipmentType extends Model
     {
         return $this->belongsToMany('App\Car');
     }
+
+    /**
+     * Get all defect acts for equipment
+     */
+    public function defect_acts()
+    {
+        return $this->belongsToMany('App\DefectAct');
+    }
 }

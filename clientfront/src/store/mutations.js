@@ -1,4 +1,4 @@
-import { SET_USER, RESET_USER, REFRESH_TOKEN } from './mutation-types'
+import { SET_USER, RESET_USER, REFRESH_TOKEN, SET_CAR, SET_DEFECT_ACT } from './mutation-types'
 import router from '@/router'
 
 const mutations = {
@@ -14,7 +14,15 @@ const mutations = {
 
     [REFRESH_TOKEN] (state, token) {
         state.token = token;
-    } 
+    },
+    
+    [SET_CAR] (state, car) {
+        state.car = car;
+    },
+    
+    [SET_DEFECT_ACT] (state, act) {
+        state.defectAct = act;
+    }
 }
 
 export default mutations

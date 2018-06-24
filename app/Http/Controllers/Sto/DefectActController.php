@@ -30,13 +30,17 @@ class DefectActController extends Controller
     public function store(Request $request, $sto_slug, $card_id)
     {
         $defectOptions = $request->only('defect_options');
+        $equipment = $request->only('equipment');
         $defectAct = new DefectAct();
         $defectAct->car_card_id = $card_id;
         $defectAct->defect_act_date = Carbon::now();
         $defectAct->save();
 
         foreach($defectOptions as $option)
-            $defectAct->defect_options()->sync($option);
+            $defectAct->defect_options()->attach($option);
+
+        foreach($equipment as $eq) 
+            $defectAct->equipment()->attach($eq);
 
         return response()->json([
             'success' => true,

@@ -1,3 +1,5 @@
-export const SET_USER = 'setUser';
-export const RESET_USER = 'resetUser';
+export const SET_USER = 'setUser'
+export const RESET_USER = 'resetUser'
 export const REFRESH_TOKEN = 'refreshToken'
+export const SET_CAR = 'setCar'
+export const SET_DEFECT_ACT = 'setDefectAct'

@@ -1,6 +1,7 @@
 import axios from '@/axios'
 import cookie from 'js-cookie'
 import router from '@/router'
+import * as types from './mutation-types'
 
 const actions = {
     fetch({ commit }) {        
@@ -67,6 +68,14 @@ const actions = {
             .catch(error => console.log(error));
            
     },
+
+    setCar({ commit }, car) {
+        commit(types.SET_CAR, car);
+    },
+
+    setDefectAct({ commit }, act) {
+        commit(types.SET_DEFECT_ACT, act);
+    }
 }
 
 export default actions

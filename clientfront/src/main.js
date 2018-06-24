@@ -7,9 +7,11 @@ import Vuetify from 'vuetify'
 import VeeValidate from 'vee-validate'
 import axios from './axios'
 import cookie from 'js-cookie'
+import VueMoment from 'vue-moment'
 
 Vue.use(Vuetify)
 Vue.use(VeeValidate)
+Vue.use(VueMoment);
 
 import 'vuetify/dist/vuetify.min.css'
 import 'babel-polyfill'

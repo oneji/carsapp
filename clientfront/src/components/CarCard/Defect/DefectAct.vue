@@ -1,93 +1,112 @@
 <template>
-    <div>
+    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition" @input="$emit('close')">
         <v-card>
-            <v-card-text class="px-0 py-0">
-                <v-tabs color="light-blue" dark show-arrows>
-                    <v-tabs-slider color="white"></v-tabs-slider>
-                    <v-tab v-for="(type, index) in defects" :key="index" ripple>{{ type.defect_type_name }}</v-tab>
-                    <v-tab-item v-for="(type, index) in defects" :key="index">
-                        <v-card flat>
-                            <v-card-text class="px-4 pb-0 pt-2">
-                                <v-form>
-                                    <v-list three-line>
-                                        <v-list-tile v-for="defect in type.defects" :key="defect.id">
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ defect.defect_name }}   </v-list-tile-title>
-                                                <v-list-tile-sub-title>
-                                                    <v-select
-                                                        :items="selects.defectOptions[defect.id]"
-                                                        v-model="selected.defectOptions"
-                                                        label="Опция дефекта"
-                                                        single-line
-                                                        multiple                                                                
-                                                    ></v-select>
-                                                </v-list-tile-sub-title>
-                                            </v-list-tile-content>
-                                        </v-list-tile>
-                                    </v-list>
-                                </v-form>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn color="success" block flat @click="saveDefects" :loading="loading.saveDefects">Создать</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-tab-item>
-                </v-tabs>
-            </v-card-text>
-        </v-card>
+            <v-toolbar dark color="primary">
+                <v-btn icon dark @click.native="$emit('close')">
+                    <v-icon>close</v-icon>
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                    <v-btn dark flat>Сохранить</v-btn>
+                </v-toolbar-items>
+            </v-toolbar>
+            
+            <v-container grid-list-lg>
+                <v-layout row justify-center>
+                    <v-flex xs12 sm12 md10 lg6>
+                        <v-btn color="success" block @click="print()">Распечатать <v-icon right dark>print</v-icon></v-btn>
+                    </v-flex>
+                </v-layout>
+                <v-layout row justify-center>
+                    <v-flex xs12 sm12 md10 lg6>
+                            <v-card>
+                                <v-card-text>
+                                    <div class="defect-act" id="defect-act" ref="defectAct">
+                                        <p class="display-1 text-lg-center defect-act__title">Дефектный акт автомобиля</p> 
+                                        <p><strong>Номер акта:</strong> №{{ act.id | generateActNum }}</p>
+                                        <p><strong>Дата осмотра автомобиля:</strong> {{ act.defect_act_date | moment("MMMM D, YYYY") }}</p> 
+                                        <p> 
+                                            <strong>Марка автомобиля:</strong> {{ car.brand_name }} 
+                                            <strong>Модель:</strong> {{ car.model_name }}
+                                            <strong>Пробег:</strong> {{ car.milage }} км.
+                                        </p> 
+                                        <p>
+                                            <strong>Год выпуска автомобиля:</strong> {{ car.year }}
+                                            <strong>VIN-CODE:</strong> {{ car.vin_code }}    
+                                        </p> 
+                                        <p>
+                                            <strong>Гос-номер:</strong> {{ car.number }}
+                                            <strong>Владелец:</strong> <span v-for="driver in car.drivers" :key="driver.id">{{ driver.fullname }},</span>
+                                        </p>
+                                        <p>
+                                            <strong>Объем ДВС:</strong> {{ car.engine_capacity }}
+                                            <strong>Тип ДВС:</strong> {{ car.engine_type_name }}
+                                        </p>
+                                        <p><strong>Трансмиссия:</strong> {{ car.transmission_name }}</p>
 
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
-    </div>
+                                        <div></div>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>           
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
-import axios from '@/axios'
-import snackbar from '@/components/mixins/snackbar'
+import printJS from 'print-js'
 
 export default {
-    mixins: [snackbar],
     props: {
-        selects: Object,
-        defects: Array,
-        cardId: [ Number, String ]
+        defectAct: Array,
+        open: Boolean
+    },
+    watch: {
+        open() {
+            if(this.open)
+                this.dialog = true;                    
+            else 
+                this.dialog = false;
+        },        
+    },
+    filters: {
+        generateActNum(value) {
+            return (value / 10000).toString().replace('.', '');
+        }
+    },
+    computed: {
+        act() {
+            return this.$store.getters.defectAct;
+        },
+            
+        car() {
+            return this.$store.getters.car;
+        }
     },
     data() {
         return {
-            loading: {
-                saveDefects: false
-            },
-            selected: {
-                defectOptions: []
-            }
+            dialog: false
         }
     },
     methods: {
-        saveDefects() {
-            this.loading.saveDefects = true;
-            axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/defects/acts`, { 
-                'defect_options': this.selected.defectOptions 
-            })
-            .then(response => {
-                console.log(response);
-                this.$emit('added', response.data.act);
-                this.loading.saveDefects = false;
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
-            })
-            .catch(error => console.log(error));
-        },
-    },
-    created() {
-        console.log(this.selected.defectOptions);
-        console.log(this.selects.defectOptions);
+        print(elem) {
+            printJS({
+                printable: 'defect-act',
+                type: 'html',
+                scanStyles: true
+            });
+        }
     }
 }
 </script>
 
 <style>
-
+    .defect-act {
+        padding: 20px 40px;
+    }
+    .defect-act__title {
+        margin-bottom: 40px;
+    }
 </style>

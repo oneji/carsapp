@@ -21,4 +21,12 @@ class DefectAct extends Model
     {
         return $this->belongsTo('App\CarCard');
     }
+
+    /**
+     * Get defect act's equipment.
+     */
+    public function equipment()
+    {
+        return $this->belongsToMany('App\EquipmentType');
+    }
 }
