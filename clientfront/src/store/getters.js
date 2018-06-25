@@ -13,6 +13,14 @@ const getters = {
 
     defectAct: state => {
         return state.defectAct;
+    },
+
+    defectTypes: state => {
+        return state.defectTypes;
+    },
+
+    equipment: state => {
+        return state.equipment;
     }
 }
 

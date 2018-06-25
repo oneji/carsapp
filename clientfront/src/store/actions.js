@@ -75,6 +75,14 @@ const actions = {
 
     setDefectAct({ commit }, act) {
         commit(types.SET_DEFECT_ACT, act);
+    },
+
+    setDefectTypes({ commit }, defectTypes) {
+        commit(types.SET_DEFECT_TYPES, defectTypes);
+    },
+
+    setEquipment({ commit }, equipment) {
+        commit(types.SET_EQUIPMENT, equipment);
     }
 }
 

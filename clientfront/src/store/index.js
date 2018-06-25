@@ -30,7 +30,8 @@ export default new Vuex.Store({
             defect_options: [],
             equipment: []
         },
-        
+        defectTypes: [],
+        equipment: []        
     },
     getters,
     mutations,

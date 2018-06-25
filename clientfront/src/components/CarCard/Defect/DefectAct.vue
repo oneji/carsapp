@@ -13,12 +13,12 @@
             
             <v-container grid-list-lg>
                 <v-layout row justify-center>
-                    <v-flex xs12 sm12 md10 lg6>
+                    <v-flex xs12 sm12 md10 lg8>
                         <v-btn color="success" block @click="print()">Распечатать <v-icon right dark>print</v-icon></v-btn>
                     </v-flex>
                 </v-layout>
                 <v-layout row justify-center>
-                    <v-flex xs12 sm12 md10 lg6>
+                    <v-flex xs12 sm12 md10 lg8>
                             <v-card>
                                 <v-card-text>
                                     <div class="defect-act" id="defect-act" ref="defectAct">
@@ -43,8 +43,25 @@
                                             <strong>Тип ДВС:</strong> {{ car.engine_type_name }}
                                         </p>
                                         <p><strong>Трансмиссия:</strong> {{ car.transmission_name }}</p>
+                                        <p>
+                                            <strong>Наличие:
+                                                <span v-for="(eq, index) in equipmentStatuses" :key="eq.id">
+                                                    {{ `${index + 1}) ${eq.name} - ${eq.status}` }}
+                                                </span>
+                                            </strong>
+                                        </p>
 
-                                        <div></div>
+                                        <div v-for="(defectType, index) in defects" :key="index">
+                                            <p><strong>{{ defectType.type }}</strong></p>
+                                            <div v-if="defectType.options.length > 0">
+                                                <p v-for="(option, i) in defectType.options" :key="option.id">
+                                                    {{ i + 1 }}. {{ option.defect.defect_name }}: {{ option.defect_option_name }}
+                                                </p>
+                                            </div>
+                                            <div v-else>
+                                                <p>Нареканий нет.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -83,11 +100,63 @@ export default {
             
         car() {
             return this.$store.getters.car;
-        }
+        },
+
+        defectTypes() {
+            return this.$store.getters.defectTypes;
+        },
+        
+        equipment() {
+            return this.$store.getters.equipment;
+        },
+
+        equipmentStatuses() {
+            let statuses = [];
+
+            for(let j = 0; j < this.equipment.length; j++) {
+                let status = '';
+                if(this.act.equipment.length === 0) {
+                    status = 'нет';        
+                } else {
+                    for(let i = 0; i < this.act.equipment.length; i++) {             
+                        if(this.equipment[j].id === this.act.equipment[i].id) {
+                            status = 'да';
+                            break;
+                        } else
+                            status = 'нет';                
+                    }
+                }
+                
+                statuses.push({
+                    'id': this.equipment[j].id,
+                    'name': this.equipment[j].equipment_type_name,
+                    'status': status
+                });
+            }
+
+            return statuses;
+        },
+
+        defects() {
+            let defects = [];               
+
+            this.defectTypes.map(type => {
+                let defectOptions = this.getDefectOptionsForDefectTypes(type.id, this.act.defect_options);
+                defects.push({
+                    'type': type.defect_type_name,
+                    'options': defectOptions
+                });
+            });
+
+            console.log(defects)
+
+            return defects;
+        },        
     },
     data() {
         return {
-            dialog: false
+            dialog: false,
+            equipmentIDs: []
         }
     },
     methods: {
@@ -97,7 +166,15 @@ export default {
                 type: 'html',
                 scanStyles: true
             });
+        },
+
+        getDefectOptionsForDefectTypes(defectTypeId, defectOptions) {
+            let lala = defectOptions.filter(option => option.defect.defect_type_id === defectTypeId);
+            return lala;
         }
+    }, 
+    created() {   
+        
     }
 }
 </script>

@@ -46,7 +46,6 @@ import DefectAct from './DefectAct';
 export default {
     props: {
         items: Array,
-        car: Object
     },
     filters: {
         generateActNum(value) {
@@ -64,10 +63,9 @@ export default {
     methods: {
         showDefectAct(act_index) {
             let act = this.items[act_index];
-            let car = this.car;
             this.$store.dispatch('setDefectAct', act);
             this.defectActDialog = true;
-        },
+        },        
     }
 }
 </script>

@@ -17,6 +17,7 @@
     "filepond-plugin-file-validate-type": "^1.1.0",
     "filepond-plugin-image-preview": "^1.0.9",
     "js-cookie": "^2.2.0",
+    "print-js": "^1.0.47",
     "vee-validate": "^2.0.9",
     "vue": "^2.5.2",
     "vue-filepond": "^2.0.1",

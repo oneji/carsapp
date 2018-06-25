@@ -333,10 +333,12 @@ export default {
                     this.car = response.data.car;
                     this.$store.dispatch('setCar', response.data.car);
                     this.defects = response.data.defects_info;
+                    this.$store.dispatch('setDefectTypes', response.data.defects_info);
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
                     this.defectActs =  this.car.card.defect_acts;
                     this.equipment = response.data.equipment;
+                    this.$store.dispatch('setEquipment', response.data.equipment);
 
                     this.attachments.map(file => {
                         this.lightboxImages.push({
