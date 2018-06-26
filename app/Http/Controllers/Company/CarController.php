@@ -6,6 +6,7 @@ use App\Car;
 use App\CarAttachment;
 use App\Company;
 use App\Driver;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -45,8 +46,6 @@ class CarController extends Controller
     {   
         $company = Company::where('slug', $company_slug)->first();
 
-        // return response()->json($request->all());
-
         if($request->hasFile('cover_image')) {
             $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
             $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
@@ -62,7 +61,14 @@ class CarController extends Controller
         $car = new Car($request->all());
         $car->year = Carbon::parse($request->year)->year;
         $car->cover_image = $coverImageNameToStore;
-        $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+        if($request->milage !== 'null') 
+            $car->milage = $request->milage;
+
+        if($request->engine_capacity !== null)
+            $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+        else
+            $car->engine_capacity = null;
+            
         $car->save();       
         
         $company->cars()->attach($car->id);
@@ -108,15 +114,28 @@ class CarController extends Controller
      */
     public function bindDriver(Request $request)
     {
+        $boundCarIds = DB::table('car_driver')->get();
+        
+        foreach($boundCarIds as $boundCar) {
+            if($boundCar->car_id === $request->car_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'У автомобиля уже есть водитель.'
+                ]);
+            }
+        }
+
         $car = Car::find($request->car_id);
         $car->drivers()->attach($request->driver_id);
+        
 
         $driver = Driver::find($request->driver_id);
 
         return response()->json([
             'success' => true,
             'message' => 'Водитель успешно привязан.',
-            'driver' => $driver
+            'driver' => $driver,
+            'boundCars' => $boundCarIds
         ]);
     }
 }

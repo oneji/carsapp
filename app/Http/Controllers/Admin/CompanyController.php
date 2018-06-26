@@ -62,7 +62,7 @@ class CompanyController extends Controller
      */
     public function bindUser($company_id, $user_id)
     {
-        $company = Company::find($company_id)->users()->sync($user_id);
+        $company = Company::find($company_id)->users()->attach($user_id);
         
         return response()->json([
             'success' => true,

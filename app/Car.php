@@ -19,7 +19,7 @@ class Car extends Model
      * @var array
      */
     protected $fillable = [
-        'number', 'shape_id', 'brand_id', 'model_id', 'milage', 'vin_code', 'engine_type_id', 'transmission_id'
+        'number', 'shape_id', 'brand_id', 'model_id', 'vin_code', 'engine_type_id', 'transmission_id'
     ];
     
     /**

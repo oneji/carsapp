@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Driver;
 use App\Company;
 use App\DriverAttachment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -17,7 +18,11 @@ class DriverController extends Controller
     public function get($company_slug) 
     {
         $company = Company::where('slug', $company_slug)->with(['drivers'])->first();
-        return response()->json($company);
+        $boundDrivers = DB::table('car_driver')->get();
+        return response()->json([
+            'company' => $company,
+            'boundDrivers' => $boundDrivers
+        ]);
     }
 
     /**

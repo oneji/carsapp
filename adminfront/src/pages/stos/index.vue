@@ -90,7 +90,7 @@
                     <v-divider></v-divider>           
                     <v-card-title primary-title>
                         <div>
-                            <h3 class="headline mb-0">{{ item.sto_name }}</h3>
+                            <h3 class="title mb-0">{{ item.sto_name }}</h3>
                             <div v-if="item.contact">{{ item.contact }}</div>
                             <div v-else>Контакта нет</div>
                         </div>
@@ -106,7 +106,7 @@
         <v-layout v-if="alert.noSTOs">
             <v-flex>
                 <v-alert outline transition="scale-transition" type="info" :value="true">
-                Ни одного СТО не зарегистрировано.
+                    и одного СТО не зарегистрировано.
                 </v-alert>
             </v-flex>
         </v-layout>

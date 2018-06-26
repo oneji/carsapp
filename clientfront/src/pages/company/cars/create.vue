@@ -91,10 +91,7 @@
                                                 data-vv-name="model_id" data-vv-as='"Модель"'
                                             ></v-select>
 
-                                            <v-text-field v-model="newCar.milage" name="milage" label="Пробег" type="text" prepend-icon="swap_calls"
-                                                v-validate="'required'" suffix="км."
-                                                :error-messages="errors.collect('milage')"
-                                                data-vv-name="milage" data-vv-as='"Пробег"'                                    
+                                            <v-text-field v-model="newCar.milage" name="milage" label="Пробег" type="text" prepend-icon="swap_calls" suffix="км."                                    
                                             ></v-text-field>
 
                                             <v-text-field v-model="newCar.vin_code" name="vin_code" label="Вин код" type="text" prepend-icon="polymer"
@@ -103,10 +100,7 @@
                                                 data-vv-name="vin_code" data-vv-as='"Вин код"'                                    
                                             ></v-text-field>  
 
-                                            <v-text-field v-model="newCar.engine_capacity" name="engine_capacity" label="Объём двигателя" type="text" prepend-icon="polymer"
-                                                v-validate="'required'" 
-                                                :error-messages="errors.collect('engine_capacity')"
-                                                data-vv-name="engine_capacity" data-vv-as='"Объём двигателя"'                                    
+                                            <v-text-field v-model="newCar.engine_capacity" name="engine_capacity" label="Объём двигателя" type="text" prepend-icon="polymer"                                  
                                             ></v-text-field> 
 
                                             <v-select :items="engine_types" v-model="newCar.engine_type_id" label="Выберите тип двигателя" prepend-icon="directions_car"

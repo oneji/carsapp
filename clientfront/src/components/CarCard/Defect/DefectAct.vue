@@ -24,7 +24,7 @@
                                     <div class="defect-act" id="defect-act" ref="defectAct">
                                         <p class="display-1 text-lg-center defect-act__title">Дефектный акт автомобиля</p> 
                                         <p><strong>Номер акта:</strong> №{{ act.id | generateActNum }}</p>
-                                        <p><strong>Дата осмотра автомобиля:</strong> {{ act.defect_act_date | moment("MMMM D, YYYY") }}</p> 
+                                        <p><strong>Дата осмотра автомобиля:</strong> {{ act.defect_act_date }}</p> 
                                         <p> 
                                             <strong>Марка автомобиля:</strong> {{ car.brand_name }} 
                                             <strong>Модель:</strong> {{ car.model_name }}
@@ -52,16 +52,21 @@
                                         </p>
 
                                         <div v-for="(defectType, index) in defects" :key="index">
-                                            <p><strong>{{ defectType.type }}</strong></p>
+                                            <p class="mb-0 mt-3"><strong>{{ defectType.type }}</strong></p>
                                             <div v-if="defectType.options.length > 0">
-                                                <p v-for="(option, i) in defectType.options" :key="option.id">
+                                                <p v-for="(option, i) in defectType.options" :key="option.id" class="mb-0">
                                                     {{ i + 1 }}. {{ option.defect.defect_name }}: {{ option.defect_option_name }}
                                                 </p>
                                             </div>
                                             <div v-else>
-                                                <p>Нареканий нет.</p>
+                                                <p class="mt-0 mb-0">Нареканий нет.</p>
                                             </div>
                                         </div>
+                                        <p>Список составлен верно, с наличием дефектов ознакомлен, претензий не имею:</p>
+                                        <p class="car-owner"><strong>(владелец авто) ФИО</strong></p>  
+                                        <p class="mb-2">Акт составлен в составе комиссии:</p>
+                                        <p class="mb-1"><strong>Механик СТО:</strong> ФИО подпись</p> 
+                                        <p><strong>Специалист по дефектовки:</strong> ФИО подпись</p> 
                                     </div>
                                 </v-card-text>
                             </v-card>
@@ -148,8 +153,6 @@ export default {
                 });
             });
 
-            console.log(defects)
-
             return defects;
         },        
     },
@@ -185,5 +188,8 @@ export default {
     }
     .defect-act__title {
         margin-bottom: 40px;
+    }
+    .car-owner {
+        border-bottom: 2px solid #000;
     }
 </style>

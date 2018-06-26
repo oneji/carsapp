@@ -41,7 +41,9 @@
                                     <v-flex>
                                         <div class="car-details-block subheading mb-2">
                                             <i class="ic-speedometer car-icon"></i>
-                                            <strong>Пробег:</strong> {{ car.milage }} км.
+                                            <strong>Пробег:</strong> 
+                                            <span v-if="car.milage !== null">{{ car.milage }} км.</span>
+                                            <span v-else>Не установлен.</span>
                                         </div>
                                         <div class="car-details-block subheading mb-2">
                                             <i class="ic-car car-icon"></i>
@@ -49,11 +51,13 @@
                                         </div>
                                         <div class="car-details-block subheading mb-2">
                                             <i class="ic-wheel car-icon"></i>
-                                            <strong>Гос номер:</strong> {{ car.number }}
+                                            <strong>Гос-номер:</strong> {{ car.number }}
                                         </div>
                                         <div class="car-details-block subheading mb-2">
                                             <i class="ic-engine car-icon"></i>
-                                            <strong>Объем двигателя:</strong> {{ car.engine_capacity }} л.
+                                            <strong>Объем двигателя:</strong> 
+                                            <span v-if="car.engine_capacity !== null">{{ car.engine_capacity }} л.</span>
+                                            <span v-else>Не установлен.</span>
                                         </div>
                                         <div class="car-details-block subheading mb-2">
                                             <i class="ic-fuel car-icon"></i>
@@ -329,7 +333,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response);
                     this.car = response.data.car;
                     this.$store.dispatch('setCar', response.data.car);
                     this.defects = response.data.defects_info;

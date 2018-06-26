@@ -108,16 +108,17 @@ export default {
                 selectDriverItems: [],
                 selectCarItems: [] 
             },
+            boundCars: []
         }
     },
     methods: {
         fetchCars() {
             axios.get(`/company/${this.$route.params.slug}/cars`)
-                .then(response => {
+                .then(response => {                    
                     this.cars = response.data.cars;
                     this.cars.map(car => {
                         this.driver.selectCarItems.push({
-                            text: car.brand_name + ' ' + car.model_name,
+                            text: car.brand_name + ' ' + car.model_name + ' (' + car.number + ')',
                             value: car.id
                         });
                     });
@@ -128,11 +129,16 @@ export default {
         fetchDrivers() {
             axios.get(`/company/${this.$route.params.slug}/drivers`)
                 .then(response => {
-                    this.drivers = response.data.drivers;
+                    console.log(response);
+                    this.drivers = response.data.company.drivers;
                     this.drivers.map(driver => {
-                        this.driver.selectDriverItems.push({
-                            text: driver.fullname,
-                            value: driver.id
+                        response.data.boundDrivers.map(boundDriver => {
+                            if(boundDriver.driver_id !== driver.id) {
+                                this.driver.selectDriverItems.push({
+                                    text: driver.fullname,
+                                    value: driver.id
+                                });
+                            }
                         });
                     });
                 })
@@ -146,15 +152,22 @@ export default {
                 'car_id': this.driver.car_id
             })
             .then(response => {
-                this.cars.map(car => {
-                    if(car.id === this.driver.car_id)
-                        car.drivers.push(response.data.driver);
-                });
-                
-                this.driver.loading = false;
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
+                if(response.data.success) {
+                    this.cars.map(car => {
+                        if(car.id === this.driver.car_id)
+                            car.drivers.push(response.data.driver);
+                    });
+                    
+                    this.driver.loading = false;
+                    this.snackbar.color = 'success';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                } else {
+                    this.driver.loading = false;
+                    this.snackbar.color = 'error';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                }
             })
             .catch(error => console.log(error));
         }

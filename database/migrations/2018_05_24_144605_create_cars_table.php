@@ -20,7 +20,7 @@ class CreateCarsTable extends Migration
             $table->integer('shape_id')->unsigned();
             $table->integer('brand_id')->unsigned();
             $table->integer('model_id')->unsigned();
-            $table->integer('milage');
+            $table->integer('milage')->nullable();
             $table->string('vin_code')->unique();
 
             $table->foreign('shape_id')->references('id')->on('car_shapes');

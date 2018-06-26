@@ -61,14 +61,10 @@
                                                 :error-messages="errors.collect('fullname')"
                                             ></v-text-field>
 
-                                            <v-text-field v-model="newDriver.address" name="address" label="Адрес" type="text" prepend-icon="home"
-                                                v-validate="'required'" 
-                                                :error-messages="errors.collect('address')"
-                                                data-vv-name="address" data-vv-as='"Адрес"'                                    
-                                            ></v-text-field>
+                                            <v-text-field v-model="newDriver.address" name="address" label="Адрес" type="text" prepend-icon="home"></v-text-field>
 
                                             <v-text-field v-model="newDriver.email" name="email" label="Email" type="text" prepend-icon="email"
-                                                v-validate="'required|email'" 
+                                                v-validate="'email'" 
                                                 :error-messages="errors.collect('email')"
                                                 data-vv-name="email" data-vv-as='"Email"'                                    
                                             ></v-text-field> 

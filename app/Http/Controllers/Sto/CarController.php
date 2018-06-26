@@ -76,9 +76,16 @@ class CarController extends Controller
         $car = new Car($request->all());
         $car->year = Carbon::parse($request->year)->year;
         $car->cover_image = $coverImageNameToStore;
-        $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+
+        if($request->milage !== 'null') 
+            $car->milage = $request->milage;
+
+        if($request->engine_capacity !== null)
+            $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+        else
+            $car->engine_capacity = null;
+
         $car->save();       
-        
         $company->cars()->attach($car->id);
 
         $carAttachments = array();

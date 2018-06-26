@@ -1,7 +1,9 @@
 import HomeLayout from '@/layouts/HomeLayout'
 import CompanyLayout from '@/layouts/CompanyLayout'
 import Login from '@/pages/login'
-import Home from '@/pages/index'
+// Home pages
+import Home from '@/pages/home/index'
+import HomeCars from '@/pages/home/cars'
 // Company pages
 import CompanyHome from '@/pages/company/index'
 import CompanyCars from '@/pages/company/cars/index'
@@ -25,6 +27,7 @@ const routes = [
     { path: '/', component: HomeLayout, meta: { requiresAuth: true },
         children: [
             { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true, } },
+            { path: '/cars', name: 'HomeCars', component: HomeCars, meta: { requiresAuth: true, } },            
         ],
     },
     // Company routes

@@ -1,5 +1,19 @@
 <template>
     <v-app>
+        <!-- Left sidebar -->
+        <v-navigation-drawer :mini-variant="miniVariant" clipped v-model="drawer" fixed app>
+            <v-list>
+                <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
+                    <v-list-tile-action>
+                        <v-icon v-html="item.icon"></v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title v-text="item.title"></v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
+        </v-navigation-drawer>
+        
         <!-- Toolbar -->
         <v-toolbar fixed app clipped-left dark color="blue darken-2">
             <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
@@ -152,6 +166,7 @@ export default {
             fixed: false,
             items: [
                 { icon: 'home', title: 'Главная', to: '/' },
+                { icon: 'directions_car', title: 'Все автомобили', to: '/cars' },
             ],
             miniVariant: false,
             rightDrawer: false,

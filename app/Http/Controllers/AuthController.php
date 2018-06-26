@@ -55,7 +55,7 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         
-        $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with(['roles', 'permissions', 'companies', 'stos'])->first();
+        $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with(['roles', 'permissions'])->first();
         if(!$user) {
             return response()->json([
                 'success' => false,
@@ -125,7 +125,7 @@ class AuthController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
         }
 
-        $me = User::where('id', $user->id)->with(['roles', 'permissions', 'companies', 'stos'])->first();
+        $me = User::where('id', $user->id)->with(['roles', 'permissions'])->first();
 
         // the token is valid and we have found the user via the sub claim
         return response()->json([
