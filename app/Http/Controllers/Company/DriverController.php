@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Driver;
 use App\Company;
+use App\DriverQueue;
 use App\DriverAttachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -17,8 +18,9 @@ class DriverController extends Controller
      */
     public function get($company_slug) 
     {
-        $company = Company::where('slug', $company_slug)->with(['drivers'])->first();
-        $boundDrivers = DB::table('car_driver')->get();
+        $company = Company::where('slug', $company_slug)->with(['drivers.queue'])->first();
+        
+        $boundDrivers = DB::table('car_driver')->where('active', 1)->pluck('driver_id')->all();
         return response()->json([
             'company' => $company,
             'boundDrivers' => $boundDrivers
@@ -84,5 +86,55 @@ class DriverController extends Controller
             'success' => true,
             'message' => 'Водитель успешно создан.',
         ]);
+    }
+
+    public function addToQueue(Request $request, $company_slug, $driver_id)
+    {
+        $queue = DriverQueue::where('driver_id', $driver_id)->get();
+
+        if(count($queue) > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Водитель уже добавлен в очередь.'
+            ]);
+        }
+
+        $driverQueue = new DriverQueue();
+        $driverQueue->driver_id = $driver_id;
+        $driverQueue->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Водитель успешно добавлен в очередь.',
+            'queue' => $driverQueue
+        ]);
+    }
+
+    
+    public function backFromQueue(Request $request, $company_slug, $driver_id)
+    {
+        $queue = DriverQueue::where('driver_id', $driver_id)->get();
+
+        if(count($queue) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Водителя в очереди нет.'
+            ]);
+        }
+
+        $driverQueue = DriverQueue::where('driver_id', $driver_id)->first();
+        $driverQueue->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Водитель успешно удален из очереди.',
+            'queue' => $driverQueue
+        ]);
+    }
+
+    public function getQueue()
+    {
+        $queue = DriverQueue::with('driver.companies')->get();
+        return response()->json($queue);
     }
 }

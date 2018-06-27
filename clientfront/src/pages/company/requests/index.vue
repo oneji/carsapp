@@ -31,13 +31,13 @@
                                         <v-list-tile-content>
                                             <v-list-tile-title class="title mb-1">{{ request.sto_name }}</v-list-tile-title>
                                             <v-list-tile-sub-title v-if="request.status === 0">
-                                                Статус: <span class="label label-warning">Ждет принятия</span>
+                                                Статус: <my-label text="Ждет принятия" color="#ffa91c" />
                                             </v-list-tile-sub-title>
                                             <v-list-tile-sub-title v-else-if="request.status === 1">
-                                                Статус: <span class="label label-success">Принята</span>
+                                                Статус: <my-label text="Принята" color="#32c861" />
                                             </v-list-tile-sub-title>                                            
                                             <v-list-tile-sub-title v-else-if="request.status === 2">
-                                                Статус: <span class="label label-danger">Отклонена</span>
+                                                Статус: <my-label text="Отклонена" color="#f96a74" />
                                             </v-list-tile-sub-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
@@ -99,6 +99,7 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import MyLabel from '@/components/Label'
 
 export default {
     mixins: [ snackbar ],
@@ -106,6 +107,9 @@ export default {
         assetsURL() {
             return config.assetsURL;
         },
+    },
+    components: {
+        MyLabel
     },
     data() {
         return {
@@ -123,39 +127,6 @@ export default {
         }
     },
     methods: {
-        fetchRequests() {
-            this.loading.pageLoad = true;
-            axios.get(`/company/${this.$route.params.slug}/requests`)
-                .then(response => {
-                    this.requests = response.data;
-                    this.loading.pageLoad = false;
-                })
-                .catch(error => console.error());           
-        },
-
-        sendRequest() {
-            this.loading.create = true;
-            axios.post(`/company/${this.$route.params.slug}/requests/${this.sto_id}`)
-                .then(response => {
-                    this.fetchRequests();
-                    this.loading.create = false;
-                    this.snackbar.color = 'success';
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
-                }) 
-                .catch(error => console.log(error));
-        },
-
-        cancelRequest(request_id, index) {
-            this.loading.cancel = true;
-            axios.delete(`/company/${this.$route.params.slug}/requests/${request_id}`)
-                .then(response => {
-                    this.loading.cancel = false;
-                    this.requests.splice(index, 1);
-                })
-                .catch(error => console.log(error));
-        },
-
         fetchSTOs() {
             axios.get('/admin/stos')
                 .then(response => {                    
@@ -171,6 +142,47 @@ export default {
                     console.log(error);
                 });
         },
+
+        fetchRequests() {
+            this.loading.pageLoad = true;
+            axios.get(`/company/${this.$route.params.slug}/requests`)
+                .then(response => {
+                    this.requests = response.data;
+                    this.loading.pageLoad = false;
+                })
+                .catch(error => console.error());           
+        },
+
+        sendRequest() {
+            this.loading.create = true;
+            axios.post(`/company/${this.$route.params.slug}/requests/${this.sto_id}`)
+                .then(response => {
+                    console.log(response);
+                    if(response.data.success) {
+                        this.snackbar.color = 'success';                        
+                    } else {
+                        this.snackbar.color = 'error';
+                    }
+                    
+                    this.fetchRequests();
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                    this.loading.create = false;
+                }) 
+                .catch(error => console.log(error));
+        },
+
+        cancelRequest(request_id, index) {
+            this.loading.cancel = true;
+            axios.delete(`/company/${this.$route.params.slug}/requests/${request_id}`)
+                .then(response => {
+                    this.loading.cancel = false;
+                    this.requests.splice(index, 1);
+                })
+                .catch(error => console.log(error));
+        },
+
+        
     },
     created() {
         this.fetchRequests();
@@ -180,28 +192,6 @@ export default {
 </script>
 
 <style>
-    .label {
-        display: inline;
-        padding: .2em .6em .3em;
-        font-size: 80%;
-        font-weight: 700;
-        line-height: 1;
-        color: #fff;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: .25em;
-    }
-    .label-warning {
-        background-color: #ffa91c;
-        padding: 0.3em .6em;
-    }
-    .label-success {
-        background-color: #32c861;
-    }
-    .label-danger {
-        background-color: #f96a74;
-    }
     .loading-block {
         position: absolute;
         top: 0;

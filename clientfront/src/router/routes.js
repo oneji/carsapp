@@ -3,7 +3,9 @@ import CompanyLayout from '@/layouts/CompanyLayout'
 import Login from '@/pages/login'
 // Home pages
 import Home from '@/pages/home/index'
-import HomeCars from '@/pages/home/cars'
+import HomeCars from '@/pages/home/cars/index'
+import HomeReservedCars from '@/pages/home/cars/reserved'
+import HomeDriversQueue from '@/pages/home/drivers/queue'
 // Company pages
 import CompanyHome from '@/pages/company/index'
 import CompanyCars from '@/pages/company/cars/index'
@@ -28,6 +30,8 @@ const routes = [
         children: [
             { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true, } },
             { path: '/cars', name: 'HomeCars', component: HomeCars, meta: { requiresAuth: true, } },            
+            { path: '/cars/reserved', name: 'HomeReservedCars', component: HomeReservedCars, meta: { requiresAuth: true, } },            
+            { path: '/drivers/queue', name: 'HomeDriversQueue', component: HomeDriversQueue, meta: { requiresAuth: true, } },            
         ],
     },
     // Company routes

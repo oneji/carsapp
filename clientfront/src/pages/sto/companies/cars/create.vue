@@ -146,7 +146,13 @@
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('transmission_id')"
                                                 data-vv-name="transmission_id" data-vv-as='"Коробка передач"'
-                                            ></v-select>                                            
+                                            ></v-select> 
+
+                                            <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>
+                                            <v-radio-group v-model="newCar.type" row class="pt-0">
+                                                <v-radio label="Служебно-Служебная" value="0"></v-radio>
+                                                <v-radio label="Служебно-Личная" value="1"></v-radio>
+                                            </v-radio-group>                                            
                                         </v-container>                                        
                                     </v-flex>
                                 </v-layout>
@@ -223,7 +229,9 @@ export default {
                 engine_capacity: '',
                 engine_type_id: null,
                 transmission_id: null,
-                company_id: Number(this.$route.params.company) 
+                company_id: Number(this.$route.params.company) ,
+                reserved: false,
+                type: 0 
             },
 
             loading: false,
@@ -267,6 +275,8 @@ export default {
                         formData.append('engine_type_id', this.newCar.engine_type_id);
                         formData.append('transmission_id', this.newCar.transmission_id);
                         formData.append('company_id', this.newCar.company_id);
+                        formData.append('reserved', this.newCar.reserved);
+                        formData.append('type', this.newCar.type);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);

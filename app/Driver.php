@@ -41,4 +41,9 @@ class Driver extends Model
     {
         return $this->belongsToMany('App\Car');
     }
+
+    public function queue()
+    {
+        return $this->hasOne('App\DriverQueue');
+    }
 }

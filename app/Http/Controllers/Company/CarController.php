@@ -22,17 +22,24 @@ class CarController extends Controller
     {
         $company = Company::where('slug', $company_slug)->with([
             'cars' => function($query) {
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image')
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('drivers')->get();
+                        ->with([ 'drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->get();
             }
         ])->first();
+
+        $boundCars = DB::table('car_driver')->where('active', 1)->pluck('car_id')->all();
         
-        return response()->json($company);
+        return response()->json([
+            'company' => $company,
+            'boundCars' => $boundCars
+        ]);
     }
 
     /**
@@ -44,6 +51,7 @@ class CarController extends Controller
      */
     public function store(Request $request, $company_slug) 
     {   
+        // return response()->json($request->all());
         $company = Company::where('slug', $company_slug)->first();
 
         if($request->hasFile('cover_image')) {
@@ -68,6 +76,11 @@ class CarController extends Controller
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
         else
             $car->engine_capacity = null;
+
+        if($request->reserved === 'true')
+            $car->reserved = 1;
+        else 
+            $car->reserved = 0;
             
         $car->save();       
         
@@ -114,7 +127,7 @@ class CarController extends Controller
      */
     public function bindDriver(Request $request)
     {
-        $boundCarIds = DB::table('car_driver')->get();
+        $boundCarIds = DB::table('car_driver')->where('active', 1)->get();
         
         foreach($boundCarIds as $boundCar) {
             if($boundCar->car_id === $request->car_id) {
@@ -126,16 +139,58 @@ class CarController extends Controller
         }
 
         $car = Car::find($request->car_id);
-        $car->drivers()->attach($request->driver_id);
-        
+        $car->drivers()->attach($request->driver_id);        
 
         $driver = Driver::find($request->driver_id);
+        $car->load([
+            'drivers' => function($query) {
+                $query->where('active', 1)->get();
+            }
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Водитель успешно привязан.',
             'driver' => $driver,
-            'boundCars' => $boundCarIds
+            'boundCars' => $boundCarIds,
+            'car' => $car
+        ]);
+    }
+
+    public function unbindDriver(Request $request) 
+    {
+        $drivers = DB::table('car_driver')->where('car_id', $request->car_id)->update([
+            'active' => 0,
+            'end_date' => Carbon::now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Водитель успешно удален.'
+        ]);
+    }
+
+    public function reserveCar(Request $request, $company_slug) 
+    {
+        $car = Car::find($request->only('car_id'))->first();
+        $car->reserved = 1;
+        $car->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Автомобиль успешно отправлен в резерв.'
+        ]);
+    } 
+
+    public function backFromReserve(Request $request, $company_slug)
+    {
+        $car = Car::find($request->only('car_id'))->first();
+        $car->reserved = 0;
+        $car->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Автомобиль успешно удален из резерва.'
         ]);
     }
 }

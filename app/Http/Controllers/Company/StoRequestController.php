@@ -38,6 +38,28 @@ class StoRequestController extends Controller
     public function store($company_slug, $sto_id) 
     {
         $company = Company::where('slug', $company_slug)->first();
+        
+        $oldReq = StoRequest::where('sto_id', $sto_id)->where('company_id', $company->id)->first();
+        if(count($oldReq) > 0) {
+            $message = '';
+            if($oldReq->status === 0)
+                $message = 'Ваша заявка ждет принятия.';
+            
+            if($oldReq->status === 1)
+                $message = 'Ваша заявка уже принята.';
+
+            if($oldReq->status === 2) {
+                $message = 'Ваша отклоненная заявка была переотправлена.';
+                $oldReq->status = 0;
+                $oldReq->save();
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $message 
+            ]);
+        }
+
         $req = new StoRequest();
         $req->company_id = $company->id;
         $req->sto_id = $sto_id;

@@ -36,13 +36,15 @@ class CompanyController extends Controller
         $company = Company::where('id', $company_id)->with([
             'cars' => function($query) {                
                 $query->with('drivers')
-                        ->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name')
+                        ->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name', 'type')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('drivers')->get(); 
+                        ->with(['drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->get(); 
             }, 
             'cars.card'
         ])->first();

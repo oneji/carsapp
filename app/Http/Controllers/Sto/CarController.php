@@ -85,6 +85,11 @@ class CarController extends Controller
         else
             $car->engine_capacity = null;
 
+        if($request->reserved === 'true')
+            $car->reserved = 1;
+        else 
+            $car->reserved = 0;
+
         $car->save();       
         $company->cars()->attach($car->id);
 

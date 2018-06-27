@@ -76,10 +76,16 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         // Car routes
         Route::get('/{slug}/cars', 'CarController@get');
         Route::post('/{slug}/cars', 'CarController@store');
-        Route::post('/{slug}/cars/drivers', 'CarController@bindDriver');        
+        Route::post('/{slug}/cars/drivers', 'CarController@bindDriver'); 
+        Route::put('/{slug}/cars/drivers', 'CarController@unbindDriver');  
+        Route::put('/{slug}/cars/reserve/put', 'CarController@reserveCar');     
+        Route::put('/{slug}/cars/reserve/get', 'CarController@backFromReserve');     
         // Driver routes
         Route::get('/{slug}/drivers', 'DriverController@get');
         Route::post('/{slug}/drivers', 'DriverController@store');
+        Route::post('/{slug}/drivers/{driver}/queue', 'DriverController@addToQueue');
+        Route::delete('/{slug}/drivers/{driver}/queue', 'DriverController@backFromQueue');
+        Route::get('/{slug}/drivers/queue', 'DriverController@getQueue');
         // Request routes
         Route::get('/{slug}/requests', 'StoRequestController@get');
         Route::post('/{slug}/requests/{sto}', 'StoRequestController@store');

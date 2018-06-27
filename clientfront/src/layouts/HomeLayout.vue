@@ -87,8 +87,8 @@
             </v-list>
         </v-navigation-drawer>
 
-        <v-footer fixed app>
-            <span>IT Nova &copy; 2018</span>
+        <v-footer fixed app inset>
+            <span class="px-3">IT Nova &copy; 2018</span>
         </v-footer>
 
         <!-- Change password modal -->
@@ -167,6 +167,8 @@ export default {
             items: [
                 { icon: 'home', title: 'Главная', to: '/' },
                 { icon: 'directions_car', title: 'Все автомобили', to: '/cars' },
+                { icon: 'directions_car', title: 'Резервные автомобили', to: '/cars/reserved' },
+                { icon: 'people', title: 'Очередь водителей', to: '/drivers/queue' },
             ],
             miniVariant: false,
             rightDrawer: false,

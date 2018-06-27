@@ -1,6 +1,7 @@
 <template>
     <div>
         <v-layout row wrap>
+            <!-- Main photo -->
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>
                     <v-card-media>
@@ -27,7 +28,7 @@
                     </v-card-actions>
                 </v-card>
             </v-flex>
-
+            <!-- Info -->
             <v-flex xs12 sm12 md4 lg5>
                 <v-card>
                     <v-form @submit.prevent="createCar">
@@ -115,7 +116,13 @@
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('transmission_id')"
                                                 data-vv-name="transmission_id" data-vv-as='"Коробка передач"'
-                                            ></v-select>                                            
+                                            ></v-select>  
+
+                                            <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>   
+                                            <v-radio-group v-model="newCar.type" row class="pt-0">
+                                                <v-radio label="Служебная-Служебная" value="0"></v-radio>
+                                                <v-radio label="Служебная-Личная" value="1"></v-radio>
+                                            </v-radio-group>                                       
                                         </v-container>                                        
                                     </v-flex>
                                 </v-layout>
@@ -126,8 +133,7 @@
                             <v-container class="py-1">
                                 <v-layout>
                                     <v-flex>
-                                        <v-btn :loading="loading" color="success" type="submit">Создать</v-btn>
-                                        <v-btn color="info">Очистить</v-btn>
+                                        <v-btn block :loading="loading" color="success" type="submit">Создать</v-btn>
                                     </v-flex>
                                 </v-layout>
                             </v-container>
@@ -135,7 +141,7 @@
                     </v-form> 
                 </v-card>
             </v-flex>
-
+            <!-- Attachments -->
             <v-flex xs12 sm12 md4 lg4>
                 <v-card>
                     <v-card-media>
@@ -202,7 +208,9 @@ export default {
                 },
                 engine_capacity: '',
                 engine_type_id: null,
-                transmission_id: null 
+                transmission_id: null,
+                reserved: false,
+                type: 0 
             },
             loading: false,
             year: null,
@@ -241,6 +249,8 @@ export default {
                         formData.append('engine_capacity', this.newCar.engine_capacity);
                         formData.append('engine_type_id', this.newCar.engine_type_id);
                         formData.append('transmission_id', this.newCar.transmission_id);
+                        formData.append('reserved', this.newCar.reserved);
+                        formData.append('type', this.newCar.type);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);

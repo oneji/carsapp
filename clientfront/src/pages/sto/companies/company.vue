@@ -23,11 +23,14 @@
                     <v-divider></v-divider>           
                     <v-card-title primary-title class="pt-3 pb-0">
                         <div>
-                            <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }} <span class="red--text">{{ car.year }}</span></h3>
+                            <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }}</h3>
                             <div v-if="car.drivers.length > 0"> 
-                                <div v-for="driver in car.drivers" :key="driver.id"><strong>Водитель:</strong> {{ driver.fullname }}</div>
+                                <div v-for="driver in car.drivers" :key="driver.id">                                    
+                                    <span v-if="driver.pivot.active == 1"><strong>Водитель:</strong> {{ driver.fullname }}</span>
+                                    <span v-else>dsadas</span>
+                                </div>
                             </div>
-                            <div v-else>Водителя нет</div>
+                            <div v-else><strong>Водитель:</strong> Водителя нет</div>
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
