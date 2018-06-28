@@ -1,22 +1,21 @@
 <template>
     <div>
-        <v-layout row>
-            <v-flex xs12 sm12 md12 lg12>
-                <h1 class="headline">Выберите проект:</h1>
-            </v-flex>
-        </v-layout>
-
         <v-layout style="position: relative;">
             <loading :loading="loading" />
-        </v-layout>
 
-        <v-layout v-if="noProjects && !loading">
-            <v-flex>
+            <v-flex v-if="noProjects && !loading">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
                     Вы пока не привязаны ни к одному проекту.
                 </v-alert>
             </v-flex>
         </v-layout>
+
+        <v-layout row>
+            <v-flex xs12 sm12 md12 lg12>
+                <h1 class="headline">Компании:</h1>
+            </v-flex>
+        </v-layout>
+        <v-divider></v-divider>       
 
         <transition-group tag="v-layout" class="row wrap" name="fade-transition">                        
             <v-flex xs12 sm6 md3 lg3 v-for="company in companies" :key="company.id" v-cloak>
@@ -41,8 +40,17 @@
                         <v-btn flat block color="success" :to="{ name: 'CompanyHome', params: { slug: company.slug } }">Войти</v-btn>
                     </v-card-actions>
                 </v-card>
-            </v-flex>
+            </v-flex>            
+        </transition-group>
 
+        <v-layout row v-if="!loading">
+            <v-flex xs12 sm12 md12 lg12>
+                <h1 class="headline">СТО:</h1>
+            </v-flex>
+        </v-layout>
+        <v-divider></v-divider>
+
+        <transition-group tag="v-layout" class="row wrap" name="fade-transition">       
             <v-flex xs12 sm6 md3 lg3 v-for="sto in stos" :key="sto.id" v-cloak>
                 <v-card>
                     <v-card-media height="150px">
@@ -65,8 +73,8 @@
                         <v-btn flat block color="success" :to="{ name: 'StoHome', params: { slug: sto.slug } }">Войти</v-btn>
                     </v-card-actions>
                 </v-card>
-            </v-flex>
-        </transition-group>        
+            </v-flex> 
+        </transition-group>    
     </div>
 </template>
 

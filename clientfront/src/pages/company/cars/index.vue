@@ -15,11 +15,7 @@
                 </v-alert>
             </v-flex>
 
-            <transition name="fade-transition" mode="out-in">
-                <div class="loading-block" v-if="loading.pageLoad" v-cloak>
-                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
-                </div>
-            </transition>
+            <loading :loading="loading.pageLoad" />
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
@@ -42,7 +38,7 @@
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn flat color="primary">Карточка</v-btn>
+                        <v-btn block flat color="primary">Карточка</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>
@@ -57,14 +53,14 @@
                         <v-layout>
                             <v-flex xs12>   
                                 <v-select autocomplete :items="driver.selectDriverItems" v-model="driver.driver_id" label="Выберите водителя" prepend-icon="category"
-                                    name="driver_id"
+                                    name="driver_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('driver_id')"
                                     data-vv-name="driver_id" data-vv-as='"Водитель"'
                                 ></v-select>       
 
                                 <v-select autocomplete :items="driver.selectCarItems" v-model="driver.car_id" label="Выберите машину" prepend-icon="category"
-                                    name="car_id"
+                                    name="car_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('car_id')"
                                     data-vv-name="car_id" data-vv-as='"Машина"'
@@ -165,30 +161,25 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars`)
                 .then(response => {   
-                    console.log(response);
                     this.cars = response.data.company.cars;                 
-                    let carsSelect = [...response.data.company.cars];
-                    let boundCars = [...new Set(response.data.boundCars)];
-                    let notBoundCars = [];
+                    let carsSelect = response.data.company.cars;
+                    let boundCars = response.data.unbindSelect.cars;
+                    let notBoundCars = response.data.bindSelect.cars;
 
-                    carsSelect.map((car, index) => {
-                        let flag;
-                        boundCars.map(boundCar => {
-                            if(car.id === boundCar) {                                
-                                this.deleteDriver.selectCarItems.push({
-                                    text: car.brand_name + ' ' + car.model_name + ' (' + car.number + ')',
-                                    value: car.id
-                                });
-                            }
-                        });
-                    });
-
-                    carsSelect.map(car => {
+                    notBoundCars.map(car => {
                         this.driver.selectCarItems.push({
                             text: car.brand_name + ' ' + car.model_name + ' (' + car.number + ')',
                             value: car.id
                         });
                     });
+
+                    boundCars.map(car => {
+                        this.deleteDriver.selectCarItems.push({
+                            text: car.brand_name + ' ' + car.model_name + ' (' + car.number + ')',
+                            value: car.id
+                        });
+                    })
+
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
@@ -198,15 +189,6 @@ export default {
             axios.get(`/company/${this.$route.params.slug}/drivers`)
                 .then(response => {
                     let drivers = response.data.company.drivers;
-                    let boundDrivers = [...new Set(response.data.boundDrivers)];
-                    
-                    for(let i = 0; i < drivers.length; i++) {
-                        for(let j = 0; j < boundDrivers.length; j++) {
-                            if(drivers[i].id === boundDrivers[j]) {
-                                drivers.splice(i, 1);
-                            } 
-                        }
-                    }
 
                     drivers.map(driver => {
                         this.driver.selectDriverItems.push({
@@ -228,7 +210,6 @@ export default {
                             'car_id': this.driver.car_id
                         })
                         .then(response => {
-                            console.log(response.data);
                             if(response.data.success) {
                                 this.cars.map(car => {
                                     if(car.id === this.driver.car_id)
@@ -277,17 +258,23 @@ export default {
                             car_id: this.deleteDriver.car_id
                         })
                         .then(response => {
-                            console.log(response);
                             this.cars.map(car => {
                                 if(car.id === this.deleteDriver.car_id) {
                                     car.drivers = [];
                                 }
                             });
                             
-                            this.deleteDriver.selectCarItems.map(car => {
-
+                            this.deleteDriver.selectCarItems.map((car, index) => {
+                                if(car.value === this.deleteDriver.car_id) {
+                                    this.driver.selectCarItems.push({
+                                        text: car.text,
+                                        value: car.value
+                                    });
+                                    this.deleteDriver.selectCarItems.splice(index, 1);
+                                } 
                             });
-                            
+
+                            this.fetchDrivers();                            
                             this.deleteDriver.dialog = false;
                             this.deleteDriver.loading = false;
                             this.snackbar.color = 'success';

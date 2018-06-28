@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                                <div v-if="car.info.type === 0"><my-label text="Служебная-Служебная" color="#32c861" /></div>
+                                <div v-if="car.info.type === 0"><my-label text="Служебная" color="#32c861" /></div>
                                 <div v-if="car.info.type === 1"><my-label text="Служебная-Личная" color="#f96a74" /></div>
                             </div>
                         </v-card-title>
@@ -152,7 +152,7 @@ export default {
             this.loading = true;
             axios.get('/all-cars')
                 .then(response => {
-                    
+                    console.log(response);                    
                     this.companies = response.data.companies;
 
                     this.companies.map(company => {
@@ -169,8 +169,7 @@ export default {
                             value: company.id
                         }) 
                     })
-                    
-                    console.log(this.cars);
+
                     this.loading = false;
                 })
                 .catch(error => console.error());
@@ -186,7 +185,6 @@ export default {
                 car_id: car_id
             })
             .then(response => {
-                console.log(response);
                 this.cars.map(car => {
                     if(car.info.id === car_id) {
                         car.info.reserved = 1;

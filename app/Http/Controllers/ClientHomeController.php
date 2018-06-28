@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Car;
 use JWTAuth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientHomeController extends Controller
 {
@@ -30,6 +31,17 @@ class ClientHomeController extends Controller
                         $query->where('active', 1)->get();
                     }, 'card' ])->get();
             }
+        ]);
+
+        return response()->json($user);
+    }
+
+    public function getAllDrivers()
+    {
+        $boundDrivers = DB::table('car_driver')->where('active', 1)->pluck('driver_id')->all();
+
+        $user = JWTAuth::parseToken()->authenticate()->load([
+            'companies.drivers.queue'
         ]);
 
         return response()->json($user);

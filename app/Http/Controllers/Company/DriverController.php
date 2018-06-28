@@ -18,12 +18,23 @@ class DriverController extends Controller
      */
     public function get($company_slug) 
     {
-        $company = Company::where('slug', $company_slug)->with(['drivers.queue'])->first();
-        
         $boundDrivers = DB::table('car_driver')->where('active', 1)->pluck('driver_id')->all();
+        
+        $allDrivers = Company::where('slug', $company_slug)->with([
+            'drivers' => function($query) {
+                $query->with('queue')->get();
+            }
+        ])->first();
+
+        $company = Company::where('slug', $company_slug)->with([
+            'drivers' => function($query) use ($boundDrivers) {
+                $query->whereNotIn('id', $boundDrivers)->with('queue')->get();
+            }
+        ])->first();
+        
         return response()->json([
             'company' => $company,
-            'boundDrivers' => $boundDrivers
+            'allDrivers' => $allDrivers 
         ]);
     }
 

@@ -20,25 +20,56 @@ class CarController extends Controller
      */
     public function get($company_slug)
     {
-        $company = Company::where('slug', $company_slug)->with([
-            'cars' => function($query) {
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type')
+        $boundCarsID = DB::table('car_driver')->where('active', 1)->pluck('car_id')->all();
+
+        $notBoundCars = Company::where('slug', $company_slug)->with([
+            'cars' => function($query) use ($boundCarsID){
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
-                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
+                        ->whereNotIn('cars.id', $boundCarsID)->where('reserved', 0)                    
                         ->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
             }
         ])->first();
+           
+        $boundCars = Company::where('slug', $company_slug)->with([
+            'cars' => function($query) use ($boundCarsID){
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
+                        ->whereIn('cars.id', $boundCarsID)->where('reserved', 0)                     
+                        ->with([ 'drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->get();
+            }
+        ])->first();    
 
-        $boundCars = DB::table('car_driver')->where('active', 1)->pluck('car_id')->all();
+        $company = Company::where('slug', $company_slug)->with([
+            'cars' => function($query) use ($boundCarsID){
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')->where('reserved', 0)                         
+                        ->with([ 'drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->get();
+            }
+        ])->first();        
         
         return response()->json([
             'company' => $company,
-            'boundCars' => $boundCars
+            'bindSelect' => $notBoundCars,
+            'unbindSelect' => $boundCars
         ]);
     }
 
@@ -139,7 +170,12 @@ class CarController extends Controller
         }
 
         $car = Car::find($request->car_id);
-        $car->drivers()->attach($request->driver_id);        
+        $car->drivers()->attach([
+            $request->driver_id => [
+                'active' => 1,
+                'start_date' => Carbon::now()
+            ]
+        ]);        
 
         $driver = Driver::find($request->driver_id);
         $car->load([
@@ -164,9 +200,13 @@ class CarController extends Controller
             'end_date' => Carbon::now()
         ]);
 
+        $car = Car::find($request->only('car_id'))->first();
+        $car->reserved = 1;
+        $car->save();
+
         return response()->json([
             'success' => true,
-            'message' => 'Водитель успешно удален.'
+            'message' => 'Водитель успешно удален. Машина отправлена в резерв.'
         ]);
     }
 
@@ -183,10 +223,14 @@ class CarController extends Controller
     } 
 
     public function backFromReserve(Request $request, $company_slug)
-    {
+    {        
         $car = Car::find($request->only('car_id'))->first();
         $car->reserved = 0;
         $car->save();
+
+        $carCompany = DB::table('car_company')->where('car_id', $car->id)->update([
+            'company_id' => $request->company_id
+        ]);
 
         return response()->json([
             'success' => true,

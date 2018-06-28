@@ -89,7 +89,7 @@ export default {
             loading: {
                 pageLoad: false, 
                 queue: null
-            }
+            },
         }
     },    
     methods: {
@@ -97,7 +97,7 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/drivers`)
                 .then(response => {
-                    this.drivers = response.data.company.drivers;
+                    this.drivers = response.data.allDrivers.drivers;
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
@@ -112,8 +112,7 @@ export default {
             axios.post(`/company/${this.$route.params.slug}/drivers/${driver_id}/queue`)
                 .then(response => {
                     console.log(response);
-                    if(response.data.success) 
-                    {
+                    if(response.data.success) {
                         this.snackbar.color = 'success';
                         this.drivers[index].queue = response.data.queue;
                     } else {

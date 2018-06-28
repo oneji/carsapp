@@ -2,7 +2,7 @@
     <div>
         <v-layout>
             <v-flex>
-                <v-btn color="success">Добавить в очередь</v-btn>
+                <v-btn color="success" @click="addToQueue.dialog = true">Добавить в очередь</v-btn>
             </v-flex>
         </v-layout>
         <v-layout style="position: relative;">
@@ -64,6 +64,33 @@
             </v-flex>
         </transition-group> 
 
+        <!-- Add to queue -->
+        <v-dialog v-model="addToQueue.dialog" max-width="500">
+            <form @submit.prevent="addQueue" data-vv-scope="add-to-queue-form">
+                <v-card>
+                    <v-card-title class="headline">Добавить водителя в очередь</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12> 
+                                <v-select autocomplete :items="selectItems.drivers" v-model="addToQueue.driverID" label="Выберите водителя" prepend-icon="category"
+                                    name="driver_id" required
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('driver_id')"
+                                    data-vv-name="driver_id" data-vv-as='"Водитель"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="addToQueue.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="addToQueue.loading" flat="flat" type="submit">В очередь</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
+
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
@@ -78,6 +105,9 @@ import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 
 export default {
+    $_veeValidate: {
+        validator: 'new'
+    },
     mixins: [snackbar],
     computed: {
         assetsURL() {
@@ -90,18 +120,45 @@ export default {
     data() {
         return {
             loading: {
-                pageLoad: true,
+                pageLoad: false,
                 queue: null
             },
-            queue: [] 
+            queue: [],
+            drivers: [],
+            selectItems: {
+                drivers: []
+            },
+            addToQueue: {
+                dialog: false,
+                driverID: null,
+                loading: false
+            } 
         }
     },
     methods: {
+        fetchDrivers() {            
+            axios.get(`/all-drivers`)
+                .then(response => {
+                    response.data.companies.map(company => {
+                        company.drivers.map(driver => {
+                            if(driver.queue === null) {
+                                this.selectItems.drivers.push({
+                                    text: driver.fullname,
+                                    value: driver.id
+                                });
+                            }
+                        });
+                    });
+
+                    this.loading.pageLoad = false;
+                })
+                .catch(error => console.log(error));
+        },
+
         getQueue() {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/drivers/queue`)
                 .then(response => {
-                    console.log(response);
                     this.queue = response.data;
                     this.loading.pageLoad = false;
                 })
@@ -115,17 +172,43 @@ export default {
                     if(response.data.success) {
                         this.snackbar.color = 'success';
                         this.queue.splice(index, 1);
+                        this.fetchDrivers();
                     } else
-                        this.snackbar.color = 'error';
+                        this.snackbar.color = 'error';                        
                         
                     this.snackbar.text = response.data.message;
                     this.snackbar.active = true;
                     this.loading.queue = null;
                 })
+        },
+
+        addQueue() {
+            this.$validator.validateAll('add-to-queue-form')
+                .then(success => {
+                    if(success) {
+                        axios.post(`/company/${this.$route.params.slug}/drivers/${this.addToQueue.driverID}/queue`)
+                        .then(response => {
+                            if(response.data.success) {
+                                this.snackbar.color = 'success';
+                                this.getQueue();
+                                this.selectItems.drivers = this.selectItems.drivers.filter(driver => driver.value !== this.addToQueue.driverID)
+                            } else {
+                                this.snackbar.color = 'error';
+                            }
+                            
+                            this.addToQueue.dialog = false;
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
+                            this.loading.queue = null;
+                        })
+                        .catch(error => console.log(error));
+                    }
+                })
         }
     },
     created() {
         this.getQueue();
+        this.fetchDrivers();
     }
 }
 </script>

@@ -14,16 +14,22 @@
                 <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
             </v-flex> 
             <v-flex>
+                <v-btn color="success" @click="addToReserve.dialog = true">Добавить в резерв</v-btn> 
                 <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
             </v-flex>   
         </v-layout>  
         <v-divider class="mb-3"></v-divider>    
 
         <v-layout style="position: relative;">
+            <v-flex>
+                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="getTotalCarCount === 0 && !loading">
+                    Список резервных машин пуст.
+                </v-alert>
+            </v-flex>
+
             <loading :loading="loading" />
         </v-layout>       
 
-        <!-- <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">    -->
         <v-layout row wrap>
             <v-flex v-for="(car, index) in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
                 <v-card>
@@ -39,12 +45,12 @@
                                 </div>
                             </div>
                             <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                            <div v-if="car.info.type === 0"><my-label text="Служебная-Служебная" color="#32c861" /></div>
+                            <div v-if="car.info.type === 0"><my-label text="Служебная" color="#32c861" /></div>
                             <div v-if="car.info.type === 1"><my-label text="Служебная-Личная" color="#f96a74" /></div>
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn flat block color="success" :loading="card.loading === car.info.id" @click="backFromReserve(car.info.id, index)">Вернуть из резерва</v-btn>
+                        <v-btn flat block color="success" @click="showUnReserveModal(car.info.id, index)">Вернуть из резерва</v-btn>
                         <v-btn flat color="primary">Карточка</v-btn>
                         <v-btn icon @click.native="card.showInfo = car.info.id" v-if="card.showInfo !== car.info.id">
                             <v-icon>keyboard_arrow_down</v-icon>
@@ -91,12 +97,65 @@
                 </v-card>
             </v-flex>         
         </v-layout>  
+
+        <!-- Back from reservation -->
+        <v-dialog v-model="backFromReserve.dialog" max-width="500">
+            <form @submit.prevent="unReserve" data-vv-scope="back-from-reserve-form">
+                <v-card>
+                    <v-card-title class="headline">Вернуть автомобиль из резерва</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12> 
+                                <v-select autocomplete :items="selectItems.companies" v-model="backFromReserve.companyID" label="Выберите компанию" prepend-icon="category"
+                                    name="company_id" required
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('company_id')"
+                                    data-vv-name="company_id" data-vv-as='"Компания"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="backFromReserve.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="backFromReserve.loading" flat="flat" type="submit">Вернуть из резерва</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
+
+        <!-- Add to reserve reservation -->
+        <v-dialog v-model="addToReserve.dialog" max-width="500">
+            <form @submit.prevent="reserve" data-vv-scope="reserve-form">
+                <v-card>
+                    <v-card-title class="headline">Добавить автомобиль в резерв</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12> 
+                                <v-select autocomplete :items="selectItems.cars" v-model="addToReserve.carID" label="Выберите автомобиль" prepend-icon="category"
+                                    name="car_id" required
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('car_id')"
+                                    data-vv-name="car_id" data-vv-as='"Автомобиль"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="addToReserve.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="addToReserve.loading" flat="flat" type="submit">В резерв</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
         
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
-        <!-- </transition-group> -->
     </div>
 </template>
 
@@ -108,6 +167,9 @@ import Loading from '@/components/Loading'
 import MyLabel from '@/components/Label'
 
 export default {
+    $_veeValidate: {
+        validator: 'new'
+    },
     mixins: [snackbar],
     computed: {
         assetsURL() {
@@ -142,7 +204,21 @@ export default {
                 company: null
             },
             selectItems: {
-                companies: []
+                companies: [],
+                cars: []
+            },
+            backFromReserve: {
+                dialog: false,
+                loading: false,
+                companyID: null,
+                carID: null,
+                index: null
+            },
+            addToReserve: {
+                dialog: false,
+                loading: false,
+                carID: null,
+                index: null,
             } 
         }
     },
@@ -166,7 +242,16 @@ export default {
                             text: company.company_name,
                             value: company.id
                         }) 
-                    })                    
+                    })
+
+                    this.cars.map(car => {
+                        if(car.info.reserved == 0) {
+                            this.selectItems.cars.push({
+                                text: car.info.brand_name + ' ' + car.info.model_name + ' (' + car.info.number + ')',
+                                value: car.info.id
+                            })
+                        }
+                    });
 
                     this.loading = false;
                 })
@@ -177,24 +262,66 @@ export default {
             this.query.company = null;
         },
 
-        backFromReserve(car_id, index) {
-            this.card.loading = car_id;
-            axios.put(`/company/${this.$route.params.slug}/cars/reserve/get`, {
-                car_id: car_id
-            })
-            .then(response => {
-                this.cars.map(car => {
-                    if(car.info.id === car_id) {
-                        car.info.reserved = 0;
+        showUnReserveModal(car_id, index) {
+            this.backFromReserve.carID = car_id;
+            this.backFromReserve.index = index;
+            this.backFromReserve.dialog = true;
+        },
+
+        unReserve() {            
+            this.$validator.validateAll('back-from-reserve-form')
+                .then(success => {
+                    if(success) {
+                        this.backFromReserve.loading = true;
+                        axios.put(`/company/${this.$route.params.slug}/cars/reserve/get`, {
+                            car_id: this.backFromReserve.carID,
+                            company_id: this.backFromReserve.companyID
+                        })
+                        .then(response => {
+                            this.cars.map(car => {
+                                if(car.info.id === this.backFromReserve.carID) {
+                                    car.info.reserved = 0;
+                                }
+                            });
+                            this.backFromReserve.dialog = false;
+                            this.backFromReserve.loading = false;
+
+                            this.snackbar.color = 'success';
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
+                            this.card.loading = false;
+                        })
+                        .catch(error => console.log(error));
                     }
                 });
+            
+        },
 
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
-                this.card.loading = false;
-            })
-            .catch(error => console.log(error));
+        reserve() {
+            this.$validator.validateAll('reserve-form')
+                .then(success => {
+                    if(success) {
+                        axios.put(`/company/${this.$route.params.slug}/cars/reserve/put`, {
+                            car_id: this.addToReserve.carID
+                        })
+                        .then(response => {
+                            this.cars.map(car => {
+                                if(car.info.id === this.addToReserve.carID) {
+                                    car.info.reserved = 1;
+                                }
+                            });
+
+                            this.selectItems.cars = this.selectItems.cars.filter(car => car.value !== this.addToReserve.carID);
+
+                            this.addToReserve.dialog = true;
+                            this.snackbar.color = 'success';
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
+                            this.card.loading = false;
+                        })
+                        .catch(error => console.log(error));
+                    }
+                });
         }
     },
     created() {
