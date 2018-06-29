@@ -166,6 +166,7 @@ export default {
             fixed: false,
             items: [
                 { icon: 'home', title: 'Главная', to: '/' },
+                { icon: 'list', title: 'Список компаний', to: '/companies' },
                 { icon: 'directions_car', title: 'Все автомобили', to: '/cars' },
                 { icon: 'directions_car', title: 'Резервные автомобили', to: '/cars/reserved' },
                 { icon: 'people', title: 'Очередь водителей', to: '/drivers/queue' },

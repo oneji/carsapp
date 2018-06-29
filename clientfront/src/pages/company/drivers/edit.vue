@@ -1,6 +1,11 @@
 <template>
     <div>
-        <v-layout row wrap>
+        <v-layout>
+            <v-flex>
+                <v-btn color="success" @click="$router.back()">Назад</v-btn>
+            </v-flex>
+        </v-layout>
+        <v-layout row wrap v-if="!loading.pageLoad">
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>
                     <v-card-media>
@@ -17,24 +22,13 @@
                         <v-container>
                             <v-layout row wrap>
                                 <v-flex>
-                                    <img v-if="newDriver.photo.url" class="avatar-preview" :src="newDriver.photo.url" height="150" />                                    
+                                    <img v-if="editDriver.photo.url" class="avatar-preview" :src="assetsURL + '/' + editDriver.photo.url" height="150" />                                    
                                     <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
                                 </v-flex>
                             </v-layout>
                         </v-container>
                     </v-card-title>
-                    <v-divider></v-divider>
-                    <v-card-actions>
-                        <v-container class="pb-0 pt-3">
-                            <v-layout row wrap>
-                                <v-text-field label="Выберите фото" @click="pickFile" v-model="newDriver.photo.name" 
-                                    prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deletePhoto"
-                                ></v-text-field>
-                                <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
-                            </v-layout>
-                        </v-container>
-                    </v-card-actions>
-                </v-card>
+                </v-card>                
             </v-flex>
 
             <v-flex xs12 sm12 md4 lg5>
@@ -55,21 +49,21 @@
                                 <v-layout row wrap>
                                     <v-flex xs12 sm12 md12 lg12 class="v-divider pr-4">                                        
                                         <v-container grid-list-xs>
-                                            <v-text-field type="text" v-model="newDriver.fullname" name="fullname" label="ФИО" prepend-icon="person"                 
+                                            <v-text-field type="text" v-model="editDriver.fullname" name="fullname" label="ФИО" prepend-icon="person"                 
                                                 v-validate="'required'" 
                                                 data-vv-name="fullname" data-vv-as='"ФИО"'
                                                 :error-messages="errors.collect('fullname')"
                                             ></v-text-field>
 
-                                            <v-text-field v-model="newDriver.address" name="address" label="Адрес" type="text" prepend-icon="home"></v-text-field>
+                                            <v-text-field v-model="editDriver.address" name="address" label="Адрес" type="text" prepend-icon="home"></v-text-field>
 
-                                            <v-text-field v-model="newDriver.email" name="email" label="Email" type="text" prepend-icon="email"
+                                            <v-text-field v-model="editDriver.email" name="email" label="Email" type="text" prepend-icon="email"
                                                 v-validate="'email'" 
                                                 :error-messages="errors.collect('email')"
                                                 data-vv-name="email" data-vv-as='"Email"'                                    
                                             ></v-text-field> 
 
-                                            <v-text-field v-model="newDriver.phone" name="phone" label="Телефон" type="text" prepend-icon="phone"
+                                            <v-text-field v-model="editDriver.phone" name="phone" label="Телефон" type="text" prepend-icon="phone"
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('phone')"
                                                 data-vv-name="phone" data-vv-as='"Телефон"'                                    
@@ -102,7 +96,7 @@
                             <v-container class="py-1">
                                 <v-layout>
                                     <v-flex>
-                                        <v-btn :loading="loading" block color="success" type="submit">Создать</v-btn>
+                                        <v-btn :loading="loading.edit" block color="success" type="submit">Изменить</v-btn>
                                     </v-flex>
                                 </v-layout>
                             </v-container>
@@ -111,25 +105,39 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm12 md4 lg4>
+            <v-flex xs12 sm12 md4 lg3>
                 <v-card>
                     <v-card-media>
                         <v-container>
                             <v-layout>
                                 <v-flex>
-                                    <p class="subheading my-0">Файлы | Прикрепления</p>
+                                    <p class="subheading my-0">Новое фото</p>
                                 </v-flex>
                             </v-layout>
                         </v-container>
                     </v-card-media>
                     <v-divider></v-divider>
-                    <file-pond
-                        name="test"
-                        ref="pond"
-                        class-name="my-pond"
-                        label-idle="Кликните или перетащите файлы сюда..."
-                        allow-multiple="true"
-                        accepted-file-types="image/jpeg, image/png, image/svg+xml"/>
+                    <v-card-title primary-title>
+                        <v-container>
+                            <v-layout row wrap>
+                                <v-flex>
+                                    <img v-if="editDriver.newPhoto.url" class="avatar-preview" :src="editDriver.newPhoto.url" height="150" />                                    
+                                    <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-container class="pb-0 pt-3">
+                            <v-layout row wrap>
+                                <v-text-field label="Выберите фото" @click="pickFile" v-model="editDriver.newPhoto.name" 
+                                    prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deletePhoto"
+                                ></v-text-field>
+                                <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
+                            </v-layout>
+                        </v-container>
+                    </v-card-actions>
                 </v-card>
             </v-flex>
         </v-layout>
@@ -152,16 +160,38 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImagePreview)
 
 import axios from '@/axios'
+import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
+    computed: {
+        assetsURL() {
+            return config.assetsURL;
+        }
+    },
     mixins: [ snackbar ],
     data() {
         return {
             attachments: [],
+            editDriver: {
+                fullname: '',
+                address: '',
+                email: '',
+                driver_license_date: null,
+                photo: {
+                    name: '',
+                    file: '',
+                    url: ''
+                },
+                newPhoto: {
+                    name: '',
+                    file: '',
+                    url: ''
+                },
+            },
             newDriver: {
                 fullname: '',
                 address: '',
@@ -173,7 +203,10 @@ export default {
                     url: ''
                 },
             },
-            loading: false,
+            loading: {
+                edit: false,
+                pageLoad: false
+            },
             date: null,
             menu: false,
         }
@@ -182,6 +215,22 @@ export default {
         FilePond
     },
     methods: {
+        editInfo() {
+            axios.get(`/company/${this.$route.params.company}/drivers/${this.$route.params.driver}/edit`)
+                .then(response => {
+                    console.log(response);
+                    this.editDriver.fullname = response.data.fullname;
+                    this.editDriver.address = response.data.address;
+                    this.editDriver.email = response.data.email;
+                    this.editDriver.phone = response.data.phone;
+                    this.editDriver.driver_license_date = response.data.driver_license_date;
+                    this.date = response.data.driver_license_date;
+                    this.editDriver.photo.name = response.data.photo;
+                    this.editDriver.photo.url = response.data.photo;
+                })
+                .catch(error => console.log(error));
+        },
+        
         createDriver() {
             this.$validator.validateAll()
                 .then(success => {
@@ -234,31 +283,34 @@ export default {
             const files = e.target.files;
 
             if(files[0] !== undefined) {
-                this.newDriver.photo.name = files[0].name;
+                this.editDriver.newPhoto.name = files[0].name;
 
-                if(this.newDriver.photo.name.lastIndexOf('.') <= 0) {
+                if(this.editDriver.newPhoto.name.lastIndexOf('.') <= 0) {
                     return
                 }
 
                 const fr = new FileReader();
                 fr.readAsDataURL(files[0])
                 fr.addEventListener('load', () => {
-                    this.newDriver.photo.url = fr.result;
-                    this.newDriver.photo.file = files[0];
+                    this.editDriver.newPhoto.url = fr.result;
+                    this.editDriver.newPhoto.file = files[0];
                 })
             } else {
-                this.newDriver.photo.url = '';
-                this.newDriver.photo.name = '';
-                this.newDriver.photo.file = '';
+                this.editDriver.newPhoto.url = '';
+                this.editDriver.newPhoto.name = '';
+                this.editDriver.newPhoto.file = '';
             }
         },
 
         deletePhoto() {
-            this.newDriver.photo.url = '';
-            this.newDriver.photo.name = '';
-            this.newDriver.photo.file = '';
+            this.editDriver.newPhoto.url = '';
+            this.editDriver.newPhoto.name = '';
+            this.editDriver.newPhoto.file = '';
         },
     },
+    created() {
+        this.editInfo();
+    }
 }
 </script>
 

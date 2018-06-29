@@ -3,6 +3,7 @@ import CompanyLayout from '@/layouts/CompanyLayout'
 import Login from '@/pages/login'
 // Home pages
 import Home from '@/pages/home/index'
+import HomeCompanies from '@/pages/home/companies/index'
 import HomeCars from '@/pages/home/cars/index'
 import HomeReservedCars from '@/pages/home/cars/reserved'
 import HomeDriversQueue from '@/pages/home/drivers/queue'
@@ -10,8 +11,10 @@ import HomeDriversQueue from '@/pages/home/drivers/queue'
 import CompanyHome from '@/pages/company/index'
 import CompanyCars from '@/pages/company/cars/index'
 import CompanyCarsCreate from '@/pages/company/cars/create'
+import CompanyCarsEdit from '@/pages/company/cars/edit'
 import CompanyDrivers from '@/pages/company/drivers/index'
 import CompanyDriversCreate from '@/pages/company/drivers/create'
+import CompanyDriversEdit from '@/pages/company/drivers/edit'
 import CompanyStoRequests from '@/pages/company/requests/index'
 // STO pages
 import StoHome from '@/pages/sto/index'
@@ -29,6 +32,7 @@ const routes = [
     { path: '/', component: HomeLayout, meta: { requiresAuth: true },
         children: [
             { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true, } },
+            { path: '/companies', name: 'HomeCompanies', component: HomeCompanies, meta: { requiresAuth: true, } },
             { path: '/cars', name: 'HomeCars', component: HomeCars, meta: { requiresAuth: true, } },            
             { path: '/cars/reserved', name: 'HomeReservedCars', component: HomeReservedCars, meta: { requiresAuth: true, } },            
             { path: '/drivers/queue', name: 'HomeDriversQueue', component: HomeDriversQueue, meta: { requiresAuth: true, } },            
@@ -39,8 +43,10 @@ const routes = [
         children: [
             { path: 'cars', name: 'CompanyCars', component: CompanyCars, meta: { requiresAuth: true } },
             { path: 'cars/create', name: 'CompanyCarsCreate', component: CompanyCarsCreate, meta: { requiresAuth: true } },
+            { path: 'cars/:car/edit', name: 'CompanyCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true } },
             { path: 'drivers', name: 'CompanyDrivers', component: CompanyDrivers, meta: { requiresAuth: true } },
             { path: 'drivers/create', name: 'CompanyDriversCreate', component: CompanyDriversCreate, meta: { requiresAuth: true } },
+            { path: 'drivers/:driver/edit', name: 'CompanyDriversEdit', component: CompanyDriversEdit, meta: { requiresAuth: true } },
             { path: 'requests', name: 'CompanyStoRequests', component: CompanyStoRequests, meta: { requiresAuth: true } },
         ]
     },

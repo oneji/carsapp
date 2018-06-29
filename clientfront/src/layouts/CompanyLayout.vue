@@ -30,7 +30,7 @@
     </v-navigation-drawer>
     
     <!-- Toolbar -->
-    <v-toolbar fixed app clipped-left dark color="blue darken-2">
+    <v-toolbar fixed app clipped-left dark color="green accent-3">
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       <v-btn icon @click.stop="miniVariant = !miniVariant">
         <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>

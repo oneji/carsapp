@@ -2,7 +2,7 @@
     <div>
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" append @click.native="dialog = true">Отправить заявку СТО</v-btn>
+                <v-btn color="success" append @click.native="dialog = true">Добавить СТО</v-btn>
             </v-flex>
         </v-layout>
 

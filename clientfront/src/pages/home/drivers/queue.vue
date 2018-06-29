@@ -27,7 +27,7 @@
                                 </v-avatar>
 
                                 <v-flex xs12 sm12 md12 lg12>
-                                    <p class="subheading text-xs-center mb-0">{{ q.driver.fullname }}</p>
+                                    <p class="body-2 text-xs-center mb-0">{{ q.driver.fullname }}</p>
                                 </v-flex>
                             </v-layout>
                         </v-container>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Car;
+use App\Company;
 use JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +31,8 @@ class ClientHomeController extends Controller
                     ->with([ 'drivers' => function($query) {
                         $query->where('active', 1)->get();
                     }, 'card' ])->get();
-            }
-        ]);
+            },
+            'companies.drivers']);
 
         return response()->json($user);
     }

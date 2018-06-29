@@ -2,140 +2,111 @@
     <div>
         <v-layout style="position: relative;">
             <loading :loading="loading" />
-
-            <v-flex v-if="noProjects && !loading">
-                <v-alert outline transition="scale-transition" type="info" :value="true">
-                    Вы пока не привязаны ни к одному проекту.
-                </v-alert>
-            </v-flex>
         </v-layout>
 
-        <v-layout row>
-            <v-flex xs12 sm12 md12 lg12>
-                <h1 class="headline">Компании:</h1>
+        <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> 
+            <v-flex xs12 sm6 mg3 lg4 :key="0">
+                <tile-box :link="{ name: 'HomeCompanies' }" title="Количество компаний" :value="companies.length" box-icon="business" />
             </v-flex>
-        </v-layout>
-        <v-divider></v-divider>       
-
-        <transition-group tag="v-layout" class="row wrap" name="fade-transition">                        
-            <v-flex xs12 sm6 md3 lg3 v-for="company in companies" :key="company.id" v-cloak>
-                <v-card>
-                    <v-card-media height="150px">
-                        <v-layout row justify-center align-center>
-                        <v-flex xs6 sm6 md6 lg6>
-                            <img v-if="company.logo" :src="`${assetURL}/${company.logo}`" :alt="`Логотип ${company.company_name}`">
-                            <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
-                        </v-flex>
-                        </v-layout>
-                    </v-card-media> 
-                    <v-divider></v-divider>           
-                    <v-card-title primary-title>
-                        <div>
-                            <h3 class="headline mb-0">{{ company.company_name }}</h3>
-                            <div v-if="company.contact">{{ company.contact }}</div>
-                            <div v-else>Контакта нет</div>
-                        </div>
-                    </v-card-title>
-                    <v-card-actions>
-                        <v-btn flat block color="success" :to="{ name: 'CompanyHome', params: { slug: company.slug } }">Войти</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-flex>            
-        </transition-group>
-
-        <v-layout row v-if="!loading">
-            <v-flex xs12 sm12 md12 lg12>
-                <h1 class="headline">СТО:</h1>
+            <v-flex xs12 sm6 mg3 lg4 :key="1">
+                <tile-box :link="{ name: 'HomeCars' }" title="Количество автомобилей" :value="carsList.length" box-icon="directions_car" />
             </v-flex>
-        </v-layout>
-        <v-divider></v-divider>
-
-        <transition-group tag="v-layout" class="row wrap" name="fade-transition">       
-            <v-flex xs12 sm6 md3 lg3 v-for="sto in stos" :key="sto.id" v-cloak>
-                <v-card>
-                    <v-card-media height="150px">
-                        <v-layout row justify-center align-center>
-                        <v-flex xs6 sm6 md6 lg6>
-                            <img v-if="sto.logo" :src="`${assetURL}/${sto.logo}`" :alt="`Логотип ${sto.sto_name}`">
-                            <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
-                        </v-flex>
-                        </v-layout>
-                    </v-card-media> 
-                    <v-divider></v-divider>           
-                    <v-card-title primary-title>
-                        <div>
-                            <h3 class="headline mb-0">{{ sto.sto_name }}</h3>
-                            <div v-if="sto.contact">{{ sto.contact }}</div>
-                            <div v-else>Контакта нет</div>
-                        </div>
-                    </v-card-title>
-                    <v-card-actions>
-                        <v-btn flat block color="success" :to="{ name: 'StoHome', params: { slug: sto.slug } }">Войти</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-flex> 
-        </transition-group>    
+            <v-flex xs12 sm6 mg3 lg4 :key="2">
+                <tile-box :link="{ name: 'HomeReservedCars' }" title="Количество резервных автомобилей" :value="reservedCarsList.length" box-icon="directions_car" />
+            </v-flex>
+            <v-flex xs12 sm6 mg3 lg4 :key="3">
+                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Количество водителей" :value="drivers.length" box-icon="people" />
+            </v-flex>
+            <v-flex xs12 sm6 mg3 lg4 :key="4">
+                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Количество водителей в очереди" :value="queue.length" box-icon="people" />
+            </v-flex>
+        </transition-group> 
     </div>
 </template>
 
 <script>
-import axios from "@/axios"
-import config from '@/config'
+import axios from '@/axios'
+import TileBox from '@/components/TileBox'
 import Loading from '@/components/Loading'
 
 export default {
     components: {
-        Loading  
+        TileBox, Loading
     },
-    computed: {        
-        assetURL() {
-            return config.assetsURL;
+    computed: {
+        carsList() {
+            return this.cars.filter(car => car.info.reserved === 0);
         },
 
-        noProjects() {
-            let companies = this.companies;
-            let stos = this.stos;
-            if(Number(companies.length) + Number(stos.length) > 0)
-                return false;
-            else             
-                return true;
+        reservedCarsList() {
+            return this.cars.filter(car => car.info.reserved === 1);
+        },
+        
+        driverQueue() {
+            return this.queue;
+        },
+
+        driverList() {
+            return this.drivers;
+        },
+
+        companyList() {
+            return this.companies;
         }
     },
     data() {
         return {
             companies: [],
-            stos: [],
-            loading: false
+            cars: [],
+            loading: false,
+            queue: [],
+            drivers: []
         }
     },
     methods: {
         fetchUserProjects() {
             this.loading = true;
-            axios.get('/projects')
-                .then(response => {
+            axios.get('/all-cars')
+                .then(response => {                
                     this.companies = response.data.companies;
-                    this.stos = response.data.stos;
+
+                    this.companies.map(company => {
+                        company.cars.map(car => {                            
+                            let carInfo = {
+                                'info': car,
+                                'company': company
+                            };                    
+                            this.cars.push(carInfo);   
+                        });
+
+                        company.drivers.map(driver => {                            
+                            let driverInfo = {
+                                'info': driver,
+                                'company': company
+                            };                    
+                            this.drivers.push(driverInfo);   
+                        });
+                    })
+
                     this.loading = false;
                 })
                 .catch(error => console.error());
-        }
+        },
+        getQueue() {
+            axios.get(`/company/${this.$route.params.slug}/drivers/queue`)
+                .then(response => {
+                    this.queue = response.data;                    
+                })
+                .catch(error => console.log(error));
+        },
     },
     created() {
         this.fetchUserProjects();
+        this.getQueue();
     }
-};
+}
 </script>
 
 <style>
-    .loading-block {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
 
+</style>

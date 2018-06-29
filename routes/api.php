@@ -32,7 +32,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('/projects', 'ClientHomeController@fetchUserProjects');
     Route::get('/all-cars', 'ClientHomeController@getAllCars');
     Route::get('/all-drivers', 'ClientHomeController@getAllDrivers');
-    Route::put('/password/change', 'AuthController@changePassword');
+    Route::put('/password/change', 'AuthController@changePassword');    
 }); 
 
 // Admin routes
@@ -80,17 +80,22 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::post('/{slug}/cars/drivers', 'CarController@bindDriver'); 
         Route::put('/{slug}/cars/drivers', 'CarController@unbindDriver');  
         Route::put('/{slug}/cars/reserve/put', 'CarController@reserveCar');     
-        Route::put('/{slug}/cars/reserve/get', 'CarController@backFromReserve');     
+        Route::put('/{slug}/cars/reserve/get', 'CarController@backFromReserve');
+        Route::get('/{slug}/cars/{car}/edit', 'CarController@edit');
+        Route::post('/{slug}/cars/{car}/update', 'CarController@update');     
         // Driver routes
         Route::get('/{slug}/drivers', 'DriverController@get');
         Route::post('/{slug}/drivers', 'DriverController@store');
         Route::post('/{slug}/drivers/{driver}/queue', 'DriverController@addToQueue');
         Route::delete('/{slug}/drivers/{driver}/queue', 'DriverController@backFromQueue');
         Route::get('/{slug}/drivers/queue', 'DriverController@getQueue');
+        Route::get('/{slug}/drivers/{driver}/edit', 'DriverController@edit');
         // Request routes
         Route::get('/{slug}/requests', 'StoRequestController@get');
         Route::post('/{slug}/requests/{sto}', 'StoRequestController@store');
         Route::delete('/{slug}/requests/{request}', 'StoRequestController@cancel');
+        // Statistics routes
+        Route::get('/{slug}/statictics', 'ClientHomeController@getStatistics');
     });    
 });
 

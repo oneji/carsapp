@@ -30,7 +30,7 @@
         </v-navigation-drawer>
     
         <!-- Toolbar -->
-        <v-toolbar fixed app clipped-left dark color="blue darken-2">
+        <v-toolbar fixed app clipped-left dark color="light-blue">
             <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
             <v-btn icon @click.stop="miniVariant = !miniVariant">
                 <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
@@ -133,7 +133,7 @@ export default {
             items: [
                 { icon: 'dashboard', title: 'Все проекты', to: { name: 'Home' } },
                 { icon: 'home', title: 'Главная', to: { name: 'CompanyHome' } },
-                { icon: 'assignment', title: 'Заявки СТО', to: { name: 'CompanyStoRequests' } },
+                { icon: 'assignment', title: 'Список СТО', to: { name: 'CompanyStoRequests' } },
                 { divider: true },        
                 { icon: 'directions_car', title: 'Автомобили', to: { name: 'CompanyCars' } },
                 { divider: true },

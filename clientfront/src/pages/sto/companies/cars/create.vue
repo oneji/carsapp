@@ -150,7 +150,7 @@
 
                                             <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>
                                             <v-radio-group v-model="newCar.type" row class="pt-0">
-                                                <v-radio label="Служебно-Служебная" value="0"></v-radio>
+                                                <v-radio label="Служебная" value="0"></v-radio>
                                                 <v-radio label="Служебно-Личная" value="1"></v-radio>
                                             </v-radio-group>                                            
                                         </v-container>                                        
@@ -163,8 +163,7 @@
                             <v-container class="py-1">
                                 <v-layout>
                                     <v-flex>
-                                        <v-btn :loading="loading" color="success" type="submit">Создать</v-btn>
-                                        <v-btn color="info">Очистить</v-btn>
+                                        <v-btn :loading="loading" color="success" type="submit" block>Создать</v-btn>
                                     </v-flex>
                                 </v-layout>
                             </v-container>

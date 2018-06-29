@@ -7,6 +7,7 @@ use App\CarAttachment;
 use App\Company;
 use App\Driver;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -235,6 +236,65 @@ class CarController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Автомобиль успешно удален из резерва.'
+        ]);
+    }
+
+    public function edit(Request $request, $company_slug, $id)
+    {
+        $car = Car::find($id);
+        return response()->json($car);
+    }
+
+    public function update(Request $request, $company_slug, $id) 
+    {
+        $car = Car::find($id);
+        $car->year = (int) $request->year;
+        $car->number = $request->number;
+        $car->shape_id = $request->shape_id;
+        $car->brand_id = $request->brand_id;
+        $car->model_id = $request->model_id;
+
+        if($request->milage !== 'null') 
+            $car->milage = $request->milage;
+
+        $car->vin_code = $request->vin_code;
+        $car->type = (int) $request->type;  
+        
+        if($request->hasFile('cover_image')) {
+            $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
+            $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
+            $coverImagePath = $request->file('cover_image')->path();
+            $coverImageExtension = $request->file('cover_image')->getClientOriginalExtension();
+            $coverImageNameToStore = time().'.'.$coverImageExtension;
+            $path = $request->file('cover_image')->move(public_path('/uploads/car_cover_images'), $coverImageNameToStore);  
+            $coverImageNameToStore = 'uploads/car_cover_images/'.$coverImageNameToStore;
+            File::delete(public_path($car->cover_image));
+        } else {
+            $coverImageNameToStore = null;
+        }
+        
+        if($coverImageNameToStore !== null)
+            $car->cover_image = $coverImageNameToStore;
+        
+        $car->engine_capacity = $request->engine_capacity;
+        $car->engine_type_id = $request->engine_type_id;
+        $car->transmission_id = $request->transmission_id;
+        
+        if($request->engine_capacity !== 'null' && $request->engine_capacity !== null)
+            $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+        else
+            $car->engine_capacity = null;
+
+        if($request->reserved === 'true')
+            $car->reserved = 1;
+        else 
+            $car->reserved = 0;
+            
+        $car->save(); 
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Автомобиль успешно изменен.' 
         ]);
     }
 }

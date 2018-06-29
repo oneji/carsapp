@@ -148,4 +148,10 @@ class DriverController extends Controller
         $queue = DriverQueue::with('driver.companies')->get();
         return response()->json($queue);
     }
+
+    public function edit($company_slug, $id)
+    {
+        $driver = Driver::find($id);
+        return response()->json($driver);
+    }
 }

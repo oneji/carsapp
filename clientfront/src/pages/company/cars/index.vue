@@ -33,12 +33,15 @@
                                 </div>
                             </div>
                             <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                            <div v-if="car.type === 0"><my-label text="Служебная-Служебная" color="#32c861" /></div>
-                            <div v-if="car.type === 1"><my-label text="Служебная-Личная" color="#f96a74" /></div>
+                            <div v-if="car.type === 0"><my-label text="Служебная" color="#32c861" /></div>
+                            <div v-if="car.type === 1"><my-label text="Служебно-Личная" color="#3498db" /></div>
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
                         <v-btn block flat color="primary">Карточка</v-btn>
+                        <v-btn icon :to="{ name: 'CompanyCarsEdit', params: { car: car.id } }">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>

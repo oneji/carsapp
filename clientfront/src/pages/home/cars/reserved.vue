@@ -46,11 +46,11 @@
                             </div>
                             <div v-else><strong>Водитель:</strong> Водителя нет</div>
                             <div v-if="car.info.type === 0"><my-label text="Служебная" color="#32c861" /></div>
-                            <div v-if="car.info.type === 1"><my-label text="Служебная-Личная" color="#f96a74" /></div>
+                            <div v-if="car.info.type === 1"><my-label text="Служебно-Личная" color="#3498db" /></div>
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn flat block color="success" @click="showUnReserveModal(car.info.id, index)">Вернуть из резерва</v-btn>
+                        <v-btn flat block color="success" @click="showUnReserveModal(car.info.id, index)">Вернуть</v-btn>
                         <v-btn flat color="primary">Карточка</v-btn>
                         <v-btn icon @click.native="card.showInfo = car.info.id" v-if="card.showInfo !== car.info.id">
                             <v-icon>keyboard_arrow_down</v-icon>

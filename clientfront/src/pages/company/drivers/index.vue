@@ -55,6 +55,9 @@
                     <v-card-actions>
                         <v-btn flat block color="primary" :loading="loading.queue === driver.id" @click="addToQueue(driver.id, index)" v-if="driver.queue === null">В очередь</v-btn>
                         <v-btn flat block color="warning" :loading="loading.queue === driver.id" @click="backFromQueue(driver.id, index)" v-else>Убрать из очереди</v-btn>
+                        <!-- <v-btn icon :to="{ name: 'CompanyDriversEdit', params: { driver: driver.id } }">
+                            <v-icon>edit</v-icon>
+                        </v-btn> -->
                     </v-card-actions>                    
                 </v-card>
             </v-flex>
