@@ -1,5 +1,10 @@
 <template>
     <div>
+        <v-layout>
+            <v-flex>
+                <v-btn color="success" @click="$router.back()">Назад</v-btn>
+            </v-flex>
+        </v-layout>
         <v-layout row wrap>
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>

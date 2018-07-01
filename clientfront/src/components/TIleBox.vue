@@ -6,7 +6,7 @@
                     <v-icon class="display-3">{{ boxIcon }}</v-icon>
                 </div>
                 <div class="tile-box__content">
-                    <p class="" title="Statistics">{{ title }}</p>
+                    <p class="title" title="Statistics">{{ title }}</p>
                     <h2 class="display-1"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">{{ value }}</span></h2>
                     <v-btn color="success" flat small :to="link">Просмотреть</v-btn>
                 </div>

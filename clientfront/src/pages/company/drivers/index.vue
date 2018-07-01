@@ -6,7 +6,7 @@
             </v-flex>
         </v-layout>
 
-        <v-layout>
+        <v-layout style="position: relative">
             <v-flex>
                 <v-alert outline transition="scale-transition" type="info" :value="true" v-if="drivers.length === 0 && !loading.pageLoad"> 
                     Ни одного водителя не зарегистрировано.
@@ -17,7 +17,7 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
-            <v-flex v-for="(driver, index) in drivers" :key="driver.id" xs12 sm6 md3 lg2>
+            <v-flex v-for="(driver, index) in drivers" :key="driver.id" xs12 sm4 md3 lg2>
                 <v-card>
                     <v-card-media>                        
                         <v-container>
@@ -53,11 +53,15 @@
                     </v-card-title>
 
                     <v-card-actions>
-                        <v-btn flat block color="primary" :loading="loading.queue === driver.id" @click="addToQueue(driver.id, index)" v-if="driver.queue === null">В очередь</v-btn>
-                        <v-btn flat block color="warning" :loading="loading.queue === driver.id" @click="backFromQueue(driver.id, index)" v-else>Убрать из очереди</v-btn>
-                        <!-- <v-btn icon :to="{ name: 'CompanyDriversEdit', params: { driver: driver.id } }">
+                        <transition name="fade-transition" mode="out-in" v-if="driver.queue === null">
+                            <v-btn flat block color="primary" :loading="loading.queue === driver.id" @click="addToQueue(driver.id, index)" >В очередь</v-btn>
+                        </transition>
+                        <transition name="fade-transition" mode="out-in" v-else>
+                            <v-btn flat block color="warning" :loading="loading.queue === driver.id" @click="backFromQueue(driver.id, index)" >Убрать из очереди</v-btn>
+                        </transition>
+                        <v-btn icon :to="{ name: 'CompanyDriversEdit', params: { driver: driver.id } }">
                             <v-icon>edit</v-icon>
-                        </v-btn> -->
+                        </v-btn>
                     </v-card-actions>                    
                 </v-card>
             </v-flex>

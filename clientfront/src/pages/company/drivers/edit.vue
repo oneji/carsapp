@@ -5,35 +5,24 @@
                 <v-btn color="success" @click="$router.back()">Назад</v-btn>
             </v-flex>
         </v-layout>
+        <v-layout style="position: relative">
+            <loading :loading="loading.pageLoad" />
+        </v-layout>
         <v-layout row wrap v-if="!loading.pageLoad">
+            <!-- Old driver photo -->
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>
-                    <v-card-media>
-                        <v-container>
-                            <v-layout>
-                                <v-flex>
-                                    <p class="subheading my-0">Фото</p>
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
+                    <v-card-media 
+                        :src="editDriver.photo.url ? assetsURL + '/' + editDriver.photo.url : '/static/images/no-photo.png'" 
+                        height="250px">
                     </v-card-media>
-                    <v-divider></v-divider>
-                    <v-card-title primary-title>
-                        <v-container>
-                            <v-layout row wrap>
-                                <v-flex>
-                                    <img v-if="editDriver.photo.url" class="avatar-preview" :src="assetsURL + '/' + editDriver.photo.url" height="150" />                                    
-                                    <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-title>
                 </v-card>                
             </v-flex>
-
+            
+            <!-- Driver info -->
             <v-flex xs12 sm12 md4 lg5>
                 <v-card>
-                    <v-form @submit.prevent="createDriver">
+                    <v-form @submit.prevent="updateDriver">
                         <v-card-media>
                             <v-container>
                                 <v-layout>
@@ -105,7 +94,8 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm12 md4 lg3>
+            <!-- New driver photo -->
+            <v-flex xs12 sm12 md4 lg4>
                 <v-card>
                     <v-card-media>
                         <v-container>
@@ -120,7 +110,7 @@
                     <v-card-title primary-title>
                         <v-container>
                             <v-layout row wrap>
-                                <v-flex>
+                                <v-flex offset-xs2 xs8>
                                     <img v-if="editDriver.newPhoto.url" class="avatar-preview" :src="editDriver.newPhoto.url" height="150" />                                    
                                     <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
                                 </v-flex>
@@ -162,6 +152,7 @@ const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImage
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import Loading from '@/components/Loading'
 
 export default {
     $_veeValidate: {
@@ -171,6 +162,9 @@ export default {
         assetsURL() {
             return config.assetsURL;
         }
+    },    
+    components: {
+        FilePond, Loading
     },
     mixins: [ snackbar ],
     data() {
@@ -211,14 +205,11 @@ export default {
             menu: false,
         }
     },
-    components: {
-        FilePond
-    },
     methods: {
         editInfo() {
+            this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.company}/drivers/${this.$route.params.driver}/edit`)
                 .then(response => {
-                    console.log(response);
                     this.editDriver.fullname = response.data.fullname;
                     this.editDriver.address = response.data.address;
                     this.editDriver.email = response.data.email;
@@ -227,45 +218,29 @@ export default {
                     this.date = response.data.driver_license_date;
                     this.editDriver.photo.name = response.data.photo;
                     this.editDriver.photo.url = response.data.photo;
+                    this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
         },
         
-        createDriver() {
+        updateDriver() {
             this.$validator.validateAll()
                 .then(success => {
                     if(success) {                    
-                        this.loading = true;
-                        this.attachments = this.$refs.pond.getFiles();
-                        let fileList = [];
-                        this.attachments.map(value => {
-                            fileList.push(value.file);
-                        });
+                        this.loading.edit = true;
 
                         let formData = new FormData();
-                        formData.append('fullname', this.newDriver.fullname);
-                        formData.append('address', this.newDriver.address);
-                        formData.append('email', this.newDriver.email);
-                        formData.append('phone', this.newDriver.phone);
+                        formData.append('fullname', this.editDriver.fullname);
+                        formData.append('address', this.editDriver.address);
+                        formData.append('email', this.editDriver.email);
+                        formData.append('phone', this.editDriver.phone);
                         formData.append('driver_license_date', this.date);
-                        formData.append('photo', this.newDriver.photo.file);
-                        
-                        for(let i = 0; i < fileList.length; i++) {
-                            formData.append('attachments[]', fileList[i]);
-                        }
+                        formData.append('photo', this.editDriver.newPhoto.file);
 
-                        axios.post(`/company/${this.$route.params.slug}/drivers`, formData)
+                        axios.post(`/company/${this.$route.params.slug}/drivers/${this.$route.params.driver}/update`, formData)
                             .then(response => {
-                                this.newDriver.fullname = '';
-                                this.newDriver.address = '';
-                                this.newDriver.email = '';
-                                this.newDriver.phone = '';
-                                this.date = '';
-                                this.newDriver.photo.url = '';
-                                this.newDriver.photo.file = '';
-                                this.newDriver.photo.name = '';
-
-                                this.loading = false;
+                                console.log(response);
+                                this.loading.edit = false;
                                 this.snackbar.color = 'success';
                                 this.snackbar.text = response.data.message;
                                 this.snackbar.active = true;

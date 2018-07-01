@@ -7,6 +7,7 @@ use App\Company;
 use App\DriverQueue;
 use App\DriverAttachment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -15,6 +16,10 @@ class DriverController extends Controller
 {
     /**
      * Get all drivers of a company. 
+     * 
+     * @param   string $company_slug
+     * 
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function get($company_slug) 
     {
@@ -43,7 +48,7 @@ class DriverController extends Controller
      * 
      * @param   \Illuminate\Http\Request $request
      * 
-     * @return  \Illuminate\Http\Response
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function store(Request $request, $company_slug) 
     {    
@@ -99,6 +104,15 @@ class DriverController extends Controller
         ]);
     }
 
+    /**
+     * Add driver to queue.
+     * 
+     * @param   \Illuminate\Http\Request $request
+     * @param   string $company_slug
+     * @param   int $driver_id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function addToQueue(Request $request, $company_slug, $driver_id)
     {
         $queue = DriverQueue::where('driver_id', $driver_id)->get();
@@ -121,7 +135,15 @@ class DriverController extends Controller
         ]);
     }
 
-    
+    /**
+     * Remove driver from queue.
+     * 
+     * @param   \Illuminate\Http\Request $request
+     * @param   string $company_slug
+     * @param   int $driver_id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function backFromQueue(Request $request, $company_slug, $driver_id)
     {
         $queue = DriverQueue::where('driver_id', $driver_id)->get();
@@ -143,15 +165,71 @@ class DriverController extends Controller
         ]);
     }
 
+    /**
+     * Get drivers' queue.
+     *  
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function getQueue()
     {
         $queue = DriverQueue::with('driver.companies')->get();
         return response()->json($queue);
     }
 
+    /**
+     * Edit driver form.
+     * 
+     * @param   string $company_slug
+     * @param   int $id
+     *  
+     * @return  \Illuminate\Http\JsonResponse
+     */
     public function edit($company_slug, $id)
     {
         $driver = Driver::find($id);
         return response()->json($driver);
+    }
+
+    public function update(Request $request, $company_slug, $id) 
+    {
+        $driver = Driver::find($id);
+        $driver->fullname = $request->fullname;
+        $driver->address = $request->address;
+        if($request->address === 'null')
+            $driver->address = null;
+        else
+            $driver->address = $request->address;
+
+        if($request->email === 'null')
+            $driver->email = null;
+        else
+            $driver->email = $request->email;
+            
+        $driver->phone = $request->phone;
+        if($request->driver_license_date !== 'null')
+            $driver->driver_license_date = Carbon::parse($request->driver_license_date);        
+
+        if($request->hasFile('photo')) {
+            $photoFullName = $request->file('photo')->getClientOriginalName(); 
+            $photoname = pathinfo($photoFullName, PATHINFO_FILENAME);
+            $photoPath = $request->file('photo')->path();
+            $photoExtension = $request->file('photo')->getClientOriginalExtension();
+            $photoNameToStore = time().'.'.$photoExtension;
+            $path = $request->file('photo')->move(public_path('/uploads/driver_photos'), $photoNameToStore);  
+            $photoNameToStore = 'uploads/driver_photos/'.$photoNameToStore;
+            File::delete(public_path($driver->photo));
+        } else {
+            $photoNameToStore = null;
+        }
+
+        if($photoNameToStore !== null)
+            $driver->photo = $photoNameToStore;
+
+        $driver->save();        
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Водитель успешно изменен.'
+        ]);        
     }
 }

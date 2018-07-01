@@ -90,6 +90,7 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::delete('/{slug}/drivers/{driver}/queue', 'DriverController@backFromQueue');
         Route::get('/{slug}/drivers/queue', 'DriverController@getQueue');
         Route::get('/{slug}/drivers/{driver}/edit', 'DriverController@edit');
+        Route::post('/{slug}/drivers/{driver}/update', 'DriverController@update');
         // Request routes
         Route::get('/{slug}/requests', 'StoRequestController@get');
         Route::post('/{slug}/requests/{sto}', 'StoRequestController@store');

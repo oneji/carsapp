@@ -6,19 +6,19 @@
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> 
             <v-flex xs12 sm6 mg3 lg4 :key="0">
-                <tile-box :link="{ name: 'HomeCompanies' }" title="Количество компаний" :value="companies.length" box-icon="business" />
+                <tile-box :link="{ name: 'HomeCompanies' }" title="Компании" :value="companies.length" box-icon="business" />
             </v-flex>
             <v-flex xs12 sm6 mg3 lg4 :key="1">
-                <tile-box :link="{ name: 'HomeCars' }" title="Количество автомобилей" :value="carsList.length" box-icon="directions_car" />
+                <tile-box :link="{ name: 'HomeCars' }" title="Автомобили" :value="carsList.length" box-icon="directions_car" />
             </v-flex>
             <v-flex xs12 sm6 mg3 lg4 :key="2">
-                <tile-box :link="{ name: 'HomeReservedCars' }" title="Количество резервных автомобилей" :value="reservedCarsList.length" box-icon="directions_car" />
+                <tile-box :link="{ name: 'HomeReservedCars' }" title="Резервные автомобили" :value="reservedCarsList.length" box-icon="directions_car" />
             </v-flex>
             <v-flex xs12 sm6 mg3 lg4 :key="3">
-                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Количество водителей" :value="drivers.length" box-icon="people" />
+                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Водители" :value="drivers.length" box-icon="people" />
             </v-flex>
             <v-flex xs12 sm6 mg3 lg4 :key="4">
-                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Количество водителей в очереди" :value="queue.length" box-icon="people" />
+                <tile-box :link="{ name: 'HomeDriversQueue' }" title="Водители в очереди" :value="queue.length" box-icon="people" />
             </v-flex>
         </transition-group> 
     </div>
