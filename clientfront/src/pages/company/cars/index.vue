@@ -9,8 +9,8 @@
         </v-layout>
         
         <v-layout style="position: relative;">
-            <v-flex>
-                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="cars.length === 0 && !loading.pageLoad">
+            <v-flex v-if="cars.length === 0 && !loading.pageLoad">
+                <v-alert outline transition="scale-transition" type="info" :value="true">
                     Ни одной машины не зарегистрировано.
                 </v-alert>
             </v-flex>
@@ -19,7 +19,7 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
+            <v-flex xs12 sm6 md3 lg3 v-for="(car, index) in cars" :key="car.id" v-cloak>
                 <v-card>
                     <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
                     <v-divider></v-divider>           
@@ -29,7 +29,6 @@
                             <div v-if="car.drivers.length > 0"> 
                                 <div v-for="driver in car.drivers" :key="driver.id">                                    
                                     <span v-if="driver.pivot.active == 1"><strong>Водитель:</strong> {{ driver.fullname }}</span>
-                                    <span v-else>dsadas</span>
                                 </div>
                             </div>
                             <div v-else><strong>Водитель:</strong> Водителя нет</div>
@@ -38,7 +37,20 @@
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn block flat color="primary">Карточка</v-btn>
+                        <v-btn block flat color="primary" :to="{ name: 'CompanyCarsCard', params: { car: car.id } }">Карточка</v-btn>
+                        <v-tooltip bottom v-if="car.sold === 0">
+                            <v-btn icon slot="activator" @click="changeSoldStatus(car.id, index, 1)" :loading="loading.sale === car.id">
+                                <v-icon>attach_money</v-icon>
+                            </v-btn>
+                            <span>В список проданных</span>
+                        </v-tooltip>
+
+                        <v-tooltip bottom v-if="car.sold === 1">
+                            <v-btn icon slot="activator" @click="changeSoldStatus(car.id, index, 0)">
+                                <v-icon>money_off</v-icon>
+                            </v-btn>
+                            <span>Вернуть из списка проданных</span>
+                        </v-tooltip>
                         <v-btn icon :to="{ name: 'CompanyCarsEdit', params: { car: car.id } }">
                             <v-icon>edit</v-icon>
                         </v-btn>
@@ -152,10 +164,11 @@ export default {
                 driver_id: null,
                 car_id: null,
                 selectDriverItems: [],
-                selectCarItems: [] 
+                selectCarItems: []
             },
             loading: {
-                pageLoad: false
+                pageLoad: false,
+                sale: null
             }
         }
     },
@@ -287,6 +300,19 @@ export default {
                         .catch(error => console.log(error));
                     }
                 }); 
+        },
+
+        changeSoldStatus(car_id, index, status) {
+            this.loading.sale = car_id;
+            axios.put(`/company/${this.$route.params.company}/cars/${car_id}/sold/${status}`)
+                .then(response => {
+                    this.cars.splice(index, 1);
+                    this.loading.sale = null;
+                    this.snackbar.color = 'success';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                })
+                .catch(error => console.log(error));
         }
     },
     created() {

@@ -136,6 +136,7 @@ export default {
                 { icon: 'assignment', title: 'Список СТО', to: { name: 'CompanyStoRequests' } },
                 { divider: true },        
                 { icon: 'directions_car', title: 'Автомобили', to: { name: 'CompanyCars' } },
+                { icon: 'directions_car', title: 'Проданные автомобили', to: { name: 'CompanySoldCars' } },
                 { divider: true },
                 { icon: 'supervised_user_circle', title: 'Водители', to: { name: 'CompanyDrivers' } },
             ],

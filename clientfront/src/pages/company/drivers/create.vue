@@ -97,6 +97,13 @@
                                                         <v-btn flat color="primary" block @click="$refs.menu.save(date)">OK</v-btn>
                                                     </v-date-picker>
                                             </v-menu>
+
+                                            <v-text-field 
+                                                v-model="newDriver.driver_license_category" 
+                                                name="driver_license_category" label="Введите категории прав через запятую" type="text" 
+                                                prepend-icon="spellcheck"
+                                                hint="Например: B, C"
+                                            ></v-text-field> 
                                         </v-container>                                        
                                     </v-flex>
                                 </v-layout>
@@ -172,6 +179,7 @@ export default {
                 address: '',
                 email: '',
                 driver_license_date: null,
+                driver_license_category: '',
                 photo: {
                     name: '',
                     file: '',
@@ -204,6 +212,7 @@ export default {
                         formData.append('email', this.newDriver.email);
                         formData.append('phone', this.newDriver.phone);
                         formData.append('driver_license_date', this.date);
+                        formData.append('driver_license_category', this.newDriver.driver_license_category);
                         formData.append('photo', this.newDriver.photo.file);
                         
                         for(let i = 0; i < fileList.length; i++) {

@@ -108,11 +108,11 @@ export default {
         },
 
         defectTypes() {
-            return this.$store.getters.defectTypes;
+            return this.$store.getters.defectTypes !== undefined ? this.$store.getters.defectTypes : [];
         },
         
         equipment() {
-            return this.$store.getters.equipment;
+            return this.$store.getters.equipment !== undefined ? this.$store.getters.equipment : [];
         },
 
         equipmentStatuses() {

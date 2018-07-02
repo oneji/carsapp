@@ -7,8 +7,8 @@
         </v-layout>
 
         <v-layout style="position: relative">
-            <v-flex>
-                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="drivers.length === 0 && !loading.pageLoad"> 
+            <v-flex v-if="drivers.length === 0 && !loading.pageLoad">
+                <v-alert outline transition="scale-transition" type="info" :value="true"> 
                     Ни одного водителя не зарегистрировано.
                 </v-alert>
             </v-flex>

@@ -294,7 +294,6 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {
-                                console.log(response);
                                 this.loading.edit = false;
                                 this.snackbar.color = 'success';
                                 this.snackbar.text = response.data.message;

@@ -192,22 +192,21 @@ class DriverController extends Controller
 
     public function update(Request $request, $company_slug, $id) 
     {
+        // return response()->json($request->all());
         $driver = Driver::find($id);
         $driver->fullname = $request->fullname;
-        $driver->address = $request->address;
-        if($request->address === 'null')
-            $driver->address = null;
-        else
+        if($request->address !== 'null')
             $driver->address = $request->address;
 
-        if($request->email === 'null')
-            $driver->email = null;
-        else
-            $driver->email = $request->email;
+        if($request->email !== 'null')
+            $driver->email = $request->email;            
             
         $driver->phone = $request->phone;
         if($request->driver_license_date !== 'null')
-            $driver->driver_license_date = Carbon::parse($request->driver_license_date);        
+            $driver->driver_license_date = Carbon::parse($request->driver_license_date);      
+            
+        if($request->driver_license_category !== 'null')
+            $driver->driver_license_category = $request->driver_license_category;
 
         if($request->hasFile('photo')) {
             $photoFullName = $request->file('photo')->getClientOriginalName(); 

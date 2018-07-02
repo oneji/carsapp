@@ -15,6 +15,56 @@ use Carbon\Carbon;
 class CarController extends Controller
 {
     /**
+     * Get all sold cars.
+     */
+    public function getSoldCars($company_slug)
+    {
+        $company = Company::where('slug', $company_slug)->with([
+            'cars' => function($query) {
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                        ->where('sold', 1)                         
+                        ->with([ 'drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->get();
+            }
+        ])->first(); 
+
+        return response()->json($company);
+    }
+
+    /**
+     * Get the whole car card info.
+     * 
+     * @param   string $sto_slug
+     * @param   int $car_id
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function getCardInfo($company_slug, $car_id)
+    {
+        $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name', 'type', 'sold')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment')
+                        ->where('sold', 0)
+                        ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
+                            $q->where('active', 1)->get();
+                        }])->first(); 
+
+        return response()->json([
+            'car' => $car
+        ]);
+    }
+
+    /**
      * Get all cars from database.
      * 
      * @return \Illuminate\Http\Response
@@ -25,13 +75,15 @@ class CarController extends Controller
 
         $notBoundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
-                        ->whereNotIn('cars.id', $boundCarsID)->where('reserved', 0)                    
+                        ->whereNotIn('cars.id', $boundCarsID)
+                        ->where('reserved', 0)  
+                        ->where('sold', 0)                    
                         ->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
@@ -40,13 +92,15 @@ class CarController extends Controller
            
         $boundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
-                        ->whereIn('cars.id', $boundCarsID)->where('reserved', 0)                     
+                        ->whereIn('cars.id', $boundCarsID)
+                        ->where('reserved', 0)  
+                        ->where('sold', 0)                     
                         ->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
@@ -55,12 +109,14 @@ class CarController extends Controller
 
         $company = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved')
+                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
-                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')->where('reserved', 0)                         
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                        ->where('reserved', 0)
+                        ->where('sold', 0)                         
                         ->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
@@ -83,7 +139,6 @@ class CarController extends Controller
      */
     public function store(Request $request, $company_slug) 
     {   
-        // return response()->json($request->all());
         $company = Company::where('slug', $company_slug)->first();
 
         if($request->hasFile('cover_image')) {
@@ -295,6 +350,29 @@ class CarController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Автомобиль успешно изменен.' 
+        ]);
+    }
+
+    /**
+     * Change car 'sold' status.
+     * 
+     * @param   \Illuminate\Http\Request
+     */
+    public function changeSoldStatus($company_slug, $car_id, $status) 
+    {
+        $car = Car::find($car_id);
+        $car->sold = $status;
+        $car->save();
+
+        $message = '';
+        if((int) $status === 1)
+            $message = 'Машина успешно продана.';
+        if((int) $status === 0)
+            $message = 'Машина удалена из списка проданных.';
+
+        return response()->json([
+            'success' => true,
+            'message' => $message
         ]);
     }
 }

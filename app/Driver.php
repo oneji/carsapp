@@ -12,7 +12,7 @@ class Driver extends Model
      * @var array
      */
     protected $fillable = [
-        'fullname', 'address', 'email', 'phone'
+        'fullname', 'address', 'email', 'phone', 'driver_license_category'
     ];
 
     /**

@@ -76,13 +76,18 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Car routes
         Route::get('/{slug}/cars', 'CarController@get');
+        Route::get('/{slug}/cars/sold', 'CarController@getSoldCars');
+        Route::get('/{slug}/cars/{car}/edit', 'CarController@edit');
+        Route::get('/{slug}/cars/{car}/card', 'CarController@getCardInfo');
+
         Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/drivers', 'CarController@bindDriver'); 
+        Route::post('/{slug}/cars/{car}/update', 'CarController@update');
+
         Route::put('/{slug}/cars/drivers', 'CarController@unbindDriver');  
         Route::put('/{slug}/cars/reserve/put', 'CarController@reserveCar');     
         Route::put('/{slug}/cars/reserve/get', 'CarController@backFromReserve');
-        Route::get('/{slug}/cars/{car}/edit', 'CarController@edit');
-        Route::post('/{slug}/cars/{car}/update', 'CarController@update');     
+        Route::put('/{slug}/cars/{car}/sold/{status}', 'CarController@changeSoldStatus');
         // Driver routes
         Route::get('/{slug}/drivers', 'DriverController@get');
         Route::post('/{slug}/drivers', 'DriverController@store');

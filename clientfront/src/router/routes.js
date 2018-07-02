@@ -1,31 +1,33 @@
-import HomeLayout from '@/layouts/HomeLayout'
-import CompanyLayout from '@/layouts/CompanyLayout'
-import Login from '@/pages/login'
+import HomeLayout           from '@/layouts/HomeLayout'
+import CompanyLayout        from '@/layouts/CompanyLayout'
+import Login                from '@/pages/login'
 // Home pages
-import Home from '@/pages/home/index'
-import HomeCompanies from '@/pages/home/companies/index'
-import HomeCars from '@/pages/home/cars/index'
-import HomeReservedCars from '@/pages/home/cars/reserved'
-import HomeDriversQueue from '@/pages/home/drivers/queue'
+import Home                 from '@/pages/home/index'
+import HomeCompanies        from '@/pages/home/companies/index'
+import HomeCars             from '@/pages/home/cars/index'
+import HomeReservedCars     from '@/pages/home/cars/reserved'
+import HomeDriversQueue     from '@/pages/home/drivers/queue'
 // Company pages
-import CompanyHome from '@/pages/company/index'
-import CompanyCars from '@/pages/company/cars/index'
-import CompanyCarsCreate from '@/pages/company/cars/create'
-import CompanyCarsEdit from '@/pages/company/cars/edit'
-import CompanyDrivers from '@/pages/company/drivers/index'
+import CompanyHome          from '@/pages/company/index'
+import CompanyCars          from '@/pages/company/cars/index'
+import CompanySoldCars      from '@/pages/company/cars/sold'
+import CompanyCarsCard      from '@/pages/company/cars/card'
+import CompanyCarsCreate    from '@/pages/company/cars/create'
+import CompanyCarsEdit      from '@/pages/company/cars/edit'
+import CompanyDrivers       from '@/pages/company/drivers/index'
 import CompanyDriversCreate from '@/pages/company/drivers/create'
-import CompanyDriversEdit from '@/pages/company/drivers/edit'
-import CompanyStoRequests from '@/pages/company/requests/index'
+import CompanyDriversEdit   from '@/pages/company/drivers/edit'
+import CompanyStoRequests   from '@/pages/company/requests/index'
 // STO pages
-import StoHome from '@/pages/sto/index'
-import StoRequests from '@/pages/sto/requests/index'
-import StoCompanies from '@/pages/sto/companies/index'
-import StoCompany from '@/pages/sto/companies/company'
-import StoPricelist from '@/pages/sto/pricelist/index'
-import StoServices from '@/pages/sto/services/index'
-import StoDefects from '@/pages/sto/defects/index'
-import StoCarCard from '@/pages/sto/companies/cars/card'
-import StoCarCreate from '@/pages/sto/companies/cars/create'
+import StoHome              from '@/pages/sto/index'
+import StoRequests          from '@/pages/sto/requests/index'
+import StoCompanies         from '@/pages/sto/companies/index'
+import StoCompany           from '@/pages/sto/companies/company'
+import StoPricelist         from '@/pages/sto/pricelist/index'
+import StoServices          from '@/pages/sto/services/index'
+import StoDefects           from '@/pages/sto/defects/index'
+import StoCarCard           from '@/pages/sto/companies/cars/card'
+import StoCarCreate         from '@/pages/sto/companies/cars/create'
 
 const routes = [        
     { path: '/login', name: 'Login', component: Login },
@@ -42,6 +44,8 @@ const routes = [
     { path: '/c/:slug', name: 'CompanyHome', component: CompanyHome, meta: { requiresAuth: true },
         children: [
             { path: 'cars', name: 'CompanyCars', component: CompanyCars, meta: { requiresAuth: true } },
+            { path: 'cars/:car/card', name: 'CompanyCarsCard', component: CompanyCarsCard, meta: { requiresAuth: true } },
+            { path: 'cars/sold', name: 'CompanySoldCars', component: CompanySoldCars, meta: { requiresAuth: true } },
             { path: 'cars/create', name: 'CompanyCarsCreate', component: CompanyCarsCreate, meta: { requiresAuth: true } },
             { path: 'cars/:car/edit', name: 'CompanyCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true } },
             { path: 'drivers', name: 'CompanyDrivers', component: CompanyDrivers, meta: { requiresAuth: true } },

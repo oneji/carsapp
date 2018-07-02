@@ -63,13 +63,14 @@ class CarCardController extends Controller
     public function getInfo($sto_slug, $car_id)
     {
         $sto = Sto::where('slug', $sto_slug)->first();
-        $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name', 'type')
+        $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name', 'type', 'sold')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                         ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment')
+                        ->where('sold', 0)
                         ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->first(); 

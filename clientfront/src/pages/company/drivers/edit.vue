@@ -75,6 +75,13 @@
                                                         <v-btn flat color="primary" block @click="$refs.menu.save(date)">OK</v-btn>
                                                     </v-date-picker>
                                             </v-menu>
+
+                                            <v-text-field 
+                                                v-model="editDriver.driver_license_category" 
+                                                name="driver_license_category" label="Введите категории прав через запятую" type="text" 
+                                                prepend-icon="spellcheck"
+                                                hint="Например: B, C"
+                                            ></v-text-field>
                                         </v-container>                                        
                                     </v-flex>
                                 </v-layout>
@@ -175,6 +182,7 @@ export default {
                 address: '',
                 email: '',
                 driver_license_date: null,
+                driver_license_category: '',
                 photo: {
                     name: '',
                     file: '',
@@ -190,7 +198,7 @@ export default {
                 fullname: '',
                 address: '',
                 email: '',
-                driver_license_date: null,
+                driver_license_date: '',
                 photo: {
                     name: '',
                     file: '',
@@ -216,6 +224,7 @@ export default {
                     this.editDriver.phone = response.data.phone;
                     this.editDriver.driver_license_date = response.data.driver_license_date;
                     this.date = response.data.driver_license_date;
+                    this.editDriver.driver_license_category = response.data.driver_license_category;
                     this.editDriver.photo.name = response.data.photo;
                     this.editDriver.photo.url = response.data.photo;
                     this.loading.pageLoad = false;
@@ -235,6 +244,7 @@ export default {
                         formData.append('email', this.editDriver.email);
                         formData.append('phone', this.editDriver.phone);
                         formData.append('driver_license_date', this.date);
+                        formData.append('driver_license_category', this.editDriver.driver_license_category);
                         formData.append('photo', this.editDriver.newPhoto.file);
 
                         axios.post(`/company/${this.$route.params.slug}/drivers/${this.$route.params.driver}/update`, formData)
