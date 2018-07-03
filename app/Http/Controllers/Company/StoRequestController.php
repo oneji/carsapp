@@ -28,32 +28,20 @@ class StoRequestController extends Controller
     }
 
     /**
-     * Store a newly created sto request to database.
+     * Store a newly created sto request in database.
      * 
      * @param   string $company_slug
      * @param   int $sto_id
      * 
-     * @return  \Illuminate\Http\Response
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function store($company_slug, $sto_id) 
     {
-        $company = Company::where('slug', $company_slug)->first();
-        
+        $company = Company::where('slug', $company_slug)->first();        
         $oldReq = StoRequest::where('sto_id', $sto_id)->where('company_id', $company->id)->first();
+
         if(count($oldReq) > 0) {
-            $message = '';
-            if($oldReq->status === 0)
-                $message = 'Ваша заявка ждет принятия.';
-            
-            if($oldReq->status === 1)
-                $message = 'Ваша заявка уже принята.';
-
-            if($oldReq->status === 2) {
-                $message = 'Ваша отклоненная заявка была переотправлена.';
-                $oldReq->status = 0;
-                $oldReq->save();
-            }
-
+            $message = $oldReq->checkStatus();
             return response()->json([
                 'success' => false,
                 'message' => $message 
@@ -76,13 +64,12 @@ class StoRequestController extends Controller
      * Cancel sent request.
      * 
      * @param   int $id
+     * 
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function cancel($company_slug, $id) 
     {
         $request = StoRequest::find($id)->delete();
-
-        return response()->json([
-            'success' => true
-        ]);
+        return response()->json([ 'success' => true ]);
     }
 }

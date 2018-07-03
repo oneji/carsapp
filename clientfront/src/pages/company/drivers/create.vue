@@ -221,6 +221,7 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/drivers`, formData)
                             .then(response => {
+                                console.log(response);
                                 this.newDriver.fullname = '';
                                 this.newDriver.address = '';
                                 this.newDriver.email = '';

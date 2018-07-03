@@ -55,13 +55,7 @@ class DriverController extends Controller
         $company = Company::where('slug', $company_slug)->first();
 
         if($request->hasFile('photo')) {
-            $photoFullName = $request->file('photo')->getClientOriginalName(); 
-            $photoname = pathinfo($photoFullName, PATHINFO_FILENAME);
-            $photoPath = $request->file('photo')->path();
-            $photoExtension = $request->file('photo')->getClientOriginalExtension();
-            $photoNameToStore = time().'.'.$photoExtension;
-            $path = $request->file('photo')->move(public_path('/uploads/driver_photos'), $photoNameToStore);  
-            $photoNameToStore = 'uploads/driver_photos/'.$photoNameToStore;
+            $photoNameToStore = Driver::uploadFile($request->file('photo'), '/uploads/driver_photos');
         } else {
             $photoNameToStore = null;
         }
@@ -77,14 +71,8 @@ class DriverController extends Controller
 
         $driverAttachments = array();
         if($request->hasFile('attachments')) {            
-            foreach($request->attachments as $file) {
-                $fileFullName = $file->getClientOriginalName(); 
-                $filename = pathinfo($fileFullName, PATHINFO_FILENAME);
-                $filePath = $file->path();
-                $fileExtension = $file->getClientOriginalExtension();
-                $fileNameToStore = uniqid().'.'.$fileExtension;
-                $path = $file->move(public_path('/uploads/attachments/drivers'), $fileNameToStore);  
-                $fileNameToStore = 'uploads/attachments/drivers/'.$fileNameToStore;    
+            foreach($request->attachments as $file) { 
+                $fileNameToStore = Driver::uploadFile($file, '/uploads/attachments/drivers');    
                 
                 array_push($driverAttachments, new DriverAttachment([
                     'attachment' => $fileNameToStore,
@@ -192,30 +180,16 @@ class DriverController extends Controller
 
     public function update(Request $request, $company_slug, $id) 
     {
-        // return response()->json($request->all());
         $driver = Driver::find($id);
         $driver->fullname = $request->fullname;
-        if($request->address !== 'null')
-            $driver->address = $request->address;
-
-        if($request->email !== 'null')
-            $driver->email = $request->email;            
-            
         $driver->phone = $request->phone;
-        if($request->driver_license_date !== 'null')
-            $driver->driver_license_date = Carbon::parse($request->driver_license_date);      
-            
-        if($request->driver_license_category !== 'null')
-            $driver->driver_license_category = $request->driver_license_category;
+        $driver->address = $request->address !== 'null' ? $request->address : null;
+        $driver->email = $request->email !== 'null' ? $request->email : null; 
+        $driver->driver_license_date = $request->driver_license_date !== 'null' ? Carbon::parse($request->driver_license_date) : null;           
+        $driver->driver_license_category = $request->driver_license_category !== 'null' ? $request->driver_license_category : null;
 
         if($request->hasFile('photo')) {
-            $photoFullName = $request->file('photo')->getClientOriginalName(); 
-            $photoname = pathinfo($photoFullName, PATHINFO_FILENAME);
-            $photoPath = $request->file('photo')->path();
-            $photoExtension = $request->file('photo')->getClientOriginalExtension();
-            $photoNameToStore = time().'.'.$photoExtension;
-            $path = $request->file('photo')->move(public_path('/uploads/driver_photos'), $photoNameToStore);  
-            $photoNameToStore = 'uploads/driver_photos/'.$photoNameToStore;
+            $photoNameToStore = Driver::uploadFile($request->file('photo'), '/uploads/driver_photos');
             File::delete(public_path($driver->photo));
         } else {
             $photoNameToStore = null;

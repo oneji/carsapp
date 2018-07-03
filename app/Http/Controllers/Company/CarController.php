@@ -19,22 +19,8 @@ class CarController extends Controller
      */
     public function getSoldCars($company_slug)
     {
-        $company = Company::where('slug', $company_slug)->with([
-            'cars' => function($query) {
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
-                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
-                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
-                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
-                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
-                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->where('sold', 1)                         
-                        ->with([ 'drivers' => function($q) {
-                            $q->where('active', 1)->get();
-                        }])->get();
-            }
-        ])->first(); 
-
-        return response()->json($company);
+        $soldCars = Car::getSold($company_slug);
+        return response()->json($soldCars);
     }
 
     /**
@@ -47,7 +33,7 @@ class CarController extends Controller
      */
     public function getCardInfo($company_slug, $car_id)
     {
-        $car = Car::select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'engine_type_name', 'engine_capacity', 'transmission_name', 'type', 'sold')
+        $car = Car::select('cars.*', 'shape_name', 'brand_name', 'model_name','engine_type_name', 'transmission_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -75,7 +61,7 @@ class CarController extends Controller
 
         $notBoundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -92,7 +78,7 @@ class CarController extends Controller
            
         $boundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -109,7 +95,7 @@ class CarController extends Controller
 
         $company = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.id as id', 'year', 'number', 'shape_name', 'brand_name', 'model_name', 'milage', 'vin_code', 'cover_image', 'type', 'reserved', 'sold')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -154,15 +140,20 @@ class CarController extends Controller
         }
 
         $car = new Car($request->all());
-        $car->year = Carbon::parse($request->year)->year;
+        $car->year = $request->year;
         $car->cover_image = $coverImageNameToStore;
-        if($request->milage !== 'null') 
+
+        if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
+            $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
+
+        if($request->tint_end_date !== null && $request->tint_end_date !== 'null')
+            $car->tint_end_date = Carbon::parse($request->tint_end_date);
+
+        if($request->milage !== 'null' && $request->milage !== null) 
             $car->milage = $request->milage;
 
-        if($request->engine_capacity !== null)
+        if($request->engine_capacity !== null && $request->engine_capacity !== 'null')
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
-        else
-            $car->engine_capacity = null;
 
         if($request->reserved === 'true')
             $car->reserved = 1;
@@ -200,8 +191,7 @@ class CarController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Машина успешно создана.',
-            'files' => $carAttachments
+            'message' => 'Машина успешно создана.'
         ]);
     }
 
@@ -337,8 +327,12 @@ class CarController extends Controller
         
         if($request->engine_capacity !== 'null' && $request->engine_capacity !== null)
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
-        else
-            $car->engine_capacity = null;
+        
+        if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
+            $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
+
+        if($request->tint_end_date !== null && $request->tint_end_date !== 'null')
+            $car->tint_end_date = Carbon::parse($request->tint_end_date);
 
         if($request->reserved === 'true')
             $car->reserved = 1;

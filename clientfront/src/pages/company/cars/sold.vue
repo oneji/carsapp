@@ -13,19 +13,25 @@
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="(car, index) in cars" :key="car.id" v-cloak>
                 <v-card>
-                    <v-card-media :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px"></v-card-media> 
+                    <v-card-media class="white--text" :src="car.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + car.cover_image" height="150px">
+                        <v-container fill-height fluid>
+                            <v-layout fill-height>
+                                <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
+                                    <my-label :text="car.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="car.type === 0 ? 'success' : 'primary'" />
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media> 
                     <v-divider></v-divider>           
                     <v-card-title primary-title class="pt-3 pb-0">
                         <div>
-                            <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }}</h3>
+                            <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }} <span class="subheading">{{ car.number }}</span> </h3>
                             <div v-if="car.drivers.length > 0"> 
                                 <div v-for="driver in car.drivers" :key="driver.id">                                    
                                     <span v-if="driver.pivot.active == 1"><strong>Водитель:</strong> {{ driver.fullname }}</span>
                                 </div>
                             </div>
-                            <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                            <div v-if="car.type === 0"><my-label text="Служебная" color="#32c861" /></div>
-                            <div v-if="car.type === 1"><my-label text="Служебно-Личная" color="#3498db" /></div>
+                            <div v-else><strong>Водитель:</strong> Водителя нет</div>                            
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
@@ -75,7 +81,8 @@ export default {
         fetchCars() {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars/sold`)
-                .then(response => {   
+                .then(response => {  
+                    console.log(response); 
                     this.cars = response.data.cars;
                     this.loading.pageLoad = false;
                 })

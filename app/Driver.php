@@ -15,6 +15,8 @@ class Driver extends Model
         'fullname', 'address', 'email', 'phone', 'driver_license_category'
     ];
 
+    private $fileFolder = '/uploads/driver_photos';
+
     /**
      * Get all attachments for a driver.
      * 
@@ -45,5 +47,22 @@ class Driver extends Model
     public function queue()
     {
         return $this->hasOne('App\DriverQueue');
+    }
+
+    /**
+     * File uploading.
+     * 
+     * @param   \Illuminate\Http\Request $file
+     * 
+     * @return  bool
+     */
+    public static function uploadFile($file, $path)
+    {
+        $fileExtension = $file->getClientOriginalExtension();
+        $fileNameToStore = uniqid().'.'.$fileExtension;
+        $result = $file->move(public_path($path), $fileNameToStore);  
+        $fileNameToStore = $path.'/'.$fileNameToStore;
+        
+        return $fileNameToStore;
     }
 }

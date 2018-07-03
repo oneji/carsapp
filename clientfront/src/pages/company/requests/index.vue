@@ -31,13 +31,13 @@
                                         <v-list-tile-content>
                                             <v-list-tile-title class="title mb-1">{{ request.sto_name }}</v-list-tile-title>
                                             <v-list-tile-sub-title v-if="request.status === 0">
-                                                Статус: <my-label text="Ждет принятия" color="#ffa91c" />
+                                                Статус: <my-label text="Ждет принятия" type="warning" />
                                             </v-list-tile-sub-title>
                                             <v-list-tile-sub-title v-else-if="request.status === 1">
-                                                Статус: <my-label text="Принята" color="#32c861" />
+                                                Статус: <my-label text="Принята" type="success" />
                                             </v-list-tile-sub-title>                                            
                                             <v-list-tile-sub-title v-else-if="request.status === 2">
-                                                Статус: <my-label text="Отклонена" color="#f96a74" />
+                                                Статус: <my-label text="Отклонена" type="error" />
                                             </v-list-tile-sub-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
@@ -157,7 +157,6 @@ export default {
             this.loading.create = true;
             axios.post(`/company/${this.$route.params.slug}/requests/${this.sto_id}`)
                 .then(response => {
-                    console.log(response);
                     if(response.data.success) {
                         this.snackbar.color = 'success';                        
                     } else {

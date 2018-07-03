@@ -23,7 +23,16 @@
                             </v-container>
                         </v-card-media>
                         <v-divider></v-divider>
-                        <v-card-media :src="car.cover_image !== null ? assetsURL + '/' + car.cover_image : '/static/images/no-photo.png'" height="200px"></v-card-media>
+                        <v-card-media :src="car.cover_image !== null ? assetsURL + '/' + car.cover_image : '/static/images/no-photo.png'" height="200px">
+                            <v-container fill-height fluid>
+                                <v-layout fill-height>
+                                    <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
+                                        <my-label v-if="car.type === 0" text="Служебная" color="#4caf50" />
+                                        <my-label v-if="car.type === 1" text="Служебно-Личная" color="#3498db" />
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-media>
                         <v-divider></v-divider>
                         <v-card-title primary-title class="pt-3 pb-0">
                             <div>
@@ -210,6 +219,7 @@ import FileUpload from '@/components/FileUpload'
 import CreateDefectAct from '@/components/CarCard/Defect/CreateDefectAct'
 import DefectAct from '@/components/CarCard/Defect/DefectAct'
 import DefectActList from '@/components/CarCard/Defect/DefectActList'
+import MyLabel from '@/components/Label'
 
 export default {
     mixins: [ snackbar ],
@@ -219,7 +229,7 @@ export default {
         }
     },
     components: {
-        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList
+        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, MyLabel
     },
     data() {
         return {

@@ -128,6 +128,42 @@
                                                 data-vv-name="transmission_id" data-vv-as='"Коробка передач"'
                                             ></v-select>  
 
+                                            <v-menu
+                                                ref="menu2"
+                                                :close-on-content-click="false"
+                                                v-model="menu2"
+                                                :nudge-right="40"
+                                                :return-value.sync="editCar.teh_osmotr_end_date"
+                                                lazy
+                                                transition="scale-transition"
+                                                offset-y
+                                                full-width
+                                                min-width="290px">
+                                                    <v-text-field slot="activator" v-model="editCar.teh_osmotr_end_date" label="Выберите дату окончания тех осмотра" prepend-icon="event" readonly></v-text-field>
+                                                    <v-date-picker v-model="editCar.teh_osmotr_end_date" no-title scrollable locale="ru">
+                                                        <v-btn flat color="primary" block @click="menu2 = false">Закрыть</v-btn>
+                                                        <v-btn flat color="primary" block @click="$refs.menu2.save(editCar.teh_osmotr_end_date)">OK</v-btn>
+                                                    </v-date-picker>
+                                            </v-menu>
+
+                                            <v-menu
+                                                ref="menu3"
+                                                :close-on-content-click="false"
+                                                v-model="menu3"
+                                                :nudge-right="40"
+                                                :return-value.sync="editCar.tint_end_date"
+                                                lazy
+                                                transition="scale-transition"
+                                                offset-y
+                                                full-width
+                                                min-width="290px">
+                                                    <v-text-field slot="activator" v-model="editCar.tint_end_date" label="Выберите дату окончания тонировки" prepend-icon="event" readonly></v-text-field>
+                                                    <v-date-picker v-model="editCar.tint_end_date" no-title scrollable locale="ru">
+                                                        <v-btn flat color="primary" block @click="menu3 = false">Закрыть</v-btn>
+                                                        <v-btn flat color="primary" block @click="$refs.menu3.save(editCar.tint_end_date)">OK</v-btn>
+                                                    </v-date-picker>
+                                            </v-menu>
+
                                             <v-checkbox label="В резерв" v-model="editCar.reserved"></v-checkbox>   
                                             <v-radio-group v-model="editCar.type" row class="pt-0">
                                                 <v-radio label="Служебная" :value="0"></v-radio>
@@ -213,7 +249,9 @@ export default {
                 engine_type_id: null,
                 transmission_id: null,
                 reserved: false,
-                type: ''
+                type: '',
+                teh_osmotr_end_date: '',
+                tint_end_date: ''
             },
             newCar: {
                 year: null,
@@ -240,6 +278,8 @@ export default {
             },
             year: null,
             menu: false,
+            menu2: false,
+            menu3: false,
             shapes: [], 
             brands: [], 
             models: [],
@@ -252,6 +292,7 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.company}/cars/${this.$route.params.car}/edit`)
                 .then(response => {
+                    console.log(response);
                     this.editCar.year = response.data.year;
                     this.editCar.number = response.data.number;
                     this.editCar.shape_id = response.data.shape_id;
@@ -266,6 +307,8 @@ export default {
                     this.editCar.transmission_id = response.data.transmission_id;
                     this.editCar.reserved = !!+response.data.reserved;
                     this.editCar.type = response.data.type;
+                    this.editCar.teh_osmotr_end_date = response.data.teh_osmotr_end_date;
+                    this.editCar.tint_end_date = response.data.tint_end_date;
                     this.loading.pageLoad = false;  
                 })
                 .catch(error => console.log(error));
@@ -291,6 +334,8 @@ export default {
                         formData.append('transmission_id', this.editCar.transmission_id);
                         formData.append('reserved', this.editCar.reserved);
                         formData.append('type', this.editCar.type);
+                        formData.append('teh_osmotr_end_date', this.editCar.teh_osmotr_end_date);
+                        formData.append('tint_end_date', this.editCar.tint_end_date);
 
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {

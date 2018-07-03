@@ -1,10 +1,10 @@
 <template>
-    <span class="label" :style="`background-color: ${color}`">{{ text }}</span>
+    <span :class="`label label-${type}`">{{ text }}</span>
 </template>
 
 <script>
 export default {
-    props: ['text', 'color']
+    props: ['text', 'type']
 }
 </script>
 
@@ -21,8 +21,11 @@ export default {
         vertical-align: baseline;
         border-radius: .25em;
     }
+    .label-primary {
+        background: #3498db;
+    }
     .label-success {
-        background-color: #32c861;
+        background-color: #4caf50;
     }
     .label-error {
         background: #f96a74;

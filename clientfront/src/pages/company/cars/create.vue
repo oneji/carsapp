@@ -1,5 +1,10 @@
 <template>
     <div>
+        <v-layout>
+            <v-flex>
+                <v-btn color="success" @click="$router.back()">Назад</v-btn>
+            </v-flex>
+        </v-layout>
         <v-layout row wrap>
             <!-- Main photo -->
             <v-flex xs12 sm12 md4 lg3>
@@ -47,23 +52,11 @@
                                 <v-layout row wrap>
                                     <v-flex xs12 sm12 md12 lg12 class="v-divider pr-4">                                        
                                         <v-container grid-list-xs>
-                                            <v-menu
-                                                ref="menu"
-                                                :close-on-content-click="false"
-                                                v-model="menu"
-                                                :nudge-right="40"
-                                                :return-value.sync="year"
-                                                lazy
-                                                transition="scale-transition"
-                                                offset-y
-                                                full-width
-                                                min-width="290px">
-                                                    <v-text-field slot="activator" v-model="year" label="Выберите год" prepend-icon="event" readonly></v-text-field>
-                                                    <v-date-picker v-model="year" no-title scrollable locale="ru" type="month">
-                                                        <v-btn flat color="primary" block @click="menu = false">Закрыть</v-btn>
-                                                        <v-btn flat color="primary" block @click="$refs.menu.save(year)">OK</v-btn>
-                                                    </v-date-picker>
-                                            </v-menu>
+                                            <v-text-field type="text" v-model="newCar.year" name="year" label="Выберите год" prepend-icon="event"                 
+                                                v-validate="'required'" 
+                                                data-vv-name="year" data-vv-as='"Год автомобиля"'
+                                                :error-messages="errors.collect('year')"
+                                            ></v-text-field>
 
                                             <v-text-field type="text" v-model="newCar.number" name="number" label="Гос номер машины" prepend-icon="filter_2"                 
                                                 v-validate="'required'" 
@@ -116,12 +109,64 @@
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('transmission_id')"
                                                 data-vv-name="transmission_id" data-vv-as='"Коробка передач"'
-                                            ></v-select>  
+                                            ></v-select> 
+
+                                            <v-menu
+                                                ref="menu2"
+                                                :close-on-content-click="false"
+                                                v-model="menu2"
+                                                :nudge-right="40"
+                                                :return-value.sync="newCar.teh_osmotr_end_date"
+                                                lazy
+                                                transition="scale-transition"
+                                                offset-y
+                                                full-width
+                                                min-width="290px">
+                                                    <v-text-field 
+                                                        slot="activator" 
+                                                        v-model="newCar.teh_osmotr_end_date" 
+                                                        label="Выберите дату окончания тех осмотра" 
+                                                        prepend-icon="event" 
+                                                        readonly
+                                                    ></v-text-field>
+                                                    <v-date-picker 
+                                                        v-model="newCar.teh_osmotr_end_date" 
+                                                        scrollable 
+                                                        locale="ru" 
+                                                        @input="$refs.menu2.save(newCar.teh_osmotr_end_date)"
+                                                    ></v-date-picker>
+                                            </v-menu>
+
+                                            <v-menu
+                                                ref="menu3"
+                                                :close-on-content-click="false"
+                                                v-model="menu3"
+                                                :nudge-right="40"
+                                                :return-value.sync="newCar.tint_end_date"
+                                                lazy
+                                                transition="scale-transition"
+                                                offset-y
+                                                full-width
+                                                min-width="290px">
+                                                    <v-text-field 
+                                                        slot="activator" 
+                                                        v-model="newCar.tint_end_date" 
+                                                        label="Выберите дату окончания тонировки" 
+                                                        prepend-icon="event" 
+                                                        readonly
+                                                    ></v-text-field>
+                                                    <v-date-picker 
+                                                        v-model="newCar.tint_end_date"
+                                                        scrollable 
+                                                        locale="ru" 
+                                                        @input="$refs.menu3.save(newCar.tint_end_date)"
+                                                    ></v-date-picker>
+                                            </v-menu> 
 
                                             <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>   
                                             <v-radio-group v-model="newCar.type" row class="pt-0">
-                                                <v-radio label="Служебная" value="0"></v-radio>
-                                                <v-radio label="Служебная-Личная" value="1"></v-radio>
+                                                <v-radio label="Служебная" :value="0"></v-radio>
+                                                <v-radio label="Служебная-Личная" :value="1"></v-radio>
                                             </v-radio-group>                                       
                                         </v-container>                                        
                                     </v-flex>
@@ -210,11 +255,15 @@ export default {
                 engine_type_id: null,
                 transmission_id: null,
                 reserved: false,
-                type: 0 
+                type: 0,
+                teh_osmotr_end_date: null,
+                tint_end_date: null 
             },
             loading: false,
             year: null,
             menu: false,
+            menu2: false,
+            menu3: false,
             shapes: [], 
             brands: [], 
             models: [],
@@ -238,7 +287,7 @@ export default {
                         });
 
                         let formData = new FormData();
-                        formData.append('year', this.year);
+                        formData.append('year', this.newCar.year);
                         formData.append('number', this.newCar.number);
                         formData.append('shape_id', this.newCar.shape_id);
                         formData.append('brand_id', this.newCar.brand_id);
@@ -251,6 +300,8 @@ export default {
                         formData.append('transmission_id', this.newCar.transmission_id);
                         formData.append('reserved', this.newCar.reserved);
                         formData.append('type', this.newCar.type);
+                        formData.append('teh_osmotr_end_date', this.newCar.teh_osmotr_end_date);
+                        formData.append('tint_end_date', this.newCar.tint_end_date);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);
