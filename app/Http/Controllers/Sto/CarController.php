@@ -15,12 +15,12 @@ class CarController extends Controller
     /**
      * Store a newly created car card to a database.
      * 
-     * @param   string $company_slug
+     * @param   string $sto_slug
      * @param   int $car_id
      * 
      * @return  \Illuminate\Http\Response
      */
-    public function createCard($company_slug, $car_id)
+    public function createCard($sto_slug, $car_id)
     {
         $car = Car::find($car_id);
         $card = CarCard::where('car_id', $car->id)->get();
@@ -57,7 +57,7 @@ class CarController extends Controller
      * 
      * @return  \Illuminate\Http\Reponse
      */
-    public function store(Request $request, $company_slug) 
+    public function store(Request $request, $sto_slug) 
     {   
         $company = Company::find($request->company_id);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Car;
+use App\CarCard;
 use App\CarAttachment;
 use App\Company;
 use App\Driver;
@@ -70,7 +71,7 @@ class CarController extends Controller
                         ->whereNotIn('cars.id', $boundCarsID)
                         ->where('reserved', 0)  
                         ->where('sold', 0)                    
-                        ->with([ 'drivers' => function($q) {
+                        ->with([ 'card', 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
             }
@@ -87,7 +88,7 @@ class CarController extends Controller
                         ->whereIn('cars.id', $boundCarsID)
                         ->where('reserved', 0)  
                         ->where('sold', 0)                     
-                        ->with([ 'drivers' => function($q) {
+                        ->with([ 'card', 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
             }
@@ -103,7 +104,7 @@ class CarController extends Controller
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                         ->where('reserved', 0)
                         ->where('sold', 0)                         
-                        ->with([ 'drivers' => function($q) {
+                        ->with([ 'card', 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->get();
             }
@@ -142,6 +143,7 @@ class CarController extends Controller
         $car = new Car($request->all());
         $car->year = $request->year;
         $car->cover_image = $coverImageNameToStore;
+        $car->reserved = $request->reserved === 'true' ? 1 : 0;
 
         if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
             $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
@@ -149,16 +151,11 @@ class CarController extends Controller
         if($request->tint_end_date !== null && $request->tint_end_date !== 'null')
             $car->tint_end_date = Carbon::parse($request->tint_end_date);
 
-        if($request->milage !== 'null' && $request->milage !== null) 
+        if($request->milage !== null && $request->milage !== 'null') 
             $car->milage = $request->milage;
 
         if($request->engine_capacity !== null && $request->engine_capacity !== 'null')
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
-
-        if($request->reserved === 'true')
-            $car->reserved = 1;
-        else 
-            $car->reserved = 0;
             
         $car->save();       
         
@@ -367,6 +364,44 @@ class CarController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message
+        ]);
+    }
+
+    /**
+     * Store a newly created car card to a database.
+     * 
+     * @param   string $company_slug
+     * @param   int $car_id
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function createCard($company_slug, $car_id)
+    {
+        $car = Car::find($car_id);
+        $card = CarCard::where('car_id', $car->id)->get();
+
+        if(count($car) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Машины не существует. Попытка подмены данных.'
+            ]);
+        }
+        
+        if(count($card) > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У машины уже имеется карточка.'
+            ]);
+        }
+
+        $card = new CarCard();
+        $card->car_id = $car->id;
+        $card->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Карточка успешно создана.',
+            'card' => $card
         ]);
     }
 }

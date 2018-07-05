@@ -27,8 +27,8 @@
                             <v-container fill-height fluid>
                                 <v-layout fill-height>
                                     <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
-                                        <my-label v-if="car.type === 0" text="Служебная" color="#4caf50" />
-                                        <my-label v-if="car.type === 1" text="Служебно-Личная" color="#3498db" />
+                                        <my-label v-if="car.type === 0" text="Служебная" type="success" />
+                                        <my-label v-if="car.type === 1" text="Служебно-Личная" type="primary" />
                                     </v-flex>
                                 </v-layout>
                             </v-container>
@@ -279,6 +279,7 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
+                    console.log(response);
                     this.car = response.data.car;
                     this.$store.dispatch('setCar', response.data.car);
                     this.$store.dispatch('setDefectTypes', response.data.defects_info);

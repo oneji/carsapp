@@ -83,6 +83,7 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/drivers', 'CarController@bindDriver'); 
         Route::post('/{slug}/cars/{car}/update', 'CarController@update');
+        Route::post('/{slug}/cars/{car}/card', 'CarController@createCard');
 
         Route::put('/{slug}/cars/drivers', 'CarController@unbindDriver');  
         Route::put('/{slug}/cars/reserve/put', 'CarController@reserveCar');     

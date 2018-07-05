@@ -43,7 +43,8 @@
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
-                        <v-btn block flat color="primary" :to="{ name: 'CompanyCarsCard', params: { car: car.id } }">Карточка</v-btn>
+                        <v-btn flat block color="success" v-if="car.card === null" @click="createCard(car.id, index)" :loading="loading.card === car.id">Создать карточку</v-btn>
+                        <v-btn block flat color="primary" v-else :to="{ name: 'CompanyCarsCard', params: { car: car.id } }">Карточка</v-btn>
                         <v-tooltip bottom v-if="car.sold === 0">
                             <v-btn icon slot="activator" @click="changeSoldStatus(car.id, index, 1)" :loading="loading.sale === car.id">
                                 <v-icon>attach_money</v-icon>
@@ -174,7 +175,8 @@ export default {
             },
             loading: {
                 pageLoad: false,
-                sale: null
+                sale: null,
+                card: ''
             }
         }
     },
@@ -320,7 +322,20 @@ export default {
                     this.snackbar.active = true;
                 })
                 .catch(error => console.log(error));
-        }
+        },
+
+        createCard(car_id, index) {
+            this.loading.card = car_id;
+            axios.post(`/company/${this.$route.params.slug}/cars/${car_id}/card`)
+                .then(response => {
+                    this.cars[index].card = response.data.card;
+                    this.loading.card = false;
+                    this.snackbar.color = 'success';
+                    this.snackbar.text = response.data.message;
+                    this.snackbar.active = true;
+                })
+                .catch(error => console.log(error));
+        },    
     },
     created() {
         this.fetchCars();

@@ -27,7 +27,15 @@
             <v-layout row wrap>           
                 <v-flex v-for="(car, index) in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
                     <v-card>
-                        <v-card-media :src="car.info.cover_image === null ? '/static/images/no-photo.png' : assetsURL + '/' + car.info.cover_image" height="150px"></v-card-media> 
+                        <v-card-media :src="car.info.cover_image === null ? '/static/images/no-photo.png' : assetsURL + '/' + car.info.cover_image" height="150px">
+                            <v-container fill-height fluid>
+                                <v-layout fill-height>
+                                    <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
+                                        <my-label :text="car.info.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="car.info.type === 0 ? 'success' : 'primary'" />
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-media> 
                         <v-divider></v-divider>           
                         <v-card-title primary-title class="pt-3 pb-0">
                             <div>
@@ -45,7 +53,8 @@
                         </v-card-title>
                         <v-card-actions class="mt-2">
                             <v-btn flat block color="warning" :loading="card.loading === car.info.id" @click="reserveCar(car.info.id, index)">В резерв</v-btn>
-                            <v-btn flat block color="primary">Карточка</v-btn>
+                            <v-btn flat block color="success" v-if="car.card === null" @click="createCard(car.id, index)" :loading="card.loading === car.id">Создать карточку</v-btn>
+                            <v-btn flat block color="primary" v-else>Карточка</v-btn>
                             <v-btn icon @click.native="card.showInfo = car.info.id" v-if="card.showInfo !== car.info.id">
                                 <v-icon>keyboard_arrow_down</v-icon>
                             </v-btn>
