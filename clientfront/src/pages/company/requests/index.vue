@@ -158,14 +158,12 @@ export default {
             axios.post(`/company/${this.$route.params.slug}/requests/${this.sto_id}`)
                 .then(response => {
                     if(response.data.success) {
-                        this.snackbar.color = 'success';                        
+                        this.successSnackbar(response.data.message);                        
                     } else {
-                        this.snackbar.color = 'error';
+                        this.errorSnackbar(response.data.message);
                     }
                     
                     this.fetchRequests();
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
                     this.loading.create = false;
                 }) 
                 .catch(error => console.log(error));

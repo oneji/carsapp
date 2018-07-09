@@ -62,7 +62,7 @@ class CarController extends Controller
 
         $notBoundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'transmission_name', 'engine_type_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -79,7 +79,7 @@ class CarController extends Controller
            
         $boundCars = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'transmission_name', 'engine_type_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
@@ -96,7 +96,7 @@ class CarController extends Controller
 
         $company = Company::where('slug', $company_slug)->with([
             'cars' => function($query) use ($boundCarsID){
-                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name')
+                $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'transmission_name', 'engine_type_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')

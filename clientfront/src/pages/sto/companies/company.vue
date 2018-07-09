@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div>        
         <v-layout row wrap>
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn>  
@@ -95,11 +95,12 @@ import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 import Alert from '@/components/Alert'
+import MoveButtons from '@/components/MoveButtons'
 
 export default {
     mixins: [ snackbar ],
     components: {
-        Loading, Alert
+        Loading, Alert, MoveButtons
     },
     computed: {
         assetsURL() {
@@ -133,9 +134,7 @@ export default {
                 .then(response => {
                     this.fetchCompanyCars();
                     this.card.loading = false;
-                    this.snackbar.color = 'success';
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
+                    this.successSnackbar(response.data.message);
                 })
                 .catch(error => console.log(error));
         },    

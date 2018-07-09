@@ -120,14 +120,11 @@ export default {
                 .then(response => {
                     console.log(response);
                     if(response.data.success) {
-                        this.snackbar.color = 'success';
+                        this.successSnackbar(response.data.message);
                         this.drivers[index].queue = response.data.queue;
                     } else {
-                        this.snackbar.color = 'error';
+                        this.errorSnackbar(response.data.message);
                     }
-                        
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
                     this.loading.queue = null;
                 })
                 .catch(error => console.log(error));

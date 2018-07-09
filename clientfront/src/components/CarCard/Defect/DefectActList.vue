@@ -26,7 +26,7 @@
                                 <v-list-tile-sub-title>Дата создания: {{ item.defect_act_date | moment("MMMM D, YYYY") }}</v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn icon ripple @click="showDefectAct(index)">
+                                <v-btn v-if="showDefect" icon ripple @click="showDefectAct(index)">
                                     <v-icon color="grey lighten-1">remove_red_eye</v-icon>
                                 </v-btn>
                             </v-list-tile-action>
@@ -46,6 +46,10 @@ import DefectAct from './DefectAct';
 export default {
     props: {
         items: Array,
+        showDefect: {
+            type: Boolean,
+            default: true
+        }
     },
     filters: {
         generateActNum(value) {

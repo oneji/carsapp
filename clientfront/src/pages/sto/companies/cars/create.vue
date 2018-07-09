@@ -285,9 +285,7 @@ export default {
                             .then(response => {
                                 console.log(response);
                                 this.loading = false;
-                                this.snackbar.color = 'success';
-                                this.snackbar.text = response.data.message;
-                                this.snackbar.active = true;
+                                this.successSnackbar(response.data.message);
                             })
                             .catch(error => console.log(error));
                 }

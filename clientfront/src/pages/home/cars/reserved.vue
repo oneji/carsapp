@@ -53,8 +53,6 @@
                                 </div>
                             </div>
                             <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                            <div v-if="car.info.type === 0"><my-label text="Служебная" color="#32c861" /></div>
-                            <div v-if="car.info.type === 1"><my-label text="Служебно-Личная" color="#3498db" /></div>
                         </div>
                     </v-card-title>
                     <v-card-actions class="mt-2">
@@ -293,10 +291,8 @@ export default {
                             this.backFromReserve.dialog = false;
                             this.backFromReserve.loading = false;
 
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
                             this.card.loading = false;
+                            this.successSnackbar(response.data.message);
                         })
                         .catch(error => console.log(error));
                     }
@@ -321,10 +317,8 @@ export default {
                             this.selectItems.cars = this.selectItems.cars.filter(car => car.value !== this.addToReserve.carID);
 
                             this.addToReserve.dialog = true;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
                             this.card.loading = false;
+                            this.successSnackbar(response.data.message);
                         })
                         .catch(error => console.log(error));
                     }

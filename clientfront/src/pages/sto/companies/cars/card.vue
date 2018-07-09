@@ -116,58 +116,7 @@
 
             <transition name="fade-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
-                    <v-card>
-                        <v-card-media>
-                            <v-container>
-                                <v-layout>
-                                    <v-flex>
-                                        <p class="subheading my-0">Комментарии</p>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-media>
-                        <v-divider></v-divider>
-                        <v-card-text primary-title class="pt-1 pb-0">
-                            <v-list two-line>
-                                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="comments.length === 0  && !loading.pageLoad">
-                                    Комментариев к автомобилю нет.
-                                </v-alert>
-                                <template v-for="comment in comments">
-                                    <v-list-tile :key="comment.title" avatar>
-                                        <v-list-tile-avatar>
-                                            <img v-if="comment.user.avatar !== null" :src="assetsURL + '/' + comment.user.avatar">
-                                            <img v-else src="/static/images/user.png">
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-content>
-                                            <v-list-tile-title v-html="comment.comment"></v-list-tile-title>
-                                            <v-list-tile-sub-title v-html="comment.user.fullname + ': ' + comment.created_at"></v-list-tile-sub-title>
-                                        </v-list-tile-content>
-                                    </v-list-tile>
-                                </template>
-                            </v-list>
-                        </v-card-text>
-                        <v-divider></v-divider>
-                        <v-card-actions>
-                            <v-container class="py-0 pb-2">
-                                <v-layout row wrap>
-                                    <v-flex xs12 sm12 md12 lg12>
-                                        <v-text-field
-                                            name="car_card_comment"
-                                            label="Введите комментарий"
-                                            multi-line 
-                                            clearable
-                                            no-resize
-                                            v-model="newComment"
-                                            rows="3"
-                                        ></v-text-field>                                
-                                    </v-flex>
-                                    <v-flex xs12 sm12 md12 lg12>
-                                        <v-btn color="success" block flat @click="storeComment" :loading="loading.comments" class="py-0">Сохранить комментарий</v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-actions>
-                    </v-card>
+                    <comments :items="comments" :card-id="car.card.id" @add="onCommentAdded" />
                 </v-flex>
             </transition>
         </v-layout>       
@@ -277,6 +226,7 @@ import FileUpload from '@/components/FileUpload'
 import CreateDefectAct from '@/components/CarCard/Defect/CreateDefectAct'
 import DefectAct from '@/components/CarCard/Defect/DefectAct'
 import DefectActList from '@/components/CarCard/Defect/DefectActList'
+import Comments from '@/components/CarCard/Comments/CarCardComments'
 
 export default {
     mixins: [ snackbar ],
@@ -286,7 +236,7 @@ export default {
         }
     },
     components: {
-        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList
+        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Comments
     },
     data() {
         return {
@@ -311,7 +261,6 @@ export default {
             defectActs: [],
             attachments: [],
             equipment: [],
-            newComment: '',
             selects: {
                 defects: [],
                 defectOptions: []
@@ -417,20 +366,6 @@ export default {
                 });
             });
         },
-
-        storeComment() {
-            this.loading.comments = true;
-            axios.post(`/sto/${this.$route.params.slug}/cards/${this.car.card.id}/comments`, { comment: this.newComment })
-                .then(response => {
-                    this.comments.push(response.data.comment);
-                    this.loading.comments = false;
-                    this.newComment = '';
-                    this.snackbar.color = 'success';
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
-                }) 
-                .catch(error => console.log(error));
-        },
         
         getAttachments(file) {
             this.attachments.items = file;
@@ -464,9 +399,7 @@ export default {
                         console.log(this.newAttachments.removeAll)
 
                         this.newAttachments.loading = false;   
-                        this.snackbar.color = 'success';
-                        this.snackbar.text = response.data.message;
-                        this.snackbar.active = true;                 
+                        this.successSnackbar(response.data.message);                
                     })
                     .catch(error => console.log(error));
             } else {
@@ -479,6 +412,11 @@ export default {
         onDefectActCreated(act) {
             this.defectActs.push(act);
         },
+        
+        onCommentAdded(response) {
+            this.comments.push(response.comment);
+            this.successSnackbar(response.message);       
+        } 
     },
     created() {
         this.fetchCarCardInfo();

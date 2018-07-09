@@ -447,9 +447,7 @@ export default {
                                 value: response.data.type.id
                             });
                             this.defectType.loading.button = false;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.successSnackbar(response.data.message);
                         })
                         .catch(error => console.log(error));
                     }

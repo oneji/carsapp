@@ -1,10 +1,6 @@
 <template>
     <div>
-        <v-layout>
-            <v-flex>
-                <v-btn color="success" @click="$router.back()">Назад</v-btn>
-            </v-flex>
-        </v-layout>
+        <move-buttons />
         <v-layout row wrap>
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>
@@ -165,6 +161,7 @@ const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImage
 
 import axios from '@/axios'
 import snackbar from '@/components/mixins/snackbar'
+import MoveButtons from '@/components/MoveButtons'
 
 export default {
     $_veeValidate: {
@@ -192,7 +189,7 @@ export default {
         }
     },
     components: {
-        FilePond
+        FilePond, MoveButtons
     },
     methods: {
         createDriver() {
@@ -232,9 +229,7 @@ export default {
                                 this.newDriver.photo.name = '';
 
                                 this.loading = false;
-                                this.snackbar.color = 'success';
-                                this.snackbar.text = response.data.message;
-                                this.snackbar.active = true;
+                                this.successSnackbar(response.data.message);
                             })
                             .catch(error => console.log(error));
                 }

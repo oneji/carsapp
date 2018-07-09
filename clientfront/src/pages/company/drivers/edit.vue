@@ -1,10 +1,6 @@
 <template>
     <div>
-        <v-layout>
-            <v-flex>
-                <v-btn color="success" @click="$router.back()">Назад</v-btn>
-            </v-flex>
-        </v-layout>
+        <move-buttons />
         <v-layout style="position: relative">
             <loading :loading="loading.pageLoad" />
         </v-layout>
@@ -160,6 +156,7 @@ import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
+import MoveButtons from '@/components/MoveButtons'
 
 export default {
     $_veeValidate: {
@@ -171,7 +168,7 @@ export default {
         }
     },    
     components: {
-        FilePond, Loading
+        FilePond, Loading, MoveButtons
     },
     mixins: [ snackbar ],
     data() {
@@ -251,9 +248,7 @@ export default {
                             .then(response => {
                                 console.log(response);
                                 this.loading.edit = false;
-                                this.snackbar.color = 'success';
-                                this.snackbar.text = response.data.message;
-                                this.snackbar.active = true;
+                                this.successSnackbar(response.data.message);
                             })
                             .catch(error => console.log(error));
                 }

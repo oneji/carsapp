@@ -189,16 +189,14 @@ export default {
                         axios.post(`/company/${this.$route.params.slug}/drivers/${this.addToQueue.driverID}/queue`)
                         .then(response => {
                             if(response.data.success) {
-                                this.snackbar.color = 'success';
+                                this.successSnackbar(response.data.message);
                                 this.getQueue();
                                 this.selectItems.drivers = this.selectItems.drivers.filter(driver => driver.value !== this.addToQueue.driverID)
                             } else {
-                                this.snackbar.color = 'error';
+                                this.errorSnackbar(response.data.message);
                             }
                             
                             this.addToQueue.dialog = false;
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
                             this.loading.queue = null;
                         })
                         .catch(error => console.log(error));

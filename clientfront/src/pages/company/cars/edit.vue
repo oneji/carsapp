@@ -1,10 +1,7 @@
 <template>
     <div>
-        <v-layout>
-            <v-flex>
-                <v-btn color="success" @click="$router.back()">Назад</v-btn>
-            </v-flex>
-        </v-layout>
+        <move-buttons />
+        
         <v-layout style="position: relative;">
             <loading :loading="loading.pageLoad" />
         </v-layout>
@@ -210,6 +207,7 @@ import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
+import MoveButtons from '@/components/MoveButtons'
 
 export default {
     $_veeValidate: {
@@ -217,7 +215,7 @@ export default {
     },
     mixins: [ snackbar ],
     components: {
-        Loading, FilePond
+        Loading, FilePond, MoveButtons
     },
     computed: {
         assetsURL() {
@@ -340,9 +338,7 @@ export default {
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {
                                 this.loading.edit = false;
-                                this.snackbar.color = 'success';
-                                this.snackbar.text = response.data.message;
-                                this.snackbar.active = true;
+                                this.successSnackbar(response.data.message);
                             })
                             .catch(error => console.log(error));
                 }
@@ -390,11 +386,11 @@ export default {
                 .catch(error => console.log(error));
         },
     
-        pickFile () {
+        pickFile() {
             this.$refs.image.click();
         },
 
-        onFilePicked (e) {
+        onFilePicked(e) {
             const files = e.target.files;
 
             if(files[0] !== undefined) {

@@ -8,6 +8,26 @@ const snackbar = {
                 color: ''
             },
         }
+    },
+
+    methods: {
+        successSnackbar(message) {
+            this.snackbar.color = 'success';
+            this.snackbar.text = message;
+            this.snackbar.active = true;
+        },
+
+        errorSnackbar(message) {
+            this.snackbar.color = 'error';
+            this.snackbar.text = message;
+            this.snackbar.active = true;
+        },
+
+        warningSnackbar(message) {
+            this.snackbar.color = 'warning';
+            this.snackbar.text = message;
+            this.snackbar.active = true;
+        }
     }
 }
 
