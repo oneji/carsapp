@@ -236,9 +236,10 @@ export default {
                             car_id: this.deleteDriver.car_id
                         })
                         .then(response => {
-                            this.cars.map(car => {
+                            this.cars.map((car, index) => {
                                 if(car.id === this.deleteDriver.car_id) {
                                     car.drivers = [];
+                                    this.cars.splice(index, 1);
                                 }
                             });
                             

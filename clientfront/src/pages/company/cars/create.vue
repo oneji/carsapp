@@ -162,7 +162,7 @@
                                             <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>   
                                             <v-radio-group v-model="newCar.type" row class="pt-0">
                                                 <v-radio label="Служебная" :value="0"></v-radio>
-                                                <v-radio label="Служебная-Личная" :value="1"></v-radio>
+                                                <v-radio label="Служебно-Личная" :value="1"></v-radio>
                                             </v-radio-group>                                       
                                         </v-container>                                        
                                     </v-flex>

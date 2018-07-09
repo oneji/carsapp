@@ -145,21 +145,14 @@ import axios from '@/axios'
 import cookies from 'js-cookie'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import user from '@/components/mixins/user'
+import assetsURL from '@/components/mixins/assets-url'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar ],
-    computed: {
-        user() {
-            return cookies.get('user') !== undefined ? JSON.parse(cookies.get('user')) : {};
-        },
-
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },
+    mixins: [ snackbar, user, assetsURL ],
     data() {
         return {
             drawer: true,

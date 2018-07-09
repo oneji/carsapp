@@ -32,7 +32,7 @@
             </v-card-text>
         </v-card>
 
-        <add-comment :card-id="cardId" @add="onCommentAdded" />
+        <add-comment @add="onCommentAdded" />
     </div>
 </template>
 
@@ -43,7 +43,6 @@ import AddComment from './AddCarCardComment'
 export default {
     props: {
         items: Array,
-        cardId: [Number, String]
     },
     components: {
         AddComment

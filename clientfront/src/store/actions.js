@@ -9,7 +9,7 @@ const actions = {
             axios.get('/me')
                 .then(response => { 
                     commit('setUser', response.data.user);
-                    cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
+                    window.localStorage.setItem('user', JSON.stringify(response.data.user));
                     resolve(response);
                 })
                 .catch(error => {
@@ -31,7 +31,7 @@ const actions = {
                     if(response.data.success) {
                         commit('setUser', response.data.user);
                         cookie.set('auth.client.token', response.data.token, { expires: 1 });
-                        cookie.set('user', JSON.stringify(response.data.user), { expires: 1 });
+                        window.localStorage.setItem('user', JSON.stringify(response.data.user));
                         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         
                         resolve(response);
@@ -48,7 +48,7 @@ const actions = {
             .then(response => {
                 commit('resetUser');
                 cookie.remove('auth.client.token');
-                cookie.remove('user');
+                window.localStorage.removeItem('user');
                 router.push('/login');
             })
             .catch(error => console.log(error));
@@ -57,7 +57,7 @@ const actions = {
     resetUser({ commit }) {
         commit('resetUser'); 
         cookie.remove('auth.client.token');
-        cookie.remove('user')       
+        window.localStorage.removeItem('user');
     },
 
     refreshToken({ commit }) {

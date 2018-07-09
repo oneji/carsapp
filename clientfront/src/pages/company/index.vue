@@ -37,9 +37,9 @@
             </v-btn>
             <v-toolbar-title></v-toolbar-title>
             <v-spacer></v-spacer>
-            <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+            <v-btn icon @click.stop="rightDrawer = !rightDrawer">
                 <v-icon>notifications</v-icon>
-            </v-btn> -->
+            </v-btn>
             <!-- User menu -->
             <v-menu :close-on-content-click="false" offset-x>
                 <v-btn icon large slot="activator">
@@ -115,17 +115,11 @@
 import axios from '@/axios'
 import cookies from 'js-cookie'
 import config from '@/config'
+import user from '@/components/mixins/user'
+import assetsURL from '@/components/mixins/assets-url'
 
 export default {
-    computed: {
-        user() {
-            return cookies.get('user') !== undefined ? JSON.parse(cookies.get('user')) : {};
-        },
-
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },
+    mixins: [user, assetsURL],
     data() {
         return {
             drawer: true,

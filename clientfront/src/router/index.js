@@ -2,7 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
 import { hasRole } from '@/utils/roles'
-import store from '@/store' 
+import { isTokenExpired } from '@/utils/jwt'
+import store from '@/store'
 import cookie from 'js-cookie'
 
 Vue.use(Router)
@@ -13,10 +14,24 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {    
     const token = cookie.get('auth.client.token');    
+    const user = window.localStorage.getItem('user');    
 
     if(to.name.toLowerCase() !== 'login')  {
         if(token === undefined) {
+            store.dispatch('resetUser')
             next('/login');
+        }
+
+        if(user === null) {
+            store.dispatch('resetUser')
+            next('/login')
+        }
+
+        if(token !== undefined) {
+            if(!isTokenExpired(token)) {
+                next()
+            }            
+            next()
         }
 
         next()     

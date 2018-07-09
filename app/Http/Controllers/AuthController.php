@@ -14,6 +14,24 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     /**
+     * Get user roles and permissions
+     */
+    public function acl() 
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $roles = $user->getRoleNames();
+        $permissions = $user->getPermissionNames();
+        $rolePermissions = array_unique($user->getRolePermissionNames());
+        $rolePermissions = array_values($rolePermissions);
+
+        return response()->json([
+            'roles' => $roles,
+            'permissions' => $permissions,
+            'rolePermissions' => $rolePermissions
+        ]);
+    }
+    
+    /**
      * API Register
      *
      * @param Request $request
@@ -29,7 +47,10 @@ class AuthController extends Controller
 
         if($validator->fails()) {
             $error = $validator->messages()->toJson();
-            return response()->json(['success'=> false, 'message'=> $error]);
+            return response()->json([
+                'success' => false, 
+                'message' => $error
+            ]);
         }
 
         $user = new User;
@@ -55,7 +76,12 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         
-        $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with(['roles', 'permissions'])->first();
+        $user = User::where('email', $request->email)->where('deleted', 0)->where('type', $request->type)->with([
+            'roles.permissions' => function($query) {
+                $query->select('name');
+            }, 'permissions'
+        ])->first();
+
         if(!$user) {
             return response()->json([
                 'success' => false,
@@ -125,7 +151,7 @@ class AuthController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
         }
 
-        $me = User::where('id', $user->id)->with(['roles', 'permissions'])->first();
+        $me = User::where('id', $user->id)->with(['roles.permissions', 'permissions'])->first();
 
         // the token is valid and we have found the user via the sub claim
         return response()->json([

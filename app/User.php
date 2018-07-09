@@ -45,7 +45,14 @@ class User extends Authenticatable implements JWTSubject
      * @return array
      */
     public function getJWTCustomClaims() {
-        return [];
+        return [ 
+            'roles' => $this->roles()->with([
+                    'permissions' => function($query) {
+                        $query->select('name')->get();
+                    }
+                ])->get(),
+            'permissions' => $this->permissions
+        ];
     }
 
     /**
@@ -72,5 +79,48 @@ class User extends Authenticatable implements JWTSubject
     public function comments() 
     {
         return $this->hasMany('App\CarCardComment');
+    }
+
+    /**
+     * Get user role names
+     * 
+     * @return  array $roles
+     */
+    public function getRoleNames()
+    {
+        $roles = [];
+        foreach($this->roles as $role)
+            array_push($roles, $role->name);
+
+        return $roles;
+    }
+
+    /**
+     * Get user permission names
+     * 
+     * @return  array $permissions
+     */
+    public function getPermissionNames()
+    {
+        $permissions = [];
+        foreach($this->permissions as $permission)
+            array_push($permissions, $permission->name);
+        
+        return $permissions;
+    }
+
+    /**
+     * Get user role permission names
+     */
+    public function getRolePermissionNames()
+    {        
+        $rolePermissions = [];
+        foreach($this->roles as $role) {
+            foreach($role->permissions as $permission) {
+                array_push($rolePermissions, $permission->name);
+            }
+        }
+        
+        return $rolePermissions;
     }
 }

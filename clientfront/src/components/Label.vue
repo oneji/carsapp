@@ -13,7 +13,6 @@ export default {
         display: inline;
         padding: 0.3em .6em;
         font-size: 95%;
-        font-weight: 700;
         line-height: 1;
         color: #fff;
         text-align: center;

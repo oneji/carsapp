@@ -51,7 +51,7 @@
             <!-- Comments -->
             <transition name="slide-x-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
-                    <comments :items="comments" :card-id="car.card.id" @add="onCommentAdded" />
+                    <comments :items="comments" @add="onCommentAdded" />
                 </v-flex>
             </transition>
         </v-layout>

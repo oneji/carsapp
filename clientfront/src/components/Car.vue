@@ -12,7 +12,7 @@
         <v-divider></v-divider>           
         <v-card-title primary-title class="pt-3 pb-0">
             <div>
-                <h3 class="headline mb-0">{{ item.brand_name }} {{ item.model_name }} <span class="subheading red--text">{{ item.number }}</span></h3>
+                <h3 class="title mb-0">{{ item.brand_name }} {{ item.model_name }} <span class="subheading red--text">{{ item.number }}</span></h3>
                 <div v-if="item.drivers.length > 0"> 
                     <div v-for="driver in item.drivers" :key="driver.id">                                    
                         <span v-if="driver.pivot.active == 1"><strong>Водитель:</strong> {{ driver.fullname }}</span>
@@ -27,11 +27,12 @@
             <v-btn block flat color="primary" v-if="item.sold === 1 && forSale" @click="changeSoldStatus(item.id, 0)" :loading="loading.sale === item.id">Вернуть</v-btn>
             <v-btn block flat color="warning" v-if="canReserve" :loading="loading.reserve === item.id" @click="reserveCar(item.id)">В резерв</v-btn> 
 
-            <v-tooltip bottom v-if="item.sold === 0 && forSale">
-                <v-btn icon slot="activator" @click="changeSoldStatus(item.id, 1)" :loading="loading.sale === item.id">
+            <v-tooltip bottom v-if="item.sold === 0 && forSale"> 
+                <v-btn :disabled="item.drivers.length > 0 ? true : false" icon slot="activator" @click="changeSoldStatus(item.id, 1)" :loading="loading.sale === item.id">
                     <v-icon>attach_money</v-icon>
                 </v-btn>
-                <span>В список проданных</span>
+                <span v-if="item.drivers.length > 0">Перед продажей отвяжите водителя</span>
+                <span v-else>В список проданных</span>
             </v-tooltip>                
 
             <div v-if="edit">

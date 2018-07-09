@@ -25,9 +25,6 @@
 import axios from '@/axios'
 
 export default {
-    props: {
-        cardId: [Number, String]
-    },
     data() {
         return {
             newComment: '',
@@ -37,7 +34,7 @@ export default {
     methods: {
         storeComment() {
             this.loading = true;
-            axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/comments`, { comment: this.newComment })
+            axios.post(`/sto/${this.$route.params.slug}/cards/${this.$store.getters.car.card.id}/comments`, { comment: this.newComment })
                 .then(response => {
                     this.loading = false;
                     this.newComment = '';

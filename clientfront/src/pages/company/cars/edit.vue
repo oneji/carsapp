@@ -164,7 +164,7 @@
                                             <v-checkbox label="В резерв" v-model="editCar.reserved"></v-checkbox>   
                                             <v-radio-group v-model="editCar.type" row class="pt-0">
                                                 <v-radio label="Служебная" :value="0"></v-radio>
-                                                <v-radio label="Служебная-Личная" :value="1"></v-radio>
+                                                <v-radio label="Служебно-Личная" :value="1"></v-radio>
                                             </v-radio-group>                                       
                                         </v-container>                                        
                                     </v-flex>

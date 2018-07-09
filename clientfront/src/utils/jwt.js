@@ -11,14 +11,14 @@ export function refreshToken(token) {
 }
 
 export function isTokenExpired(token) {
-    const parsedToken = VueJwtDecode.decode(token.split(' ')[1]);
+    const parsedToken = VueJwtDecode.decode(token);
+    console.log(parsedToken)
     let expirationTime = new Date(parsedToken.exp * 1000);    
     let todayTime = new Date(Date.now());    
     let issueTime = new Date(parsedToken.iat * 1000);
 
-    if(expirationTime < todayTime) {
-        return true;
-    } else {
-        return false;
-    }
+    if(expirationTime < todayTime)
+        return true
+    else
+        return false
 }
