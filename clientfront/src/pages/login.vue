@@ -79,7 +79,7 @@ export default {
                             password: this.password,
                             type: this.type
                         }
-                        this.$store.dispatch('login', credentials).then(response => {
+                        this.$store.dispatch('login', credentials).then(() => {
                             this.loading = false;
                             this.$router.push('/');
                         })

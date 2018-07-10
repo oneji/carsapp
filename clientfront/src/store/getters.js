@@ -21,6 +21,10 @@ const getters = {
 
     equipment: state => {
         return state.equipment;
+    },
+
+    permissions: state => {
+        return state.permissions;
     }
 }
 

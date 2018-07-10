@@ -1,4 +1,4 @@
-import { SET_USER, RESET_USER, REFRESH_TOKEN, SET_CAR, SET_DEFECT_ACT, SET_DEFECT_TYPES, SET_EQUIPMENT } from './mutation-types'
+import { SET_USER, RESET_USER, REFRESH_TOKEN, SET_CAR, SET_DEFECT_ACT, SET_DEFECT_TYPES, SET_EQUIPMENT, SET_PERMISSIONS } from './mutation-types'
 import router from '@/router'
 
 const mutations = {
@@ -30,6 +30,10 @@ const mutations = {
  
     [SET_EQUIPMENT] (state, equipment) {
         state.equipment = equipment;
+    },
+
+    [SET_PERMISSIONS] (state, permissions) {
+        state.permissions = permissions;
     }
 }
 

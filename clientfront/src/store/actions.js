@@ -2,6 +2,7 @@ import axios from '@/axios'
 import cookie from 'js-cookie'
 import router from '@/router'
 import * as types from './mutation-types'
+import api from '@/api'
 
 const actions = {
     fetch({ commit }) {        
@@ -21,12 +22,7 @@ const actions = {
 
     login({ commit }, user) {
         return new Promise((resolve, reject) => {
-            axios.post('/auth/login', {
-                'email': user.email,
-                'password': user.password,
-                'type': user.type
-            })
-            .then(response => { 
+            api.login(user).then(response => { 
                 if(response.status === 200) { 
                     if(response.data.success) {
                         commit('setUser', response.data.user);
@@ -44,29 +40,19 @@ const actions = {
     },
 
     logout({ commit }) {
-        axios.post('/auth/logout')
-            .then(response => {
-                commit('resetUser');
-                cookie.remove('auth.client.token');
-                window.localStorage.removeItem('user');
-                router.push('/login');
-            })
-            .catch(error => console.log(error));
+        api.logout().then(() => {
+            commit('resetUser');
+            cookie.remove('auth.client.token');
+            window.localStorage.removeItem('user');
+            router.push('/login');
+        })
+        .catch(error => console.log(error));
     },
 
     resetUser({ commit }) {
         commit('resetUser'); 
         cookie.remove('auth.client.token');
         window.localStorage.removeItem('user');
-    },
-
-    refreshToken({ commit }) {
-        axios.get('/token/refresh')
-            .then(response => {
-                console.log(axios.defaults.headers.common);
-            })
-            .catch(error => console.log(error));
-           
     },
 
     setCar({ commit }, car) {
@@ -83,6 +69,10 @@ const actions = {
 
     setEquipment({ commit }, equipment) {
         commit(types.SET_EQUIPMENT, equipment);
+    },
+
+    setPermissions({ commit }, permissions) {
+        commit(types.SET_PERMISSIONS, permissions);
     }
 }
 
