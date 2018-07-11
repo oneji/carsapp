@@ -42,6 +42,7 @@ export default {
     methods: {
         filesChanged() {
             this.$emit('files-changed', this.$refs.pond.getFiles());
+            console.log(this.$refs.pond.getFiles());
         }
     },
     watch: {

@@ -34,28 +34,6 @@
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
-
-        <!-- Add attachment modal -->
-        <!-- <v-dialog v-model="newAttachments.dialog" max-width="500">
-            <form @submit.prevent="addAttachments" data-vv-scope="add-attachments-type-form">
-                <v-card>
-                    <v-card-title class="headline">Добавить вложения</v-card-title>
-                    <v-card-text>
-                        <v-layout>
-                            <v-flex xs12 sm12 md12 lg12>     
-                                <file-upload @files-changed="getAttachments" :remove-files="newAttachments.removeAll" />
-                            </v-flex>
-                        </v-layout>
-                    </v-card-text>
-                    
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="newAttachments.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="newAttachments.loading" flat="flat" type="submit">Добавить</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </form>
-        </v-dialog> -->
     </div>
 </template>
 
@@ -63,6 +41,7 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 
 import Loading from '@/components/Loading'
 import FileUpload from '@/components/FileUpload'
@@ -76,12 +55,7 @@ import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import Fines from '@/components/CarCard/Fines/CarCardFine'
 
 export default {
-    mixins: [ snackbar ],
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },
+    mixins: [ snackbar, assetsURL ],
     components: {
         FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments, Fines
     },

@@ -14,6 +14,15 @@ class FineAttachment extends Model
     public $timestamps = false;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'fine_id', 'attachment', 
+    ];
+
+    /**
      * Get fine that owns an attachment
      */
     public function fine()

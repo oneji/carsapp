@@ -8,6 +8,7 @@ use App\CarAttachment;
 use App\Company;
 use App\Driver;
 use App\Fine;
+use App\FineAttachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class CarController extends Controller
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines')
+                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments')
                         ->where('sold', 0)
                         ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
@@ -374,7 +375,7 @@ class CarController extends Controller
      * @param   string $company_slug
      * @param   int $car_id
      * 
-     * @return  \Illuminate\Http\Response
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function createCard($company_slug, $car_id)
     {
@@ -407,20 +408,60 @@ class CarController extends Controller
     }
 
     /**
+     * Store a newly created fine to the database.
      * 
+     * @param   \Illuminate\Http\Request
+     * @param   string $company_slug
+     * @param   int $car_id
+     * @param   int $car_card_id 
+     * 
+     * @return  \Illuminate\Http\JsonResponse
      */
-    public function addFine($company_slug, $car_id, $car_card_id)
+    public function addFine(Request $request, $company_slug, $car_id, $car_card_id)
     {
-        $card = CarCard::find($car_card_id);
+        $fine = new Fine();
+        $fine->fine_amount = $request->fine_amount;
+        $fine->fine_date = Carbon::parse($request->fine_date);
+        $fine->car_card_id = $car_card_id;
+        $fine->save();
+
+        $fineAttachments = array();
+        if($request->hasFile('attachments')) {            
+            foreach($request->attachments as $file) {
+                $fileExtension = $file->getClientOriginalExtension();
+                $fileNameToStore = uniqid().'.'.$fileExtension;
+                $path = $file->move(public_path('/uploads/attachments/fines'), $fileNameToStore);  
+                $fileNameToStore = 'uploads/attachments/fines/'.$fileNameToStore;    
+                
+                array_push($fineAttachments, new FineAttachment([
+                    'fine_id' => $fine->id,
+                    'attachment' => $fileNameToStore,
+                ]));
+            }
+        } else {
+            $fileNameToStore = null;
+        }        
+
+        if($fileNameToStore !== null)
+            $fine->attachments()->saveMany($fineAttachments);
+
+
         return response()->json([
             'success' => true,
             'message' => 'Штраф успешно добавлен.',
-            'card' => $card
+            'fine' => $fine
         ]);
     }
 
     /**
+     * Change fine paid status.
      * 
+     * @param   string $company_slug
+     * @param   int $car_id
+     * @param   int $fine_id
+     * @param   int $status
+     * 
+     * @return  \Illuminate\Http\JsonResponse
      */
     public function changePaidFineStatus($company_slug, $car_id, $fine_id, $status)
     {
