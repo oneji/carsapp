@@ -11,7 +11,7 @@
                 </v-container>
             </v-card-media>
             <v-divider></v-divider>
-            <v-card-text primary-title class="pt-1 pb-0">
+            <v-card-text primary-title class="pt-1 pb-1">
                 <v-list two-line>
                     <v-alert outline transition="scale-transition" type="info" :value="true" v-if="items.length === 0">
                         Дефектных актов нет.
@@ -36,7 +36,7 @@
             </v-card-text>
         </v-card>
 
-        <defect-act :open="defectActDialog" @close="defectActDialog = false" />
+        <DefectAct :open="defectActDialog" @close="defectActDialog = false" />
     </div>
 </template>
 

@@ -12,7 +12,7 @@ import { Can } from '@/directives'
 
 Vue.use(Vuetify)
 Vue.use(VeeValidate)
-Vue.use(VueMoment);
+Vue.use(VueMoment)
 
 import 'vuetify/dist/vuetify.min.css'
 import 'babel-polyfill'

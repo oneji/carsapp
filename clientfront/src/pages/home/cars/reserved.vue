@@ -27,7 +27,7 @@
                 </v-alert>
             </v-flex>
 
-            <loading :loading="loading" />
+            <Loading :loading="loading" />
         </v-layout>       
 
         <v-layout row wrap>
@@ -37,7 +37,7 @@
                         <v-container fill-height fluid>
                             <v-layout fill-height>
                                 <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
-                                    <my-label :text="car.info.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="car.info.type === 0 ? 'success' : 'primary'" />
+                                    <MyLabel :text="car.info.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="car.info.type === 0 ? 'success' : 'primary'" />
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -168,6 +168,7 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 import Loading from '@/components/Loading'
 import MyLabel from '@/components/Label'
 
@@ -175,12 +176,8 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [snackbar],
+    mixins: [snackbar, assetsURL],
     computed: {
-        assetsURL() {
-            return config.assetsURL;
-        },
-
         getCarsByCompany() {
             if(this.query.company === null)
                 return this.cars.filter(car => car.info.reserved === 1);

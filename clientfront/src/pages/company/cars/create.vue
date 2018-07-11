@@ -1,6 +1,6 @@
 <template>
     <div>
-        <move-buttons />
+        <MoveButtons />
         <v-layout row wrap>
             <!-- Main photo -->
             <v-flex xs12 sm12 md4 lg3>
@@ -195,7 +195,7 @@
                         </v-container>
                     </v-card-media>
                     <v-divider></v-divider>
-                    <file-pond
+                    <FilePond
                         name="test"
                         ref="pond"
                         class-name="my-pond"

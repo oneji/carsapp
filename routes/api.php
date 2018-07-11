@@ -80,16 +80,18 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::get('/{slug}/cars/sold', 'CarController@getSoldCars');
         Route::get('/{slug}/cars/{car}/edit', 'CarController@edit');
         Route::get('/{slug}/cars/{car}/card', 'CarController@getCardInfo');
-
+        
         Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/drivers', 'CarController@bindDriver'); 
         Route::post('/{slug}/cars/{car}/update', 'CarController@update');
         Route::post('/{slug}/cars/{car}/card', 'CarController@createCard');
+        Route::post('/{slug}/cars/{car}/card/{card}/fines', 'CarController@addFine');
 
         Route::put('/{slug}/cars/drivers', 'CarController@unbindDriver');  
         Route::put('/{slug}/cars/reserve/put', 'CarController@reserveCar');     
         Route::put('/{slug}/cars/reserve/get', 'CarController@backFromReserve');
         Route::put('/{slug}/cars/{car}/sold/{status}', 'CarController@changeSoldStatus');
+        Route::put('/{slug}/cars/{car}/fines/{fine}/{status}', 'CarController@changePaidFineStatus');
         // Driver routes
         Route::get('/{slug}/drivers', 'DriverController@get');
         Route::post('/{slug}/drivers', 'DriverController@store');

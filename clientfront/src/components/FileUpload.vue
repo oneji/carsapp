@@ -1,5 +1,5 @@
 <template>
-    <file-pond
+    <FilePond
         name="test"
         ref="pond"
         class-name="my-pond"
@@ -25,6 +25,8 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImagePreview, FilepondPluginFileValidateSize)
 
+// events: 'files-changed'
+
 export default {
     props: {
         removeFiles: {
@@ -40,7 +42,6 @@ export default {
     methods: {
         filesChanged() {
             this.$emit('files-changed', this.$refs.pond.getFiles());
-            console.log(this.$refs.pond.getFiles());
         }
     },
     watch: {

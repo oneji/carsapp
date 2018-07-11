@@ -1,25 +1,25 @@
 <template>
     <div>
         <v-layout style="position: relative;">
-            <loading :loading="loading" />
+            <Loading :loading="loading" />
         </v-layout>
 
         <transition class="row wrap" name="slide-x-transition" mode="out-in"> 
             <v-layout row wrap :key="11" v-if="!loading">           
                 <v-flex xs12 sm6 mg3 lg4 :key="0" >
-                    <tile-box :link="{ name: 'HomeCompanies' }" title="Компании" :value="companies.length" box-icon="business" />
+                    <TileBox :link="{ name: 'HomeCompanies' }" title="Компании" :value="companies.length" box-icon="business" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="1">
-                    <tile-box :link="{ name: 'HomeCars' }" title="Автомобили" :value="carsList.length" box-icon="directions_car" />
+                    <TileBox :link="{ name: 'HomeCars' }" title="Автомобили" :value="carsList.length" box-icon="directions_car" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="2">
-                    <tile-box :link="{ name: 'HomeReservedCars' }" title="Резервные автомобили" :value="reservedCarsList.length" box-icon="directions_car" />
+                    <TileBox :link="{ name: 'HomeReservedCars' }" title="Резервные автомобили" :value="reservedCarsList.length" box-icon="directions_car" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="3">
-                    <tile-box :link="{ name: 'HomeDriversQueue' }" title="Водители" :value="drivers.length" box-icon="people" />
+                    <TileBox :link="{ name: 'HomeDriversQueue' }" title="Водители" :value="drivers.length" box-icon="people" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="4">
-                    <tile-box :link="{ name: 'HomeDriversQueue' }" title="Водители в очереди" :value="queue.length" box-icon="people" />
+                    <TileBox :link="{ name: 'HomeDriversQueue' }" title="Водители в очереди" :value="queue.length" box-icon="people" />
                 </v-flex>
             </v-layout>
         </transition> 

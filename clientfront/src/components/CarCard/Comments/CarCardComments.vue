@@ -17,39 +17,31 @@
                         Комментариев к автомобилю нет.
                     </v-alert>
                     <template v-for="comment in items">
-                        <v-list-tile :key="comment.title" avatar>
-                            <v-list-tile-avatar>
-                                <img v-if="comment.user.avatar !== null" :src="assetsURL + '/' + comment.user.avatar">
-                                <img v-else src="/static/images/user.png">
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title v-html="comment.comment"></v-list-tile-title>
-                                <v-list-tile-sub-title v-html="comment.user.fullname + ': ' + comment.created_at"></v-list-tile-sub-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
+                        <CommentItem :key="comment.title" :item="comment" />
                     </template>
                 </v-list>
             </v-card-text>
         </v-card>
 
-        <add-comment @add="onCommentAdded" />
+        <AddComment @add="onCommentAdded" />
     </div>
 </template>
 
 <script>
-import config from '@/config'
+import CommentItem from './CarCardCommentItem'
 import AddComment from './AddCarCardComment'
+
 
 export default {
     props: {
         items: Array,
     },
     components: {
-        AddComment
+        AddComment, CommentItem
     },
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
+    data() {
+        return {
+            
         }
     },
     methods: {

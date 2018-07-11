@@ -37,4 +37,12 @@ class CarCard extends Model
     {
         return $this->hasMany('App\DefectAct');
     }
+
+    /**
+     * Get all fines for car card.
+     */
+    public function fines()
+    {
+        return $this->hasMany('App\Fine');
+    }
 }

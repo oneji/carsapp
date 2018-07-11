@@ -4,7 +4,7 @@
             <v-container fill-height fluid>
                 <v-layout fill-height>
                     <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
-                        <my-label :text="item.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="item.type === 0 ? 'success' : 'primary'" />
+                        <MyLabel :text="item.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="item.type === 0 ? 'success' : 'primary'" />
                     </v-flex>
                 </v-layout>
             </v-container>

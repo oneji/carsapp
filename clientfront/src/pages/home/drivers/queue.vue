@@ -6,7 +6,7 @@
             </v-flex>
         </v-layout>
         <v-layout style="position: relative;">
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
 
             <v-flex v-if="queue.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true"> 
@@ -102,18 +102,14 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 import Loading from '@/components/Loading'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [snackbar],
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },
+    mixins: [snackbar, assetsURL],
     components: {
         Loading
     },

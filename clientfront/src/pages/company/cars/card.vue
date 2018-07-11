@@ -1,57 +1,31 @@
 <template>
     <div>
-        <move-buttons />
+        <MoveButtons />
         <v-layout row wrap style="position: relative">
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
             
             <!-- Car info -->
             <transition name="slide-x-transition" mode="out-in">
                 <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
-                    <car :item="car" :expanded="true" />
+                    <Car :item="car" :expanded="true" />
                 </v-flex>
             </transition>
             
-            <!-- Defect act and attachments -->
+            <!-- Defect act, attachments and fines -->
             <transition name="slide-x-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
-                    <defect-act-list v-if="!loading.pageLoad" :items="defectActs" :show-defect="false" />
+                    <DefectActList v-if="!loading.pageLoad" :items="defectActs" :show-defect="false" />
 
-                    <attachments :files="lightboxImages" />
-                    <!-- <v-card>
-                        <v-card-media>
-                            <v-container>
-                                <v-layout>
-                                    <v-flex>
-                                        <p class="subheading my-0">Вложения</p>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-media>
-                        <v-divider></v-divider>
-                        <v-card-text primary-title>
-                            <v-alert outline transition="scale-transition" type="info" :value="true" v-if="attachments.length === 0 && !loading.pageLoad">
-                                Вложений нет.
-                            </v-alert>
-                            
-                            <lightbox
-                                id="car_attachments"
-                                :images="lightboxImages"
-                                :image_class="'card_attachment'"
-                                :album_class="'my-album-class'"
-                                :options="{ history: false }">
-                            </lightbox>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="success" block flat class="py-0" @click.native="newAttachments.dialog = true">Добавить вложения</v-btn>
-                        </v-card-actions>
-                    </v-card> -->
+                    <Attachments :files="lightboxImages" />  
+
+                    <Fines :items="fines" />
                 </v-flex>            
             </transition>
 
             <!-- Comments -->
             <transition name="slide-x-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
-                    <comments :items="comments" @add="onCommentAdded" />
+                    <Comments :items="comments" @add="onCommentAdded" />
                 </v-flex>
             </transition>
         </v-layout>
@@ -62,7 +36,7 @@
         </v-snackbar>
 
         <!-- Add attachment modal -->
-        <v-dialog v-model="newAttachments.dialog" max-width="500">
+        <!-- <v-dialog v-model="newAttachments.dialog" max-width="500">
             <form @submit.prevent="addAttachments" data-vv-scope="add-attachments-type-form">
                 <v-card>
                     <v-card-title class="headline">Добавить вложения</v-card-title>
@@ -81,7 +55,7 @@
                     </v-card-actions>
                 </v-card>
             </form>
-        </v-dialog>
+        </v-dialog> -->
     </div>
 </template>
 
@@ -99,6 +73,7 @@ import Car from '@/components/Car'
 import MoveButtons from '@/components/MoveButtons'
 import Comments from '@/components/CarCard/Comments/CarCardComments'
 import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
+import Fines from '@/components/CarCard/Fines/CarCardFine'
 
 export default {
     mixins: [ snackbar ],
@@ -108,7 +83,7 @@ export default {
         }
     },
     components: {
-        FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments
+        FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments, Fines
     },
     data() {
         return {
@@ -132,6 +107,7 @@ export default {
             comments: [],
             defectActs: [],
             attachments: [],
+            fines: [],
             equipment: [],
             selects: {
                 defects: [],
@@ -162,6 +138,7 @@ export default {
                     this.$store.dispatch('setDefectTypes', response.data.defects_info);
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
+                    this.fines = this.car.card.fines;
                     this.defectActs =  this.car.card.defect_acts;
 
                     this.attachments.map(file => {
@@ -214,45 +191,6 @@ export default {
                 });
             });
         },
-        
-        getAttachments(file) {
-            this.attachments.items = file;
-        },
-
-        addAttachments() {
-            if(this.attachments.items !== undefined) {  
-                this.newAttachments.loading = true;             
-    
-                let formData = new FormData();
-                let fileList = [];
-    
-                this.attachments.items.map(value => {
-                    fileList.push(value.file);
-                });
-                
-                for(let i = 0; i < fileList.length; i++) {
-                    formData.append('attachments[]', fileList[i]);
-                }
-                
-                axios.post(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/attachments`, formData)
-                    .then(response => {
-                        response.data.files.map(file => {
-                            this.lightboxImages.push({
-                                src: this.assetsURL + '/' + file.attachment,
-                                title: file.attachment_name
-                            });
-                        });
-                        this.newAttachments.loading = false;  
-                        this.newAttachments.removeAll = true;                        
-
-                        this.successSnackbar(response.data.message);       
-                    })
-                    .catch(error => console.log(error));
-            } else {
-                this.warningSnackbar('Выберите хотя бы одно вложение!');
-            } 
-            
-        },
 
         onDefectActCreated(act) {
             this.defectActs.push(act);
@@ -270,25 +208,5 @@ export default {
 </script>
 
 <style>
-    .car-icon {
-        font-size: 150%;
-        margin-right: 8px;
-    }
-    .car-details-block {
-        display: flex;
-        justify-content: start;
-        align-items: center;
-    }
-    .car-details-block strong {
-        margin-right: 5px;
-    }
-    .card_attachment {
-        margin-right: 5px;
-        border: 1px solid #ccc !important;
-        padding: 3px;
-        width: 80px !important;
-        height: 80px !important;
-        border-radius: 100%;
-        float: none !important;
-    }
+    
 </style>

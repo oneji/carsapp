@@ -1,9 +1,9 @@
 <template>
     <div>
-        <move-buttons />
+        <MoveButtons />
         
         <v-layout style="position: relative;">
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
         </v-layout>
         <v-layout row wrap v-if="!loading.pageLoad">
             <!-- Main photo -->

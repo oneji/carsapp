@@ -31,13 +31,13 @@
                                         <v-list-tile-content>
                                             <v-list-tile-title class="title mb-1">{{ request.sto_name }}</v-list-tile-title>
                                             <v-list-tile-sub-title v-if="request.status === 0">
-                                                Статус: <my-label text="Ждет принятия" type="warning" />
+                                                Статус: <MyLabel text="Ждет принятия" type="warning" />
                                             </v-list-tile-sub-title>
                                             <v-list-tile-sub-title v-else-if="request.status === 1">
-                                                Статус: <my-label text="Принята" type="success" />
+                                                Статус: <MyLabel text="Принята" type="success" />
                                             </v-list-tile-sub-title>                                            
                                             <v-list-tile-sub-title v-else-if="request.status === 2">
-                                                Статус: <my-label text="Отклонена" type="error" />
+                                                Статус: <MyLabel text="Отклонена" type="error" />
                                             </v-list-tile-sub-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
@@ -99,15 +99,11 @@
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 import MyLabel from '@/components/Label'
 
 export default {
-    mixins: [ snackbar ],
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
-        },
-    },
+    mixins: [ snackbar, assetsURL ],
     components: {
         MyLabel
     },

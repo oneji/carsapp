@@ -1,6 +1,6 @@
 <template>
     <div>
-        <move-buttons />
+        <MoveButtons />
         <v-layout row wrap>
             <v-flex xs12 sm12 md4 lg3>
                 <v-card>

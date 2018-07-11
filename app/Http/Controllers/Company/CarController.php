@@ -7,6 +7,7 @@ use App\CarCard;
 use App\CarAttachment;
 use App\Company;
 use App\Driver;
+use App\Fine;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ class CarController extends Controller
                         ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                         ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment')
+                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines')
                         ->where('sold', 0)
                         ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
                             $q->where('active', 1)->get();
@@ -402,6 +403,35 @@ class CarController extends Controller
             'success' => true,
             'message' => 'Карточка успешно создана.',
             'card' => $card
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function addFine($company_slug, $car_id, $car_card_id)
+    {
+        $card = CarCard::find($car_card_id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Штраф успешно добавлен.',
+            'card' => $card
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function changePaidFineStatus($company_slug, $car_id, $fine_id, $status)
+    {
+        $message = (int) $status === 1 ? 'Штраф успешно оплачен.' : 'Штраф помечен как не оплаченный.';
+        $fine = Fine::find($fine_id);
+        $fine->paid = (int) $status;
+        $fine->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $message
         ]);
     }
 }

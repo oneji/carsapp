@@ -16,7 +16,7 @@
                 <v-container>
                     <v-layout row justify-center>
                         <v-flex xs12 sm12 md6 lg5>
-                            <defect-act :selects="selects" :defects="defects" :selected="selected" :card-id="cardId" />
+                            <DefectAct :selects="selects" :defects="defects" :selected="selected" :card-id="cardId" />
                         </v-flex>
                     </v-layout>
                 </v-container>                

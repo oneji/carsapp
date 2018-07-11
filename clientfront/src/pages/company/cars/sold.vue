@@ -7,12 +7,12 @@
                 </v-alert>
             </v-flex>
 
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
-                <car :item="car" :for-sale="true" :details="true" @sale="onCarSale" />
+                <Car :item="car" :for-sale="true" :details="true" @sale="onCarSale" />
             </v-flex>
         </transition-group>
 
@@ -28,7 +28,6 @@ import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
-import MyLabel from '@/components/Label'
 import Car from '@/components/Car'
 
 export default {
@@ -42,7 +41,7 @@ export default {
         },
     },
     components: {
-        Loading, MyLabel, Car
+        Loading, Car
     },
     data() {
         return {

@@ -13,7 +13,7 @@
                 </v-alert>
             </v-flex>
 
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
@@ -79,14 +79,10 @@ import axios from '@/axios'
 import config from '@/config'
 import Loading from '@/components/Loading'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 
 export default {
-    mixins: [snackbar],
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },
+    mixins: [snackbar, assetsURL],    
     components: {
         Loading
     },

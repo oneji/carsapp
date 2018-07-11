@@ -1,8 +1,8 @@
 <template>
     <div>
-        <move-buttons />
+        <MoveButtons />
         <v-layout style="position: relative">
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
         </v-layout>
         <v-layout row wrap v-if="!loading.pageLoad">
             <!-- Old driver photo -->
@@ -155,18 +155,15 @@ const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImage
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
+import assetsURL from '@/components/mixins/assets-url'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
 
 export default {
     $_veeValidate: {
         validator: 'new'
-    },
-    computed: {
-        assetsURL() {
-            return config.assetsURL;
-        }
-    },    
+    }, 
+    mixins: [assetsURL],
     components: {
         FilePond, Loading, MoveButtons
     },

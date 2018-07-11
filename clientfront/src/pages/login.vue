@@ -39,19 +39,11 @@
 </template>
 
 <script>
-import axios from '../axios'
+import axios from '@/axios'
 
 export default {
     $_veeValidate: {
         validator: 'new'
-    },
-    computed: {
-        user() {
-            return this.$store.getters.user;
-        },
-        isLogged() {
-            return this.$store.getters.isLogged;
-        }
     },
     data: () => ({        
         showPassword: true,

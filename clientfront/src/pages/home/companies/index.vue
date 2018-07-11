@@ -23,7 +23,7 @@
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
                         <v-flex xs6 sm6 md6 lg6>
-                            <img v-if="company.logo" :src="`${assetURL}/${company.logo}`" :alt="`Логотип ${company.company_name}`">
+                            <img v-if="company.logo" :src="`${assetsURL}/${company.logo}`" :alt="`Логотип ${company.company_name}`">
                             <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
                         </v-flex>
                         </v-layout>
@@ -56,7 +56,7 @@
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
                         <v-flex xs6 sm6 md6 lg6>
-                            <img v-if="sto.logo" :src="`${assetURL}/${sto.logo}`" :alt="`Логотип ${sto.sto_name}`">
+                            <img v-if="sto.logo" :src="`${assetsURL}/${sto.logo}`" :alt="`Логотип ${sto.sto_name}`">
                             <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
                         </v-flex>
                         </v-layout>
@@ -82,16 +82,14 @@
 import axios from "@/axios"
 import config from '@/config'
 import Loading from '@/components/Loading'
+import assetsURL from '@/components/mixins/assets-url'
 
 export default {
+    mixins: [assetsURL],
     components: {
         Loading  
     },
-    computed: {        
-        assetURL() {
-            return config.assetsURL;
-        },
-
+    computed: {  
         noProjects() {
             let companies = this.companies;
             let stos = this.stos;

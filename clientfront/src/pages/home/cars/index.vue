@@ -20,13 +20,13 @@
         <v-divider class="mb-3"></v-divider>
 
         <v-layout style="position: relative;">
-            <loading :loading="loading" />
+            <Loading :loading="loading" />
         </v-layout>      
 
         <!-- <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> -->
             <v-layout row wrap>           
                 <v-flex v-for="car in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
-                    <car :item="car.info" :can-reserve="true" @reserve="onReserveCar" />
+                    <Car :item="car.info" :can-reserve="true" @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
         <!-- </transition-group> -->
@@ -40,18 +40,13 @@
 
 <script>
 import axios from '@/axios'
-import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
-import MyLabel from '@/components/Label'
 import Car from '@/components/Car'
 
 export default {
     mixins: [snackbar],
     computed: {
-        assetsURL() {
-            return config.assetsURL;
-        },
 
         getCarsByCompany() {
             if(this.query.company === null)
@@ -65,7 +60,7 @@ export default {
         } 
     },
     components: {
-        Loading, MyLabel, Car
+        Loading, Car
     },
     data() {
         return {
