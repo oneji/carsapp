@@ -422,6 +422,7 @@ class CarController extends Controller
         $fine = new Fine();
         $fine->fine_amount = $request->fine_amount;
         $fine->fine_date = Carbon::parse($request->fine_date);
+        $fine->paid = 0;
         $fine->car_card_id = $car_card_id;
         $fine->save();
 
