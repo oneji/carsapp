@@ -127,7 +127,9 @@ export default {
             items: [
                 { icon: 'dashboard', title: 'Все проекты', to: { name: 'Home' } },
                 { icon: 'home', title: 'Главная', to: { name: 'CompanyHome' } },
+                { divider: true },
                 { icon: 'assignment', title: 'Список СТО', to: { name: 'CompanyStoRequests' } },
+                { icon: 'assignment', title: 'Заявки на ремонт', to: { name: 'CompanyRepairRequests' } },
                 { divider: true },        
                 { icon: 'directions_car', title: 'Автомобили', to: { name: 'CompanyCars' } },
                 { icon: 'directions_car', title: 'Проданные автомобили', to: { name: 'CompanySoldCars' } },

@@ -7,7 +7,7 @@
         <v-list-tile-content>
             <v-list-tile-title v-html="item.comment"></v-list-tile-title>
             <v-list-tile-sub-title>
-                {{ item.user.fullname }}: {{ item.created_at | moment("MMMM D, YYYY") }} в {{ item.created_at | moment("H:mm:ss") }}
+                {{ item.user.fullname }}: {{ item.created_at | moment('MMMM D, YYYY') }} в {{ item.created_at | moment('H:mm:ss') }}
             </v-list-tile-sub-title>
         </v-list-tile-content>
     </v-list-tile>

@@ -8,115 +8,27 @@
         </v-layout>
 
         <v-layout row wrap style="position: relative">
-            <loading :loading="loading.pageLoad" />
+            <Loading :loading="loading.pageLoad" />
             
             <!-- Car card -->
             <transition name="fade-transition" mode="out-in">
-                <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
-                    <v-card>
-                        <v-card-media>
-                            <v-container>
-                                <v-layout>
-                                    <v-flex>
-                                        <p class="subheading my-0">Общая информация</p>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-media>
-                        <v-divider></v-divider>
-                        <v-card-media :src="car.cover_image !== null ? assetsURL + '/' + car.cover_image : '/static/images/no-photo.png'" height="200px"></v-card-media>
-                        <v-divider></v-divider>
-                        <v-card-title primary-title class="pt-3 pb-0">
-                            <div>
-                                <h3 class="headline mb-0">{{ car.brand_name }} {{ car.model_name }}</h3>
-                                <div v-if="car.drivers.length > 0"> 
-                                    <div v-for="driver in car.drivers" :key="driver.id">                                    
-                                        <span v-if="driver.pivot.active == 1"><strong>Водитель:</strong> {{ driver.fullname }}</span>
-                                        <span v-else>dsadas</span>
-                                    </div>
-                                </div>
-                                <div v-else><strong>Водитель:</strong> Водителя нет</div>
-                            </div>
-                        </v-card-title>
-                        <v-card-actions class="pr-0 pl-0">
-                            <v-container class="pt-2 pb-2">
-                                <v-layout row wrap>
-                                    <v-flex>
-                                        <div class="car-details-block subheading mb-2">
-                                            <i class="ic-speedometer car-icon"></i>
-                                            <strong>Пробег:</strong> 
-                                            <span v-if="car.milage !== null">{{ car.milage }} км.</span>
-                                            <span v-else>Не установлен.</span>
-                                        </div>
-                                        <div class="car-details-block subheading mb-2">
-                                            <i class="ic-car car-icon"></i>
-                                            <strong>Vin код:</strong> {{ car.vin_code }}
-                                        </div>
-                                        <div class="car-details-block subheading mb-2">
-                                            <i class="ic-wheel car-icon"></i>
-                                            <strong>Гос-номер:</strong> {{ car.number }}
-                                        </div>
-                                        <div class="car-details-block subheading mb-2">
-                                            <i class="ic-engine car-icon"></i>
-                                            <strong>Объем двигателя:</strong> 
-                                            <span v-if="car.engine_capacity !== null">{{ car.engine_capacity }} л.</span>
-                                            <span v-else>Не установлен.</span>
-                                        </div>
-                                        <div class="car-details-block subheading mb-2">
-                                            <i class="ic-fuel car-icon"></i>
-                                            <strong>Тип ДВС:</strong> {{ car.engine_type_name }}
-                                        </div>
-                                        <div class="car-details-block subheading">
-                                            <i class="ic-transmission car-icon"></i>
-                                            <strong>Трансмиссия:</strong> {{ car.transmission_name }}
-                                        </div>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-actions>
-                    </v-card>
+                <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad">
+                    <Car :item="car" :expanded="true" />
                 </v-flex>
             </transition>
             
             <!-- Defect act -->
             <transition name="fade-transition" mode="out-in"> 
-                <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
+                <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad">
                     <defect-act-list v-if="!loading.pageLoad" :items="defectActs" :car="car" />
-
-                    <v-card>
-                        <v-card-media>
-                            <v-container>
-                                <v-layout>
-                                    <v-flex>
-                                        <p class="subheading my-0">Вложения</p>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-media>
-                        <v-divider></v-divider>
-                        <v-card-text primary-title>
-                            <v-alert outline transition="scale-transition" type="info" :value="true" v-if="attachments.length === 0 && !loading.pageLoad">
-                                Вложений нет.
-                            </v-alert>
-                            
-                            <lightbox
-                                id="car_attachments"
-                                :images="lightboxImages"
-                                :image_class="'card_attachment'"
-                                :album_class="'my-album-class'"
-                                :options="{ history: false }">
-                            </lightbox>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="success" block flat class="py-0" @click.native="newAttachments.dialog = true">Добавить вложения</v-btn>
-                        </v-card-actions>
-                    </v-card>
+                    
+                    <Attachments :files="lightboxImages" />
                 </v-flex>            
             </transition>
 
             <transition name="fade-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
-                    <comments :items="comments" :card-id="car.card.id" @add="onCommentAdded" />
+                    <Comments :items="comments" :card-id="car.card.id" @add="onCommentAdded" />
                 </v-flex>
             </transition>
         </v-layout>       
@@ -227,6 +139,8 @@ import CreateDefectAct from '@/components/CarCard/Defect/CreateDefectAct'
 import DefectAct from '@/components/CarCard/Defect/DefectAct'
 import DefectActList from '@/components/CarCard/Defect/DefectActList'
 import Comments from '@/components/CarCard/Comments/CarCardComments'
+import Car from '@/components/Car'
+import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 
 export default {
     mixins: [ snackbar ],
@@ -236,7 +150,7 @@ export default {
         }
     },
     components: {
-        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Comments
+        Lightbox, FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Comments, Car, Attachments
     },
     data() {
         return {
@@ -285,7 +199,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response)
                     this.car = response.data.car;
                     this.$store.dispatch('setCar', response.data.car);
                     this.defects = response.data.defects_info;
@@ -366,48 +279,6 @@ export default {
                 });
             });
         },
-        
-        getAttachments(file) {
-            this.attachments.items = file;
-        },
-
-        addAttachments() {
-            if(this.attachments.items !== undefined) {
-                this.newAttachments.loading = true;
-    
-                let formData = new FormData();
-                let fileList = [];
-    
-                this.attachments.items.map(value => {
-                    fileList.push(value.file);
-                });
-                
-                for(let i = 0; i < fileList.length; i++) {
-                    formData.append('attachments[]', fileList[i]);
-                }
-                
-                axios.post(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/attachments`, formData)
-                    .then(response => {
-                        console.log(response);
-                        response.data.files.map(file => {
-                            this.lightboxImages.push({
-                                src: this.assetsURL + '/' + file.attachment,
-                                title: file.attachment_name
-                            });
-                        });
-                        this.newAttachments.removeAll = true;
-                        console.log(this.newAttachments.removeAll)
-
-                        this.newAttachments.loading = false;   
-                        this.successSnackbar(response.data.message);                
-                    })
-                    .catch(error => console.log(error));
-            } else {
-                this.snackbar.color = 'success';
-                this.snackbar.text = 'Выберите хотя бы одно вложение.';
-                this.snackbar.active = true;
-            } 
-        },
 
         onDefectActCreated(act) {
             this.defectActs.push(act);
@@ -441,7 +312,9 @@ export default {
         margin-right: 5px;
         border: 1px solid #ccc !important;
         padding: 3px;
-        width: 19% !important;
+        width: 75px !important;
+        height: 70px !important;
+        border-radius: 100%;
         float: none !important;
     }
 </style>

@@ -101,8 +101,12 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
         Route::get('/{slug}/drivers/{driver}/edit', 'DriverController@edit');
         Route::post('/{slug}/drivers/{driver}/update', 'DriverController@update');
         // Request routes
-        Route::get('/{slug}/requests', 'StoRequestController@get');
-        Route::post('/{slug}/requests/{sto}', 'StoRequestController@store');
+        Route::get('/{slug}/sto-list', 'StoRequestController@get');
+        Route::get('/{slug}/requests/repair', 'RepairRequestController@get');
+
+        Route::post('/{slug}/sto-list/{sto}', 'StoRequestController@store');
+        Route::post('/{slug}/requests/repair', 'RepairRequestController@store');
+
         Route::delete('/{slug}/requests/{request}', 'StoRequestController@cancel');
         // Statistics routes
         Route::get('/{slug}/statictics', 'ClientHomeController@getStatistics');
@@ -114,6 +118,9 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
     Route::group(['middleware' => ['jwt.auth']], function() {
         // Request routes
         Route::get('/{slug}/requests', 'StoRequestController@get');
+        Route::get('/{slug}/requests/repair', 'RepairRequestController@get');
+
+        Route::post('/{slug}/requests/{request}/queue', 'RepairRequestController@toQueue');
         Route::put('/{slug}/requests/{request}', 'StoRequestController@accept');
         // Company routes
         Route::get('/{slug}/companies', 'CompanyController@get');

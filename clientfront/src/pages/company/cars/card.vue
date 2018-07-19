@@ -125,46 +125,7 @@ export default {
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.log(error));
-        },        
-
-        getInvoice() {
-            this.loading.invoice = true;
-            axios.post(`/sto/${this.$route.params.slug}/services/invoice`, { 'defect_options': this.selected.defectOptions })
-                .then(response => {
-                    this.selectedServices = [];
-                    this.invoice = response.data;
-                    this.invoice.map((item, index) => {
-                        this.selectedServices.push(index);
-                        this.getTotal();
-                    });
-                    this.loading.invoice = false;
-                })
-                .catch(error => console.log(error));
-
-            
-        },
-
-        toggle(index) {
-            const i = this.selectedServices.indexOf(index)
-
-            if (i > -1)
-                this.selectedServices.splice(i, 1);
-            else
-                this.selectedServices.push(index);            
-
-            this.getTotal();
-        },
-
-        getTotal() {
-            this.totalSum = 0;
-            this.selectedServices.map(serviceIndex => {
-                this.invoice.map((item, index) => {
-                    if(index === serviceIndex) {
-                        this.totalSum += item.service_price;
-                    }
-                });
-            });
-        },
+        },  
 
         onDefectActCreated(act) {
             this.defectActs.push(act);
