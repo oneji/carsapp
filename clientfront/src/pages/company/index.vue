@@ -113,8 +113,6 @@
 
 <script>
 import axios from '@/axios'
-import cookies from 'js-cookie'
-import config from '@/config'
 import user from '@/components/mixins/user'
 import assetsURL from '@/components/mixins/assets-url'
 

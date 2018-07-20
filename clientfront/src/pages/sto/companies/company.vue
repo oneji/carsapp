@@ -85,16 +85,5 @@ export default {
 </script>
 
 <style>
-    .car-icon {
-        font-size: 150%;
-        margin-right: 8px;
-    }
-    .car-details-block {
-        display: flex;
-        justify-content: start;
-        align-items: center;
-    }
-    .car-details-block strong {
-        margin-right: 5px;
-    }
+
 </style>

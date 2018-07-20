@@ -42,11 +42,7 @@
         </v-layout>
 
         <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
-            <transition name="fade-transition" mode="out-in">
-                <div class="loading-block" v-if="loading.invoice" v-cloak>
-                    <v-progress-circular :size="50" indeterminate color="primary"></v-progress-circular>
-                </div>
-            </transition>
+            <Loading :loading="loading.invoice" />
 
             <v-flex v-if="!loading.pageLoad && totalSum === 0"> 
                 <v-alert outline transition="scale-transition" type="info" :value="true">
@@ -92,28 +88,6 @@
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
-
-        <!-- Add attachment modal -->
-        <v-dialog v-model="newAttachments.dialog" max-width="500">
-            <form @submit.prevent="addAttachments" data-vv-scope="add-attachments-type-form">
-                <v-card>
-                    <v-card-title class="headline">Добавить вложения</v-card-title>
-                    <v-card-text>
-                        <v-layout>
-                            <v-flex xs12 sm12 md12 lg12>     
-                                <file-upload @files-changed="getAttachments" :remove-files="newAttachments.removeAll" />
-                            </v-flex>
-                        </v-layout>
-                    </v-card-text>
-                    
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="newAttachments.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="newAttachments.loading" flat="flat" type="submit">Добавить</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </form>
-        </v-dialog>
 
         <defect-act />
 
@@ -296,25 +270,5 @@ export default {
 </script>
 
 <style>
-    .car-icon {
-        font-size: 150%;
-        margin-right: 8px;
-    }
-    .car-details-block {
-        display: flex;
-        justify-content: start;
-        align-items: center;
-    }
-    .car-details-block strong {
-        margin-right: 5px;
-    }
-    .card_attachment {
-        margin-right: 5px;
-        border: 1px solid #ccc !important;
-        padding: 3px;
-        width: 75px !important;
-        height: 70px !important;
-        border-radius: 100%;
-        float: none !important;
-    }
+
 </style>

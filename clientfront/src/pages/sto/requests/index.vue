@@ -123,23 +123,5 @@ export default {
 </script>
 
 <style>
-    .label {
-        display: inline;
-        padding: .2em .6em .3em;
-        font-size: 80%;
-        font-weight: 700;
-        line-height: 1;
-        color: #fff;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: .25em;
-    }
-    .label-warning {
-        background-color: #ffa91c;
-        padding: 0.3em .6em;
-    }
-    .label-success {
-        background-color: #32c861;
-    }
+
 </style>

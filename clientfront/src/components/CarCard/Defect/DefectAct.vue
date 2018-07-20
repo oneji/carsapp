@@ -182,7 +182,7 @@ export default {
 }
 </script>
 
-<style>
+
     .defect-act {
         padding: 20px 40px;
     }

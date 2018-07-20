@@ -16,8 +16,8 @@
                     <v-divider></v-divider>
                     <v-card-title primary-title>
                         <v-container>
-                            <v-layout row wrap>
-                                <v-flex>
+                            <v-layout row wrap justify-center>
+                                <v-flex xs6>
                                     <img v-if="newDriver.photo.url" class="avatar-preview" :src="newDriver.photo.url" height="150" />                                    
                                     <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
                                 </v-flex>
@@ -273,9 +273,5 @@ export default {
 </script>
 
 <style>
-    .avatar-preview {
-        display: block;
-        margin: 0 auto;
-        width: 100%;
-    }
+    
 </style>

@@ -1,5 +1,13 @@
 <template>
     <div>
+        <v-layout row wrap>
+            <v-flex>
+                <v-btn color="success" :to="{ name: 'CompanyCarsCreate' }" append>Добавить машину</v-btn>
+                <v-btn color="primary" append @click.native="driver.dialog = true">Привязать водителя</v-btn>
+                <v-btn color="primary" append @click.native="deleteDriver.dialog = true">Отвязать водителя</v-btn>
+            </v-flex>
+        </v-layout> 
+
         <v-layout style="position: relative;">
             <v-flex v-if="cars.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
@@ -8,19 +16,20 @@
             </v-flex>
 
             <Loading :loading="loading.pageLoad" />
-        </v-layout>
-
-        <v-layout row wrap>
-            <v-flex>
-                <v-btn color="success" :to="{ name: 'CompanyCarsCreate' }" append>Добавить машину</v-btn>
-                <v-btn color="primary" append @click.native="driver.dialog = true">Привязать водителя</v-btn>
-                <v-btn color="primary" append @click.native="deleteDriver.dialog = true">Отвязать водителя</v-btn>
-            </v-flex>
-        </v-layout>     
+        </v-layout>            
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
-                <Car :item="car" :edit="true" :card="true" :for-sale="true" :details="true" @sale="onCarSale" @card-created="onCarCardCreated" />
+                <Car 
+                    :item="car" 
+                    :edit="true" 
+                    :card="true" 
+                    :for-sale="true" 
+                    :details="true" 
+                    :can-reserve="true"
+                    @sale="onCarSale"
+                    @card-created="onCarCardCreated"
+                    @reserve="onCarReserved" />
             </v-flex>
         </transition-group>
 
@@ -271,6 +280,15 @@ export default {
             this.cars.map(car => {
                 if(car.id === params.car.car_id)
                     car.card = params.car.card
+            });
+
+            this.successSnackbar(params.message);
+        },
+
+        onCarReserved(params) {
+            this.cars.forEach((car, index) => {
+                if(car.id === params.car_id)
+                    this.cars.splice(index, 1);
             });
 
             this.successSnackbar(params.message);

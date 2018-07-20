@@ -4,13 +4,13 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Vuetify from 'vuetify'
-import VeeValidate from 'vee-validate'
-import axios from './axios'
-import cookie from 'js-cookie'
+import ru from 'vee-validate/dist/locale/ru'
+import VeeValidate, { Validator } from 'vee-validate'
 import VueMoment from 'vue-moment'
 import { Can } from '@/directives'
 
 Vue.use(Vuetify)
+Validator.localize('ru', ru);
 Vue.use(VeeValidate)
 Vue.use(VueMoment)
 

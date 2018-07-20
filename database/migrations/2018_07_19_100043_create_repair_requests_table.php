@@ -20,7 +20,8 @@ class CreateRepairRequestsTable extends Migration
             $table->integer('sto_id')->unsigned();
             $table->text('comment');
             $table->integer('status')->default(0);
-            $table->date('receive_date')->nullable(); 
+            $table->dateTime('receive_date')->nullable(); 
+            $table->dateTime('repair_date')->nullable();
             $table->timestamps();
 
             $table->foreign('car_id')->references('id')->on('cars');

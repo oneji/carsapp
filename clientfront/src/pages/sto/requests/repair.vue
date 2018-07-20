@@ -1,11 +1,5 @@
 <template>
     <div>
-        <v-layout row wrap>
-            <v-flex>
-                <v-btn color="success" append @click.native="dialog = true">Создать заявку</v-btn>
-            </v-flex>
-        </v-layout>
-
         <v-layout style="position: relative;">  
             <v-flex v-if="requests.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
@@ -18,7 +12,14 @@
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="request in requests" :key="request.id">
-                <RepairRequest :item="request" :queue="true" @queue="onRequestQueued" />
+                <RepairRequest 
+                    :item="request" 
+                    :queue="true" 
+                    :for-sto="true" 
+                    :repair="true" 
+                    @queue="onRequestQueued" 
+                    @bring="onCarBrought" 
+                    @repair="onCarRepairDone" />
             </v-flex>
         </transition-group>
 
@@ -40,7 +41,7 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar ],
+    mixins: [snackbar],
     components: {
         RepairRequest, Loading
     },
@@ -61,6 +62,10 @@ export default {
             company_id: null,
             sto_id: null,
             comment: '',
+            query: null,
+            selectItems: {
+                companies: []
+            }
         }
     },
     methods: {
@@ -68,15 +73,22 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/requests/repair`)
                 .then(response => {
-                    console.log(response);
                     this.requests = response.data;
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.error());
         },
-
         onRequestQueued(message) {
             this.successSnackbar(message);
+        },
+        onCarBrought(message) {
+            this.successSnackbar(message);
+        },
+        onCarRepairDone(message) {
+            this.successSnackbar(message);
+        },
+        clearFilter() {
+            this.query = null;
         }
     },
     created() {
@@ -86,14 +98,5 @@ export default {
 </script>
 
 <style>
-    .loading-block {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+
 </style>

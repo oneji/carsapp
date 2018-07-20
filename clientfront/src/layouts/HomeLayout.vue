@@ -213,8 +213,6 @@ export default {
 </script>
 
 <style>
-    .user-avatar {
-        border-radius: 100% !important;
-    }
+    
 </style>
 

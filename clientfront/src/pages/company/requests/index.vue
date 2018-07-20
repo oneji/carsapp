@@ -139,14 +139,5 @@ export default {
 </script>
 
 <style>
-    .loading-block {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+
 </style>

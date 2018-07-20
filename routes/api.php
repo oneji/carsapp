@@ -121,6 +121,8 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/requests/repair', 'RepairRequestController@get');
 
         Route::post('/{slug}/requests/{request}/queue', 'RepairRequestController@toQueue');
+        Route::post('/{slug}/requests/{request}/sto', 'RepairRequestController@toSto');
+        Route::post('/{slug}/requests/{request}/repair-done', 'RepairRequestController@repairDone');
         Route::put('/{slug}/requests/{request}', 'StoRequestController@accept');
         // Company routes
         Route::get('/{slug}/companies', 'CompanyController@get');

@@ -90,4 +90,12 @@ class Car extends Model
 
         return $company;
     }
+
+    /**
+     * Get all repair requests for a car.
+     */
+    public function repair_requests()
+    {
+        return $this->hasMany('App\RepairRequest');
+    }
 }

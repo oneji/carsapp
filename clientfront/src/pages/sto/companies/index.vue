@@ -7,7 +7,7 @@
                 </v-alert>
             </v-flex>
             
-            <loading :loading="loading" />
+            <Loading :loading="loading" />
         </v-layout>
         <!-- A list of companies -->
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
@@ -16,7 +16,7 @@
                     <v-card-media height="150px">
                         <v-layout row justify-center align-center>
                             <v-flex xs6 sm6 md6 lg6>
-                                <img v-if="company.logo" :src="`${assetURL}/${company.logo}`" :alt="`Логотип ${company.company_name}`">
+                                <img v-if="company.logo" :src="`${assetsURL}/${company.logo}`" :alt="`Логотип ${company.company_name}`">
                                 <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
                             </v-flex>
                         </v-layout>
@@ -41,17 +41,13 @@
 
 <script>
 import axios from '@/axios'
-import config from '@/config'
+import assetsURL from '@/components/mixins/assets-url'
 import Loading from '@/components/Loading'
 
 export default {
+    mixins: [assetsURL],
     components: {
         Loading
-    },
-    computed: {
-        assetURL() {
-            return config.assetsURL;
-        }
     },
     data() {
         return {
@@ -77,14 +73,5 @@ export default {
 </script>
 
 <style>
-    .loading-block {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+
 </style>

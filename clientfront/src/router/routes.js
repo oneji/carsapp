@@ -60,7 +60,7 @@ const routes = [
     // Sto routes
     { path: '/s/:slug', name: 'StoHome', component: StoHome, meta: { requiresAuth: true },
         children: [
-            { path: 'requests', name: 'StoRequests', component: StoRequests, meta: { requiresAuth: true } },
+            { path: 'c-list', name: 'StoRequests', component: StoRequests, meta: { requiresAuth: true } },
             { path: 'requests/repair', name: 'StoRepairRequests', component: StoRepairRequests, meta: { requiresAuth: true } },
             { path: 'companies', name: 'StoCompanies', component: StoCompanies, meta: { requiresAuth: true } },
             { path: 'companies/:company', name: 'StoCompany', component: StoCompany, meta: { requiresAuth: true } },

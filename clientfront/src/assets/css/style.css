@@ -129,3 +129,13 @@
 .ic-wallet:before {
   content: "\e922";
 }
+
+/* Global styles */
+.avatar-preview {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+}
+.user-avatar {
+  border-radius: 100% !important;
+}

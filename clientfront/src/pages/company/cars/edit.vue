@@ -290,7 +290,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.company}/cars/${this.$route.params.car}/edit`)
                 .then(response => {
-                    console.log(response);
                     this.editCar.year = response.data.year;
                     this.editCar.number = response.data.number;
                     this.editCar.shape_id = response.data.shape_id;
@@ -427,9 +426,5 @@ export default {
 </script>
 
 <style>
-    .avatar-preview {
-        display: block;
-        margin: 0 auto;
-        width: 100%;
-    }
+
 </style>

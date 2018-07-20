@@ -112,8 +112,8 @@
                     <v-divider></v-divider>
                     <v-card-title primary-title>
                         <v-container>
-                            <v-layout row wrap>
-                                <v-flex offset-xs2 xs8>
+                            <v-layout row wrap justify-center>
+                                <v-flex xs6>
                                     <img v-if="editDriver.newPhoto.url" class="avatar-preview" :src="editDriver.newPhoto.url" height="150" />                                    
                                     <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
                                 </v-flex>
@@ -143,15 +143,6 @@
 </template>
 
 <script>
-import vueFilePond from 'vue-filepond'
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.esm.js'
-import FilepondPluginImagePreview from 'filepond-plugin-image-preview';
-
-import 'filepond/dist/filepond.min.css'
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-
-const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImagePreview)
-
 import axios from '@/axios'
 import config from '@/config'
 import snackbar from '@/components/mixins/snackbar'
@@ -163,11 +154,10 @@ export default {
     $_veeValidate: {
         validator: 'new'
     }, 
-    mixins: [assetsURL],
+    mixins: [assetsURL, snackbar],
     components: {
-        FilePond, Loading, MoveButtons
+        Loading, MoveButtons
     },
-    mixins: [ snackbar ],
     data() {
         return {
             attachments: [],
@@ -292,9 +282,5 @@ export default {
 </script>
 
 <style>
-    .avatar-preview {
-        display: block;
-        margin: 0 auto;
-        width: 100%;
-    }
+
 </style>

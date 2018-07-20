@@ -387,9 +387,5 @@ export default {
 </script>
 
 <style>
-    .avatar-preview {
-        display: block;
-        margin: 0 auto;
-        width: 100%;
-    }
+
 </style>

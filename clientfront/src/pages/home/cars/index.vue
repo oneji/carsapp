@@ -26,7 +26,7 @@
         <!-- <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> -->
             <v-layout row wrap>           
                 <v-flex v-for="car in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
-                    <Car :item="car.info" :can-reserve="true" @reserve="onReserveCar" />
+                    <Car :item="car.info" :can-reserve="true" :details="true" @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
         <!-- </transition-group> -->
@@ -47,7 +47,6 @@ import Car from '@/components/Car'
 export default {
     mixins: [snackbar],
     computed: {
-
         getCarsByCompany() {
             if(this.query.company === null)
                 return this.cars.filter(car => car.info.reserved === 0);
