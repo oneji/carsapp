@@ -22,7 +22,7 @@ class CarBodyController extends Controller
     {
         $shapes = CarShape::orderBy('shape_name')->get();
         $brands = CarBrand::orderBy('brand_name')->get();
-        $models = CarModel::select(['car_models.id', 'car_models.model_name', 'car_brands.brand_name'])
+        $models = CarModel::select('car_models.*', 'car_brands.brand_name')
                             ->join('car_brands', 'car_brands.id', '=', 'car_models.brand_id')
                             ->get();
         $engine_types = EngineType::orderBy('engine_type_name')->get();

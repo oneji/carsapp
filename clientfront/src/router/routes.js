@@ -18,6 +18,7 @@ import CompanyDriversCreate     from '@/pages/company/drivers/create'
 import CompanyDriversEdit       from '@/pages/company/drivers/edit'
 import CompanyStoRequests       from '@/pages/company/requests/index'
 import CompanyRepairRequests    from '@/pages/company/requests/repair'
+import CompanyArchivedRequests    from '@/pages/company/requests/archived'
 // STO pages    
 import StoHome                  from '@/pages/sto/index'
 import StoRequests              from '@/pages/sto/requests/index'
@@ -55,6 +56,7 @@ const routes = [
             { path: 'drivers/:driver/edit', name: 'CompanyDriversEdit', component: CompanyDriversEdit, meta: { requiresAuth: true } },
             { path: 'sto-list', name: 'CompanyStoRequests', component: CompanyStoRequests, meta: { requiresAuth: true } },
             { path: 'requests/repair', name: 'CompanyRepairRequests', component: CompanyRepairRequests, meta: { requiresAuth: true } },
+            { path: 'requests/archive', name: 'CompanyArchivedRequests', component: CompanyArchivedRequests, meta: { requiresAuth: true } },
         ]
     },
     // Sto routes

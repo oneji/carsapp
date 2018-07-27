@@ -115,7 +115,7 @@
                                                 data-vv-name="brand_id" data-vv-as='"Марка"'
                                             ></v-select>
 
-                                            <v-select autocomplete :items="models" v-model="newCar.model_id" label="Выберите модель" prepend-icon="directions_car"
+                                            <v-select autocomplete :items="filteredModels" v-model="newCar.model_id" label="Выберите модель" prepend-icon="directions_car"
                                                 name="model_id"
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('model_id')"
@@ -208,6 +208,11 @@ export default {
     mixins: [ snackbar ],
     components: {
         FileUpload
+    },
+    computed: {
+        filteredModels() {
+            return this.models.filter(model => model.brand_id === this.newCar.brand_id)
+        }
     },
     data() {
         return {
@@ -312,7 +317,8 @@ export default {
                     response.data.models.map(value => {
                         this.models.push({
                             text: value.model_name,
-                            value: value.id
+                            value: value.id,
+                            brand_id: value.brand_id
                         });
                     }); 
 

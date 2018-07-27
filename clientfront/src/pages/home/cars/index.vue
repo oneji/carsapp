@@ -10,6 +10,15 @@
                     v-model="query.company"
                 ></v-select>
             </v-flex>      
+            <v-flex xs6 sm6 md3 lg3>     
+                <v-select
+                    :items="selectItems.companies"
+                    label="Фильтр по марке машины"
+                    overflow
+                    item-value="value"
+                    v-model="query.company"
+                ></v-select>
+            </v-flex>      
             <v-flex xs6 sm6 md5 lg2>
                 <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
             </v-flex> 

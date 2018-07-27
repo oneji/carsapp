@@ -31,8 +31,9 @@ class RepairRequestController extends Controller
                                                 ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                                                 ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                                                 ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
-                                                ->where('reserved', 0)  
-                                                ->where('sold', 0)                    
+                                                // ->where('reserved', 0)  
+                                                // ->where('sold', 0)  
+                                                ->with('drivers')                          
                                                 ->get();
                                     }
                                 ])->get();
@@ -89,6 +90,8 @@ class RepairRequestController extends Controller
         $req = RepairRequest::find($request_id);
         $req->status = 3;
         $req->repair_date = Carbon::parse($request->repair_date);
+        $req->current_milage = $request->current_milage;
+        $req->repair_comment = $request->repair_comment;
         $req->save();
 
         return response()->json([
@@ -96,5 +99,5 @@ class RepairRequestController extends Controller
             'message' => 'Ремонт автомобиля успешно завершен.',
             'request' => $req
         ]);
-    } 
+    }     
 }

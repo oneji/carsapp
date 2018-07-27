@@ -121,6 +121,7 @@ export default {
                 { icon: 'home', title: 'Главная', to: { name: 'StoHome' } },
                 { divider: true },
                 { icon: 'assignment', title: 'Добавить компанию', to: { name: 'StoRequests' } },
+                { divider: true },
                 { icon: 'assignment', title: 'Заявки на ремонт', to: { name: 'StoRepairRequests' } },
                 { divider: true },
                 { icon: 'business', title: 'Компании', to: { name: 'StoCompanies' } },

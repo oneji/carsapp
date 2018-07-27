@@ -139,3 +139,10 @@
 .user-avatar {
   border-radius: 100% !important;
 }
+
+@media print {
+  .print-block {
+    background-color: #000 !important;
+    font-size: 30px !important;
+  }
+}

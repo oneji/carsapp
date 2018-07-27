@@ -177,10 +177,14 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /**
+         * Custom providers
+         */
         Barryvdh\Cors\ServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Laratrust\LaratrustServiceProvider::class,
-        Clockwork\Support\Laravel\ClockworkServiceProvider::class
+        Clockwork\Support\Laravel\ClockworkServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class
 
     ],
 
@@ -231,10 +235,14 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        /**
+         * Custom aliases
+         */
         'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
         'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
         'Laratrust'   => Laratrust\LaratrustFacade::class,
         'Clockwork' => Clockwork\Support\Laravel\Facade::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
     ],
 

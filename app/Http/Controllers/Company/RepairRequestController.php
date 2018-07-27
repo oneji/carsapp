@@ -47,12 +47,30 @@ class RepairRequestController extends Controller
                                                 ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                                                 ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                                                 ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
-                                                ->where('reserved', 0)  
-                                                ->where('sold', 0)                    
+                                                // ->where('reserved', 0)  
+                                                // ->where('sold', 0) 
+                                                ->with('drivers')                   
                                                 ->get();
                                     }
-                                ])->get();
+                                ])
+                                ->get();
 
         return response()->json($requests);
+    }
+
+    /**
+     * Get a request to the archive.
+     */
+    public function archive($company_slug, $request_id) 
+    {
+        $req = RepairRequest::find($request_id);
+        $req->archived = 1;
+        $req->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Заявка успешно архивирована.',
+            'request' => $req
+        ]);
     }
 }

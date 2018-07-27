@@ -106,6 +106,7 @@ Route::group(['namespace' => 'Company', 'prefix' => 'company'], function() {
 
         Route::post('/{slug}/sto-list/{sto}', 'StoRequestController@store');
         Route::post('/{slug}/requests/repair', 'RepairRequestController@store');
+        Route::post('/{slug}/requests/{request}/archive', 'RepairRequestController@archive');
 
         Route::delete('/{slug}/requests/{request}', 'StoRequestController@cancel');
         // Statistics routes

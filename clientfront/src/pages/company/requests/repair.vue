@@ -7,7 +7,7 @@
         </v-layout>
 
         <v-layout style="position: relative;">  
-            <v-flex v-if="requests.length === 0 && !loading.pageLoad">
+            <v-flex v-if="filteredRequests.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
                     Вы пока не отправляли ни одной заявки.
                 </v-alert>
@@ -17,8 +17,8 @@
         </v-layout>        
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg3 v-for="request in requests" :key="request.id">
-                <RepairRequest :item="request" @cancel="onRequestCanceled" />
+            <v-flex xs12 sm6 md3 lg3 v-for="request in filteredRequests" :key="request.id">
+                <RepairRequest :item="request" :archive="true" @cancel="onRequestCanceled" @archive="onRequestArchived" />
             </v-flex>
         </transition-group>
         
@@ -93,6 +93,11 @@ export default {
     mixins: [ snackbar ],
     components: {
         RepairRequest, Loading
+    },
+    computed: {
+        filteredRequests() {
+            return this.requests.filter(request => request.archived !== 1);
+        }
     },
     data() {
         return {
@@ -185,6 +190,11 @@ export default {
 
         onRequestCanceled(request_id) {
             this.requests = this.requests.filter(request => request.id !== request_id);
+        },
+
+        onRequestArchived(response) {
+            console.log(response)
+            this.successSnackbar(response.message);
         }
     },
     created() {

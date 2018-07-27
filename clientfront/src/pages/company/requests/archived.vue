@@ -1,9 +1,9 @@
 <template>
     <div>
         <v-layout style="position: relative;">  
-            <v-flex v-if="requests.length === 0 && !loading.pageLoad">
+            <v-flex v-if="filteredRequests.length === 0 && !loading.pageLoad">
                 <v-alert outline transition="scale-transition" type="info" :value="true">
-                    Заявок на ремонт не найдено.
+                    В архиве заявок не найдено.
                 </v-alert>
             </v-flex>
             
@@ -11,15 +11,8 @@
         </v-layout>        
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg3 v-for="request in requests" :key="request.id">
-                <RepairRequest 
-                    :item="request" 
-                    :queue="true" 
-                    :for-sto="true" 
-                    :repair="true" 
-                    @queue="onRequestQueued" 
-                    @bring="onCarBrought" 
-                    @repair="onCarRepairDone" />
+            <v-flex xs12 sm6 md3 lg3 v-for="request in filteredRequests" :key="request.id">
+                <RepairRequest :item="request" />
             </v-flex>
         </transition-group>
 
@@ -41,9 +34,14 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [snackbar],
+    mixins: [ snackbar ],
     components: {
         RepairRequest, Loading
+    },
+    computed: {
+        filteredRequests() {
+            return this.requests.filter(request => request.archived !== 0);
+        }
     },
     data() {
         return {
@@ -62,34 +60,18 @@ export default {
             company_id: null,
             sto_id: null,
             comment: '',
-            query: null,
-            selectItems: {
-                companies: []
-            }
         }
     },
     methods: {
         fetchRequests() {
             this.loading.pageLoad = true;
-            axios.get(`/sto/${this.$route.params.slug}/requests/repair`)
+            axios.get(`/company/${this.$route.params.slug}/requests/repair`)
                 .then(response => {
                     this.requests = response.data;
                     this.loading.pageLoad = false;
                 })
                 .catch(error => console.error());
         },
-        onRequestQueued(message) {
-            this.successSnackbar(message);
-        },
-        onCarBrought(message) {
-            this.successSnackbar(message);
-        },
-        onCarRepairDone(message) {
-            this.successSnackbar(message);
-        },
-        clearFilter() {
-            this.query = null;
-        }
     },
     created() {
         this.fetchRequests();

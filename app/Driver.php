@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Image;
 
 class Driver extends Model
 {
@@ -60,7 +61,17 @@ class Driver extends Model
     {
         $fileExtension = $file->getClientOriginalExtension();
         $fileNameToStore = uniqid().'.'.$fileExtension;
-        $result = $file->move(public_path($path), $fileNameToStore);  
+        // $result = $file->move(public_path($path), $fileNameToStore);
+        $fileDetails = getimagesize($file); 
+        // Compressing image
+        $compressedImage = Image::make($file->getRealPath());
+        if($fileDetails[0] > 1290) {
+            $compressedImage->resize(1290, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+        }        
+        $compressedImage->save(public_path($path.'/'.$fileNameToStore));
+
         $fileNameToStore = $path.'/'.$fileNameToStore;
         
         return $fileNameToStore;

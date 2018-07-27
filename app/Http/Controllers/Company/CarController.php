@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Image;
+use Illuminate\Support\Facades\Input;
 
 class CarController extends Controller
 {
@@ -131,12 +133,20 @@ class CarController extends Controller
         $company = Company::where('slug', $company_slug)->first();
 
         if($request->hasFile('cover_image')) {
-            $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
-            $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
-            $coverImagePath = $request->file('cover_image')->path();
-            $coverImageExtension = $request->file('cover_image')->getClientOriginalExtension();
-            $coverImageNameToStore = time().'.'.$coverImageExtension;
-            $path = $request->file('cover_image')->move(public_path('/uploads/car_cover_images'), $coverImageNameToStore);  
+            $file = $request->file('cover_image');
+            $coverImageExtension = $file->getClientOriginalExtension();
+            $coverImageNameToStore = time().'.'.$coverImageExtension; 
+            $fileDetails = getimagesize($file); 
+            // Compressing image
+            $compressedImage = Image::make($file->getRealPath());
+
+            if($fileDetails[0] > 1290) {
+                $compressedImage->resize(1290, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
+            
+            $compressedImage->save(public_path('uploads/car_cover_images/'.$coverImageNameToStore));
             $coverImageNameToStore = 'uploads/car_cover_images/'.$coverImageNameToStore;
         } else {
             $coverImageNameToStore = null;
@@ -167,13 +177,21 @@ class CarController extends Controller
         if($request->hasFile('attachments')) {            
             foreach($request->attachments as $file) {
                 $fileFullName = $file->getClientOriginalName(); 
-                $filename = pathinfo($fileFullName, PATHINFO_FILENAME);
-                $filePath = $file->path();
                 $fileExtension = $file->getClientOriginalExtension();
-                $fileNameToStore = uniqid().'.'.$fileExtension;
-                $path = $file->move(public_path('/uploads/attachments/cars'), $fileNameToStore);  
-                $fileNameToStore = 'uploads/attachments/cars/'.$fileNameToStore;    
-                
+                $fileNameToStore = uniqid().'.'.$fileExtension;   
+                $attDetails = getimagesize($file);
+                // Compressing image
+                $compressedImage = Image::make($file->getRealPath());
+
+                if($attDetails[0] > 1290) {
+                    $compressedImage->resize(1290, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
+
+                $compressedImage->save(public_path('uploads/attachments/cars/'.$fileNameToStore));
+                $fileNameToStore = 'uploads/attachments/cars/'.$fileNameToStore; 
+
                 array_push($carAttachments, new CarAttachment([
                     'attachment' => $fileNameToStore,
                     'attachment_name' => $fileFullName,
@@ -305,12 +323,20 @@ class CarController extends Controller
         $car->type = (int) $request->type;  
         
         if($request->hasFile('cover_image')) {
-            $coverImageFullName = $request->file('cover_image')->getClientOriginalName(); 
-            $coverImagename = pathinfo($coverImageFullName, PATHINFO_FILENAME);
-            $coverImagePath = $request->file('cover_image')->path();
-            $coverImageExtension = $request->file('cover_image')->getClientOriginalExtension();
-            $coverImageNameToStore = time().'.'.$coverImageExtension;
-            $path = $request->file('cover_image')->move(public_path('/uploads/car_cover_images'), $coverImageNameToStore);  
+            $file = $request->file('cover_image');
+            $coverImageExtension = $file->getClientOriginalExtension();
+            $coverImageNameToStore = time().'.'.$coverImageExtension; 
+            $fileDetails = getimagesize($file); 
+            // Compressing image
+            $compressedImage = Image::make($file->getRealPath());
+
+            if($fileDetails[0] > 1290) {
+                $compressedImage->resize(1290, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }            
+            $compressedImage->save(public_path('uploads/car_cover_images/'.$coverImageNameToStore));
+
             $coverImageNameToStore = 'uploads/car_cover_images/'.$coverImageNameToStore;
             File::delete(public_path($car->cover_image));
         } else {
@@ -431,8 +457,18 @@ class CarController extends Controller
             foreach($request->attachments as $file) {
                 $fileExtension = $file->getClientOriginalExtension();
                 $fileNameToStore = uniqid().'.'.$fileExtension;
-                $path = $file->move(public_path('/uploads/attachments/fines'), $fileNameToStore);  
-                $fileNameToStore = 'uploads/attachments/fines/'.$fileNameToStore;    
+                $fileDetails = getimagesize($file); 
+                
+                // Compressing image
+                $compressedImage = Image::make($file->getRealPath());
+
+                if($fileDetails[0] > 1290) {
+                    $compressedImage->resize(1290, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
+                
+                $compressedImage->save(public_path('uploads/attachments/fines/'.$fileNameToStore));
                 
                 array_push($fineAttachments, new FineAttachment([
                     'fine_id' => $fine->id,
@@ -453,6 +489,29 @@ class CarController extends Controller
             'fine' => $fine
         ]);
     }
+
+    public function test(Request $request) 
+    {
+        if($request->hasFile('fucking_image')) {
+            $file = $request->file('fucking_image');
+            $fileExtension = $file->getClientOriginalExtension();
+            $fileNameToStore = uniqid().'.'.$fileExtension; 
+
+            $compressedImage = Image::make($file->getRealPath())->resize(200, 200)->save(public_path('uploads/attachments/fines/'.$fileNameToStore));
+
+            $fileDetails = getimagesize($file);
+
+            return response()->json([
+                'ok' => true,
+                'width' => $fileDetails[0],
+                'height' => $fileDetails[1]
+            ]);
+        }
+    
+        return response()->json([
+            'ok' => false
+        ]);
+    }    
 
     /**
      * Change fine paid status.

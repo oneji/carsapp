@@ -4,7 +4,9 @@
             <v-icon class="blue white--text">assignment</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-content>
-            <v-list-tile-title>Штраф от: {{ item.fine_date }}</v-list-tile-title>
+            <v-list-tile-title>
+                Штраф от: {{ typeof item.fine_date === 'object' ? item.fine_date.date.substr(0, 10) : item.fine_date | moment('MMMM DD, YYYY') }}
+            </v-list-tile-title>
             <v-list-tile-sub-title>
                 <MyLabel :text="item.fine_amount + 'с.'" type="primary" />
                 <MyLabel :text="item.paid === 1 ? 'Оплачен' : 'Не оплачен'" :type="item.paid === 1 ? 'success' : 'warning'" />
