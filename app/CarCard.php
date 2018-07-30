@@ -45,4 +45,12 @@ class CarCard extends Model
     {
         return $this->hasMany('App\Fine');
     }
+
+    /**
+     * Get all consumables for a card
+     */
+    public function consumables()
+    {
+        return $this->belongsToMany('App\Consumable')->withPivot('change_date', 'change_date_milage', 'recommended_change_milage');
+    }
 }

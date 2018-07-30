@@ -25,6 +25,10 @@ const getters = {
 
     permissions: state => {
         return state.permissions;
+    },
+
+    consumable: state => {
+        return state.consumable;
     }
 }
 

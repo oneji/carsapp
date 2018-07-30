@@ -33,7 +33,19 @@ export default new Vuex.Store({
             equipment: []
         },
         defectTypes: [],
-        equipment: []        
+        equipment: [],
+        consumable: {   
+            id: '',     
+            consumable_name: '',
+            pivot: {
+                change_date: '',
+                change_date_milage: '',
+                recommended_change_milage: '',
+                car_card_id: '',
+                consumable_id: '',
+            }
+        }
+
     },
     getters,
     mutations,

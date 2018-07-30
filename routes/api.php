@@ -34,6 +34,10 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('/all-cars', 'ClientHomeController@getAllCars');
     Route::get('/all-drivers', 'ClientHomeController@getAllDrivers');
     Route::put('/password/change', 'AuthController@changePassword');    
+
+    Route::get('/car/{car}/consumables', 'ConsumableController@get');
+    Route::post('/car/{car}/consumables', 'ConsumableController@update');
+    Route::post('/car/{car}/consumables/create', 'ConsumableController@store');
 }); 
 
 // Admin routes

@@ -73,6 +73,10 @@ const actions = {
 
     setPermissions({ commit }, permissions) {
         commit(types.SET_PERMISSIONS, permissions);
+    },
+
+    setConsumable({ commit }, consumable) {
+        commit(types.SET_CONSUMABLE, consumable);
     }
 }
 

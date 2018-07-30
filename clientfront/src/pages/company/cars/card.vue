@@ -4,17 +4,23 @@
         <v-layout row wrap style="position: relative">
             <Loading :loading="loading.pageLoad" />
             
-            <!-- Car info -->
+            <!-- Car info and defect act list -->
             <transition name="slide-x-transition" mode="out-in">
                 <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
                     <Car :item="car" :expanded="true" />
+                    
+                    <DefectActList :items="defectActs" :show-defect="false" class="mt-3" />
                 </v-flex>
             </transition>
             
-            <!-- Defect act, attachments and fines -->
+            <!-- Consumables, attachments and fines -->
             <transition name="slide-x-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg5 v-if="!loading.pageLoad" v-cloak>
-                    <DefectActList v-if="!loading.pageLoad" :items="defectActs" :show-defect="false" />
+                    <ConsumablesList 
+                        :items="consumables" 
+                        :private-items="privateConsumables" 
+                        @add="onConsumableAdded"
+                        @change="onConsumableChanged" />
 
                     <Attachments :files="lightboxImages" />  
 
@@ -53,11 +59,13 @@ import MoveButtons from '@/components/MoveButtons'
 import Comments from '@/components/CarCard/Comments/CarCardComments'
 import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import Fines from '@/components/CarCard/Fines/CarCardFine'
+import ConsumablesList from '@/components/CarCard/Consumables/ConsumablesList'
 
 export default {
     mixins: [ snackbar, assetsURL ],
     components: {
-        FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments, Fines
+        FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments, Fines,
+        ConsumablesList
     },
     data() {
         return {
@@ -83,6 +91,8 @@ export default {
             attachments: [],
             fines: [],
             equipment: [],
+            consumables: [],
+            privateConsumables: [],
             selects: {
                 defects: [],
                 defectOptions: []
@@ -127,6 +137,15 @@ export default {
                 .catch(error => console.log(error));
         },  
 
+        fetchConsumables() {
+            axios.get(`/car/${this.$route.params.car}/consumables`)
+                .then(response => {
+                    this.consumables = response.data.consumables;
+                    this.privateConsumables = response.data.data.consumables;
+                })
+                .catch(error => console.log(error));
+        },
+
         onDefectActCreated(act) {
             this.defectActs.push(act);
         },
@@ -134,10 +153,21 @@ export default {
         onCommentAdded(response) {
             this.comments.push(response.comment);
             this.successSnackbar(response.message);       
-        } 
+        },
+        
+        onConsumableAdded(response) {
+            this.consumables.push(response.consumable);
+            this.successSnackbar(response.message);
+        },
+
+        onConsumableChanged(response) {
+            this.successSnackbar(response.message);
+            this.fetchConsumables();
+        }
     },
     created() {
         this.fetchCarCardInfo();
+        this.fetchConsumables();
     }
 }
 </script>
