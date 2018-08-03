@@ -12,11 +12,11 @@
             </v-flex>      
             <v-flex xs6 sm6 md3 lg3>     
                 <v-select
-                    :items="selectItems.companies"
+                    :items="selectItems.brands"
                     label="Фильтр по марке машины"
                     overflow
                     item-value="value"
-                    v-model="query.company"
+                    v-model="query.brand"
                 ></v-select>
             </v-flex>      
             <v-flex xs6 sm6 md5 lg2>
@@ -34,7 +34,7 @@
 
         <!-- <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> -->
             <v-layout row wrap>           
-                <v-flex v-for="car in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
+                <v-flex v-for="car in filterCars" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
                     <Car :item="car.info" :can-reserve="true" :details="true" @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
@@ -56,15 +56,20 @@ import Car from '@/components/Car'
 export default {
     mixins: [snackbar],
     computed: {
-        getCarsByCompany() {
-            if(this.query.company === null)
+        filterCars() {
+            if(this.query.company === '' && this.query.brand === '') {
                 return this.cars.filter(car => car.info.reserved === 0);
-            else
+            } else if(this.query.company !== '' && this.query.brand === ''){
                 return this.cars.filter(car => car.company.id === this.query.company && car.info.reserved === 0); 
+            } else if(this.query.company === '' && this.query.brand !== '') {
+                return this.cars.filter(car => car.info.brand_id === this.query.brand && car.info.reserved === 0); 
+            } else if(this.query.company !== '' && this.query.brand !== '') {
+                return this.cars.filter(car => car.company.id === this.query.company && car.info.brand_id === this.query.brand && car.info.reserved === 0); 
+            }  
         },
 
         getTotalCarCount() {
-            return this.getCarsByCompany.length;
+            return this.filterCars.length;
         } 
     },
     components: {
@@ -81,10 +86,13 @@ export default {
                 showInfo: false
             },
             query: {
-                company: null
+                company: '',
+                brand: ''
             },
             selectItems: {
-                companies: []
+                companies: [],
+                brands: [],
+                shapes: []
             } 
         }
     },
@@ -110,13 +118,32 @@ export default {
                         }) 
                     })
 
+                    console.log(this.cars)
                     this.loading = false;
                 })
                 .catch(error => console.error());
         },
 
+        fetchCarBodyInfo() {
+            axios.get('/admin/cars/body/info')
+                .then(response => { 
+                    let brands = response.data.brands;
+
+                    brands.map(value => {
+                        this.selectItems.brands.push({
+                            text: value.brand_name,
+                            value: value.id
+                        });
+                    }); 
+
+                    console.log(this.selectItems.brands)
+                })
+                .catch(error => console.log(error));
+        },
+
         clearFilter() {
-            this.query.company = null;
+            this.query.company = '';
+            this.query.brand = '';
         },
 
         onReserveCar(params) {
@@ -130,6 +157,7 @@ export default {
     },
     created() {
         this.fetchUserProjects();
+        this.fetchCarBodyInfo();
     }
 }
 </script>
