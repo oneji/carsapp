@@ -118,7 +118,6 @@ export default {
                         }) 
                     })
 
-                    console.log(this.cars)
                     this.loading = false;
                 })
                 .catch(error => console.error());
@@ -136,7 +135,6 @@ export default {
                         });
                     }); 
 
-                    console.log(this.selectItems.brands)
                 })
                 .catch(error => console.log(error));
         },

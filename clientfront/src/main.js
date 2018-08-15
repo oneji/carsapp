@@ -16,6 +16,7 @@ Vue.use(VueMoment)
 
 import 'vuetify/dist/vuetify.min.css'
 import 'babel-polyfill'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
 

@@ -7,7 +7,7 @@
                 </div>
                 <div class="tile-box__content">
                     <p class="title" title="Statistics">{{ title }}</p>
-                    <h2 class="display-1"><span><i class="mdi mdi-arrow-up"></i></span> <span data-plugin="counterup">{{ value }}</span></h2>
+                    <h2 class="display-1">{{ value }}</h2>
                     <v-btn color="success" flat small :to="link">Просмотреть</v-btn>
                 </div>
                 <div class="clearfix"></div>

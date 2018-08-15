@@ -25,6 +25,6 @@ export default {
 <style>
   @import url('./assets/css/style.css'); 
   body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans';
   }
 </style>

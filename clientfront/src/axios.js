@@ -11,7 +11,6 @@ const instance = axios.create({
 
 const token = cookie.get('auth.client.token');
 
-
 if (token !== undefined) {
     instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
