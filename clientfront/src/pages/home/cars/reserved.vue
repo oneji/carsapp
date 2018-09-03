@@ -1,32 +1,36 @@
 <template>
     <div>
-        <v-layout row wrap>
-            <v-flex xs6 sm6 md3 lg3>      
-                <v-select
-                    :items="selectItems.companies"
-                    label="Фильтр по компаниям"
-                    overflow
-                    item-value="value"
-                    v-model="query.company"
-                ></v-select>
-            </v-flex>      
-            <v-flex xs6 sm6 md5 lg2>
-                <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
-            </v-flex> 
-            <v-flex>
-                <v-btn color="success" @click="addToReserve.dialog = true">Добавить в резерв</v-btn> 
-                <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
-            </v-flex>   
-        </v-layout>  
-        <v-divider class="mb-3"></v-divider>    
+        <div v-if="getTotalCarCount !== 0 && !loading">        
+            <v-layout row wrap>
+                <v-flex xs6 sm6 md3 lg3>      
+                    <v-select
+                        :items="selectItems.companies"
+                        label="Фильтр по компаниям"
+                        overflow
+                        item-value="value"
+                        v-model="query.company"
+                    ></v-select>
+                </v-flex>      
+                <v-flex xs6 sm6 md5 lg2>
+                    <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
+                </v-flex> 
+                <v-flex>
+                    <v-btn color="success" @click="addToReserve.dialog = true">Добавить в резерв</v-btn> 
+                    <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
+                </v-flex>   
+            </v-layout>  
+            <v-divider class="mb-3"></v-divider>  
+        </div>  
 
-        <v-layout style="position: relative;">
+        <v-layout v-if="getTotalCarCount === 0 && !loading">
             <v-flex>
-                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="getTotalCarCount === 0 && !loading">
-                    Список резервных машин пуст.
+                <v-alert outline transition="scale-transition" type="info" :value="true">
+                    Список резервных автомобилей пуст.
                 </v-alert>
             </v-flex>
+        </v-layout>
 
+        <v-layout style="position: relative;" v-if="loading">
             <Loading :loading="loading" />
         </v-layout>       
 

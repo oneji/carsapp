@@ -31,7 +31,7 @@ class ClientHomeController extends Controller
                     ->where('sold', 0)  
                     ->with([ 'drivers' => function($query) {
                         $query->where('active', 1)->get();
-                    }, 'card' ])->get();
+                    }, 'card', 'companies' ])->get();
             },
             'companies.drivers']);
 

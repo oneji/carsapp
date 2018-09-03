@@ -134,7 +134,7 @@ export default {
                 { icon: 'directions_car', title: 'Автомобили', to: { name: 'CompanyCars' } },
                 { icon: 'directions_car', title: 'Проданные автомобили', to: { name: 'CompanySoldCars' } },
                 { divider: true },
-                { icon: 'supervised_user_circle', title: 'Водители', to: { name: 'CompanyDrivers' } },
+                { icon: 'people', title: 'Водители', to: { name: 'CompanyDrivers' } },
             ],
             miniVariant: false,
             rightDrawer: false,

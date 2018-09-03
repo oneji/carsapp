@@ -4,6 +4,7 @@ import routes from './routes'
 import store from '@/store'
 import cookie from 'js-cookie'
 import api from '@/api'
+import { checkPermissions } from '@/utils/permissions'
 
 Vue.use(Router)
 
@@ -12,8 +13,8 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {       
-    const token = cookie.get('auth.client.token');    
-    const user = window.localStorage.getItem('user');    
+    const token = cookie.get('auth.client.token');
+    const user = window.localStorage.getItem('user');
 
     if(to.name.toLowerCase() !== 'login')  {
         if(token === undefined || user === null) {
@@ -31,9 +32,14 @@ router.beforeEach((to, from, next) => {
                 next()
             })
         } else {
-            next()
+            if(checkPermissions(to.meta.permissions)) {
+                next()
+            } else {
+                next('/403')
+            }
         }   
     } else {
+        
         next()
     } 
 });

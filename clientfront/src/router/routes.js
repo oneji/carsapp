@@ -6,6 +6,9 @@ import HomeCompanies            from '@/pages/home/companies/index'
 import HomeCars                 from '@/pages/home/cars/index'
 import HomeReservedCars         from '@/pages/home/cars/reserved'
 import HomeDriversQueue         from '@/pages/home/drivers/queue'
+import HomeUsersIndex           from '@/pages/home/users/index'
+import HomeUserCreate           from '@/pages/home/users/create'
+import HomeUserEdit             from '@/pages/home/users/edit'
 // Company pages    
 import CompanyHome              from '@/pages/company/index'
 import CompanyCars              from '@/pages/company/cars/index'
@@ -18,7 +21,7 @@ import CompanyDriversCreate     from '@/pages/company/drivers/create'
 import CompanyDriversEdit       from '@/pages/company/drivers/edit'
 import CompanyStoRequests       from '@/pages/company/requests/index'
 import CompanyRepairRequests    from '@/pages/company/requests/repair'
-import CompanyArchivedRequests    from '@/pages/company/requests/archived'
+import CompanyArchivedRequests  from '@/pages/company/requests/archived'
 // STO pages    
 import StoHome                  from '@/pages/sto/index'
 import StoRequests              from '@/pages/sto/requests/index'
@@ -30,9 +33,14 @@ import StoDefects               from '@/pages/sto/defects/index'
 import StoCarCard               from '@/pages/sto/companies/cars/card'
 import StoCarCreate             from '@/pages/sto/companies/cars/create'
 import StoRepairRequests        from '@/pages/sto/requests/repair'
+// Error pages
+import NotFound                 from '@/pages/errors/404'
+import NoAccess                 from '@/pages/errors/403'
 
 const routes = [        
     { path: '/login', name: 'Login', component: Login },
+    { path: '/403', name: 'NoAccess', component: NoAccess },
+    { path: '/404', name: 'NotFound', component: NotFound },
     // Home routes
     { path: '/', component: HomeLayout, meta: { requiresAuth: true },
         children: [
@@ -41,6 +49,14 @@ const routes = [
             { path: '/cars', name: 'HomeCars', component: HomeCars, meta: { requiresAuth: true, } },            
             { path: '/cars/reserved', name: 'HomeReservedCars', component: HomeReservedCars, meta: { requiresAuth: true, } },            
             { path: '/drivers/queue', name: 'HomeDriversQueue', component: HomeDriversQueue, meta: { requiresAuth: true, } },            
+            { path: '/users', name: 'HomeUsers', component: HomeUsersIndex, 
+                meta: { 
+                    requiresAuth: true,
+                    permissions: ['read-users'] 
+                } 
+            },
+            { path: '/users/create', name: 'HomeUserCreate', component: HomeUserCreate, meta: { requiresAuth: true } },
+            { path: '/users/edit/:id', name: 'HomeUserEdit', component: HomeUserEdit, meta: { requiresAuth: true } },            
         ],
     },
     // Company routes

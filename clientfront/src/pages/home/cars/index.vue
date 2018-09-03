@@ -1,41 +1,55 @@
 <template>
     <div>
-        <v-layout row wrap>  
-            <v-flex xs6 sm6 md3 lg3>     
-                <v-select
-                    :items="selectItems.companies"
-                    label="Фильтр по компаниям"
-                    overflow
-                    item-value="value"
-                    v-model="query.company"
-                ></v-select>
-            </v-flex>      
-            <v-flex xs6 sm6 md3 lg3>     
-                <v-select
-                    :items="selectItems.brands"
-                    label="Фильтр по марке машины"
-                    overflow
-                    item-value="value"
-                    v-model="query.brand"
-                ></v-select>
-            </v-flex>      
-            <v-flex xs6 sm6 md5 lg2>
-                <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
-            </v-flex> 
+        <div v-if="getTotalCarCount !== 0 && !loading">        
+            <v-layout row wrap>  
+                <v-flex xs6 sm6 md3 lg3>     
+                    <v-select
+                        :items="selectItems.companies"
+                        label="Фильтр по компаниям"
+                        overflow
+                        item-value="value"
+                        v-model="query.company"
+                    ></v-select>
+                </v-flex>      
+                <v-flex xs6 sm6 md3 lg3>     
+                    <v-select
+                        :items="selectItems.brands"
+                        label="Фильтр по марке машины"
+                        overflow
+                        item-value="value"
+                        v-model="query.brand"
+                    ></v-select>
+                </v-flex>      
+                <v-flex xs6 sm6 md5 lg2>
+                    <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
+                </v-flex> 
+                <v-flex>
+                    <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
+                </v-flex>   
+            </v-layout> 
+            <v-divider class="mb-3"></v-divider>
+        </div>
+
+        <v-layout v-if="getTotalCarCount === 0 && !loading">
             <v-flex>
-                <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
-            </v-flex>   
-        </v-layout> 
-        <v-divider class="mb-3"></v-divider>
+                <v-alert outline transition="scale-transition" type="info" :value="true" >
+                    Список автомобилей пуст.
+                </v-alert>
+            </v-flex>
+        </v-layout>
 
         <v-layout style="position: relative;">
             <Loading :loading="loading" />
-        </v-layout>      
+        </v-layout>
 
         <!-- <transition-group tag="v-layout" class="row wrap" name="slide-x-transition"> -->
             <v-layout row wrap>           
-                <v-flex v-for="car in filterCars" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
-                    <Car :item="car.info" :can-reserve="true" :details="true" @reserve="onReserveCar" />
+                <v-flex v-for="car in filterCars" :key="car.info.id" xs12 sm6 md4 lg3>
+                    <Car 
+                        :item="car.info"
+                        :can-reserve="true"
+                        :details="true"
+                        @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
         <!-- </transition-group> -->

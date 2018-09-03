@@ -3,7 +3,7 @@
         <!-- Left sidebar -->
         <v-navigation-drawer :mini-variant="miniVariant" clipped v-model="drawer" fixed app>
             <v-list>
-                <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact>
+                <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact v-can="item.permissions">
                     <v-list-tile-action>
                         <v-icon v-html="item.icon"></v-icon>
                     </v-list-tile-action>
@@ -159,6 +159,7 @@ export default {
             fixed: false,
             items: [
                 { icon: 'home', title: 'Главная', to: '/' },
+                { icon: 'people', title: 'Пользователи', to: '/users', permissions: ['read-users'] },
                 { icon: 'list', title: 'Список компаний', to: '/companies' },
                 { icon: 'directions_car', title: 'Все автомобили', to: '/cars' },
                 { icon: 'directions_car', title: 'Резервные автомобили', to: '/cars/reserved' },

@@ -408,7 +408,7 @@ class CarController extends Controller
         $car = Car::find($car_id);
         $card = CarCard::where('car_id', $car->id)->get();
 
-        if(count($car) === 0) {
+        if(!$car->exists()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Машины не существует. Попытка подмены данных.'

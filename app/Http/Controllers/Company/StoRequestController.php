@@ -38,10 +38,10 @@ class StoRequestController extends Controller
     public function store($company_slug, $sto_id) 
     {
         $company = Company::where('slug', $company_slug)->first();        
-        $oldReq = StoRequest::where('sto_id', $sto_id)->where('company_id', $company->id)->first();
+        $oldReq = StoRequest::where('sto_id', $sto_id)->where('company_id', $company->id);
 
-        if(count($oldReq) > 0) {
-            $message = $oldReq->checkStatus();
+        if($oldReq->exists()) {
+            $message = $oldReq->first()->checkStatus();
             return response()->json([
                 'success' => false,
                 'message' => $message 

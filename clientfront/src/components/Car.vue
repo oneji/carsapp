@@ -27,6 +27,7 @@
                 <v-btn block flat color="success" v-if="item.card === null && card" @click="createCard(item.id)" :loading="loading.card === item.id">Создать карточку</v-btn>
                 <!-- Card link -->
                 <v-btn block flat color="primary" v-if="item.card !== null && card" :to="{ name: routeName, params: { car: item.id } }">Карточка</v-btn>
+                <v-btn block flat color="primary" v-if="item.card !== null && $route.name === 'HomeCars'" :to="`/c/${item.companies[0].slug}/cars/${item.id}/card`">Карточка</v-btn>
                 <!-- Back from reserve -->
                 <v-btn block flat color="primary" v-if="item.sold === 1 && forSale" @click="changeSoldStatus(item.id, 0)" :loading="loading.sale === item.id">Вернуть</v-btn>
                 <!-- Reserve car -->
@@ -59,7 +60,7 @@
             </v-card-actions>
             <v-slide-y-transition>
                 <!-- Car info -->
-                <v-card-text v-show="showCarInfo === item.id || expanded" class="pt-1">
+                <v-card-text v-show="showCarInfo === item.id || expanded" class="pt-1 px-1">
                     <v-flex>
                         <div class="car-details-block subheading mb-2">
                             <i class="ic-car car-icon"></i>
@@ -174,6 +175,8 @@ export default {
                 return 'StoCarCard';
             if(this.$route.name === 'CompanyCars')
                 return 'CompanyCarsCard';
+            if(this.$route.name === 'HomeCars')
+                return 'CompanyCarsCard';                           
         }
     },
     data() {
