@@ -1,7 +1,8 @@
 <template>
     <div>
+        <MoveButtons />
         <v-layout row wrap>
-            <v-flex xs12 sm6 md3 lg3>
+            <v-flex xs12 sm6 md4 lg4>
                 <v-card>
                     <v-card-media>
                         <v-container>
@@ -37,7 +38,7 @@
                 </v-card>
             </v-flex>
 
-            <v-flex xs12 sm6 md9 lg9>
+            <v-flex xs12 sm6 md8 lg8>
                 <v-card>
                     <v-form @submit.prevent="createUser">
                         <v-card-media>
@@ -53,68 +54,51 @@
                         <v-card-title>
                             <v-container>
                                 <v-layout row wrap>
-                                    <v-flex xs12 sm6 md6 lg6 class="v-divider pr-4">                                        
-                                        <v-container grid-list-xs>
-                                            <v-alert v-model="alert" v-if="alert.active" type="error" dismissible>
-                                                This is a success alert that is closable.
-                                            </v-alert>
-                                            <v-layout row wrap>
-                                                <v-flex xs6>
-                                                    <v-text-field type="text" v-model="newUser.fullname" name="fullname" label="ФИО" prepend-icon="person"                 
-                                                        v-validate="'required'" 
-                                                        data-vv-name="fullname" data-vv-as='"ФИО"'
-                                                        :error-messages="errors.collect('fullname')"
-                                                    ></v-text-field>                                        
-                                                </v-flex>
-                                                
-                                                <v-flex xs6>
-                                                    <v-text-field v-model="newUser.email" name="email" label="Email" type="text"
-                                                        v-validate="'required|email'" 
-                                                        :error-messages="errors.collect('email')"
-                                                        data-vv-name="email" data-vv-as='"Email"'                                    
-                                                    ></v-text-field>
-                                                </v-flex>
-                                            </v-layout>
-
-                                            <v-text-field v-model="newUser.password" name="password" label="Пароль" hint="Минимум 6 символов" prepend-icon="lock"
-                                                :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-                                                :append-icon-cb="() => (showPassword = !showPassword)" 
-                                                :type="showPassword ? 'password' : 'text'"
-                                                v-validate="'required|min:6'"
-                                                :error-messages="errors.collect('password')"
-                                                data-vv-name="password" data-vv-as='"Пароль"' 
-                                            ></v-text-field>   
-
-                                            <v-text-field v-model="newUser.passwordConfirmation" name="password_confimation" label="Подтвердите пароль" hint="Минимум 6 символов" prepend-icon="lock"
-                                                :append-icon="showPasswordConfirmation ? 'visibility' : 'visibility_off'"
-                                                :append-icon-cb="() => (showPasswordConfirmation = !showPasswordConfirmation)"
-                                                :type="showPasswordConfirmation ? 'password' : 'text'"
-                                                v-validate="'required|min:6|confirmed:password'"
-                                                :error-messages="errors.collect('password_confirmation')" 
-                                                data-vv-name="password_confirmation" data-vv-as='"Подтверждение пароля"' 
-                                            ></v-text-field>    
-                                        </v-container>
-                                        
+                                    <v-flex xs12 sm12 md12 lg12 v-if="alert.show"> 
+                                        <v-alert v-model="alert" type="error" dismissible>
+                                            {{ alert.message }}
+                                        </v-alert>
                                     </v-flex>
+                                    <v-flex xs12 sm12 md12 lg12>
+                                        <v-text-field type="text" v-model="newUser.fullname" name="fullname" label="ФИО" prepend-icon="person"                 
+                                            v-validate="'required'" 
+                                            data-vv-name="fullname" data-vv-as='"ФИО"'
+                                            :error-messages="errors.collect('fullname')"
+                                        ></v-text-field>  
+                                    
+                                        <v-text-field v-model="newUser.email" name="email" label="Email" type="text" prepend-icon="email" 
+                                            v-validate="'required|email'" 
+                                            :error-messages="errors.collect('email')"
+                                            data-vv-name="email" data-vv-as='"Email"'
+                                        ></v-text-field>
 
-                                    <v-flex xs12 sm6 md6 lg6 class="pl-4">
-                                        <form>
-                                            <v-container grid-list-xs> 
-                                                <v-layout>
-                                                    <v-flex>
-                                                        <v-select :items="roles" v-model="newUser.roles" label="Выберите роли" multiple chips prepend-icon="people" persistent-hint></v-select>
-                                                        <v-select :items="permissions" v-model="newUser.permissions" label="Выберите права доступа" prepend-icon="category" multiple chips persistent-hint></v-select>
-                                                        <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="supervised_user_circle" persistent-hint
-                                                            name="type"
-                                                            v-validate="'required'" 
-                                                            :error-messages="errors.collect('type')"
-                                                            data-vv-name="type" data-vv-as='"Тип пользователя"'
-                                                        ></v-select>
-                                                    </v-flex>     
-                                                </v-layout>                                                                       
-                                            </v-container>
-                                        </form>
-                                    </v-flex>
+                                        <v-text-field v-model="newUser.password" name="password" label="Пароль" hint="Минимум 6 символов" prepend-icon="lock"
+                                            :append-icon="showPassword ? 'visibility_off' : 'visibility'"
+                                            :append-icon-cb="() => (showPassword = !showPassword)" 
+                                            :type="showPassword ? 'text' : 'password'"
+                                            v-validate="'required|min:6'"
+                                            :error-messages="errors.collect('password')"
+                                            data-vv-name="password" data-vv-as='"Пароль"' 
+                                        ></v-text-field>
+
+                                        <v-text-field v-model="newUser.passwordConfirmation" name="password_confimation" label="Подтвердите пароль" hint="Минимум 6 символов" prepend-icon="lock"
+                                            :append-icon="showPasswordConfirmation ? 'visibility_off' : 'visibility'"
+                                            :append-icon-cb="() => (showPasswordConfirmation = !showPasswordConfirmation)"
+                                            :type="showPasswordConfirmation ? 'text' : 'password'"
+                                            v-validate="'required|min:6|confirmed:password'"
+                                            :error-messages="errors.collect('password_confirmation')" 
+                                            data-vv-name="password_confirmation" data-vv-as='"Подтверждение пароля"' 
+                                        ></v-text-field>  
+
+                                        <v-select :items="roles" v-model="newUser.roles" label="Выберите роли" multiple chips prepend-icon="people" persistent-hint></v-select>
+                                        <v-select :items="permissions" v-model="newUser.permissions" label="Выберите права доступа" prepend-icon="category" multiple chips persistent-hint></v-select>
+                                        <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="supervised_user_circle" persistent-hint
+                                            name="type"
+                                            v-validate="'required'" 
+                                            :error-messages="errors.collect('type')"
+                                            data-vv-name="type" data-vv-as='"Тип пользователя"'
+                                        ></v-select>
+                                    </v-flex> 
                                 </v-layout>
                             </v-container>
                         </v-card-title>
@@ -142,12 +126,16 @@
 </template>
 
 <script>
-import axios from '@/axios' 
+import axios from '@/axios'
+import MoveButtons from '@/components/MoveButtons'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
+    components: {
+        MoveButtons
+    },  
     data() {
         return {
             alert: {
@@ -188,32 +176,41 @@ export default {
         }
     },
     methods: {
-        createUser(event) {
+        createUser() {
             this.loading = true;
-            const vm = this;
+            this.$validator.errors.clear();
             this.$validator.validateAll()
                 .then((result) => {
                     if(result) {
                         let formData = new FormData();
-                        formData.append('fullname', vm.newUser.fullname);
-                        formData.append('email', vm.newUser.email);
-                        formData.append('password', vm.newUser.password);
-                        formData.append('password_confirmation', vm.newUser.passwordConfirmation);
-                        formData.append('avatar', vm.newUser.avatar.file);
-                        formData.append('type', vm.newUser.type);
-                        formData.append('roles', vm.newUser.roles);
-                        formData.append('permissions', vm.newUser.permissions);
+                        formData.append('fullname', this.newUser.fullname);
+                        formData.append('email', this.newUser.email);
+                        formData.append('password', this.newUser.password);
+                        formData.append('password_confirmation', this.newUser.passwordConfirmation);
+                        formData.append('avatar', this.newUser.avatar.file);
+                        formData.append('type', this.newUser.type);
+                        formData.append('roles', this.newUser.roles);
+                        formData.append('permissions', this.newUser.permissions);
 
                         axios.post('admin/users', formData)
                             .then(response => {
-                                vm.loading = false;
-                                vm.snackbar.color = 'success';
-                                vm.snackbar.text = response.data.message;
-                                vm.snackbar.active = true;
-                                event.target.reset();
+                                if(response.data.success) {
+                                    this.loading = false;
+                                    this.snackbar.color = 'success';
+                                    this.snackbar.text = response.data.message;
+                                    this.snackbar.active = true;
+                                    this.$validator.errors.clear();
+                                } else {
+                                    this.loading = false;
+                                    let errorMessages = JSON.parse(response.data.message);
+                                    console.log(errorMessages);
+                                    for(let errorKey in errorMessages) {
+                                        this.$validator.errors.add(errorKey, errorMessages[errorKey]);
+                                    }
+                                }
                             });
                     } else {
-                        vm.loading = false;
+                        this.loading = false;
                     }
                 });           
         },

@@ -99,11 +99,15 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="passwords.old" name="old_password" label="Старый пароль" prepend-icon="lock_open"                 
+                                <v-text-field v-model="passwords.old" name="old_password" label="Старый пароль" prepend-icon="lock_open"                 
+                                    :append-icon="passwords.showOldPassword ? 'visibility_off' : 'visibility'"
+                                    :append-icon-cb="() => (passwords.showOldPassword = !passwords.showOldPassword)"
+                                    :type="passwords.showOldPassword ? 'text' : 'password'"
                                     v-validate="'required'" 
                                     data-vv-name="old_password" data-vv-as='"Старый пароль"' required
                                     :error-messages="errors.collect('old_password')"
                                 ></v-text-field>
+
                                 <v-text-field v-model="passwords.new" name="new_password" label="Новый пароль" hint="Минимум 6 символов" prepend-icon="lock_open"  
                                     :append-icon="passwords.showNewPassword ? 'visibility_off' : 'visibility'"
                                     :append-icon-cb="() => (passwords.showNewPassword = !passwords.showNewPassword)"
@@ -112,6 +116,7 @@
                                     :error-messages="errors.collect('new_password')"
                                     data-vv-name="new_password" data-vv-as='"Пароль"' required 
                                 ></v-text-field> 
+                                
                                 <v-text-field v-model="passwords.new_confirmation" name="new_confimation_password" label="Повторите новый пароль" hint="Минимум 6 символов" prepend-icon="lock_open"  
                                     :append-icon="passwords.showNewConfPassword ? 'visibility_off' : 'visibility'"
                                     :append-icon-cb="() => (passwords.showNewConfPassword = !passwords.showNewConfPassword)"
@@ -127,7 +132,7 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" flat="flat" @click.native="passwords.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="passwords.loading" flat="flat" type="submit">Создать</v-btn>
+                        <v-btn color="green darken-1" :loading="passwords.loading" flat="flat" type="submit">Изменить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
@@ -174,6 +179,7 @@ export default {
                 new_confirmation: '',
                 dialog: false,
                 loading: false,
+                showOldPassword: false,
                 showNewPassword: false, 
                 showNewConfPassword: false, 
             }
@@ -196,6 +202,7 @@ export default {
                         .then(response => {
                             if(response.data.success) {
                                 this.passwords.old = this.passwords.new = this.passwords.new_confirmation = ''                             
+                                this.$validator.errors.clear();
                                 this.snackbar.color = 'success';
                                 this.snackbar.text = response.data.message;
                                 this.snackbar.active = true;

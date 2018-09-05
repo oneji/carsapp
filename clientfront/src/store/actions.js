@@ -9,7 +9,7 @@ const actions = {
         return new Promise((resolve, reject) => {
             axios.get('/me')
                 .then(response => { 
-                    commit('setUser', response.data.user);
+                    commit(types.SET_USER, response.data.user);
                     window.localStorage.setItem('user', JSON.stringify(response.data.user));
                     resolve(response);
                 })
@@ -25,7 +25,9 @@ const actions = {
             api.login(user).then(response => { 
                 if(response.status === 200) { 
                     if(response.data.success) {
-                        commit('setUser', response.data.user);
+                        commit(types.SET_USER, response.data.user);
+                        commit(types.SET_PERMISSIONS, response.data.user.permissions);
+
                         cookie.set('auth.client.token', response.data.token, { expires: 1 });
                         window.localStorage.setItem('user', JSON.stringify(response.data.user));
                         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
@@ -34,14 +36,16 @@ const actions = {
                     } else {
                         reject(response);
                     }                                      
-                }                 
+                } else {
+                    reject(response);
+                }
             });
         });
     },
 
     logout({ commit }) {
         api.logout().then(() => {
-            commit('resetUser');
+            commit(types.RESET_USER);
             cookie.remove('auth.client.token');
             window.localStorage.removeItem('user');
             router.push('/login');
@@ -50,7 +54,7 @@ const actions = {
     },
 
     resetUser({ commit }) {
-        commit('resetUser'); 
+        commit(types.RESET_USER); 
         cookie.remove('auth.client.token');
         window.localStorage.removeItem('user');
     },

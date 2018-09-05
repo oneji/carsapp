@@ -75,6 +75,7 @@ export default {
                             this.$router.push('/');
                         })
                         .catch(error => {
+                            console.log(error);
                             this.loading = false;
                             this.alert.message = error.data.message;
                             this.alert.show = true;
