@@ -105,15 +105,15 @@ class User extends Authenticatable implements JWTSubject
     /**
      * Get user role permission names
      */
-    public function getRolePermissionNames()
+    public function getFilteredPermissionNames()
     {        
-        $rolePermissions = [];
+        $rolePermissions = $this->getPermissionNames();
         foreach($this->roles as $role) {
             foreach($role->permissions as $permission) {
                 array_push($rolePermissions, $permission->name);
             }
         }
-        
-        return $rolePermissions;
+
+        return array_unique($rolePermissions);
     }
 }

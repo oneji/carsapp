@@ -19,14 +19,9 @@ class AuthController extends Controller
     public function acl() 
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $roles = $user->getRoleNames();
-        $permissions = $user->getPermissionNames();
-        $rolePermissions = array_unique($user->getRolePermissionNames());
-        $rolePermissions = array_values($rolePermissions);
+        $rolePermissions = $user->getFilteredPermissionNames();
 
         return response()->json([
-            'roles' => $roles,
-            'permissions' => $permissions,
             'rolePermissions' => $rolePermissions
         ]);
     }
