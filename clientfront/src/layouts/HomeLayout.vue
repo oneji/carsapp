@@ -3,14 +3,26 @@
         <!-- Left sidebar -->
         <v-navigation-drawer :mini-variant="miniVariant" clipped v-model="drawer" fixed app>
             <v-list>
-                <v-list-tile router :to="item.to" :key="i" v-for="(item, i) in items" exact v-can="item.permissions">
-                    <v-list-tile-action>
-                        <v-icon v-html="item.icon"></v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title v-text="item.title"></v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
+                <template v-for="(item, index) in items">
+                    <v-layout v-if="item.heading" :key="index" row align-center>
+                        <v-flex xs12>
+                            <v-subheader v-if="item.heading">
+                                {{ item.heading }}
+                            </v-subheader>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider v-else-if="item.divider" :key="index" dark class="my-1"></v-divider>
+                    <v-list-tile v-else :key="index" :to="item.to" v-can="item.permissions">
+                        <v-list-tile-action>
+                            <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>
+                                {{ item.title }}
+                            </v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    </template>
             </v-list>
         </v-navigation-drawer>
         
@@ -164,11 +176,17 @@ export default {
             fixed: false,
             items: [
                 { icon: 'home', title: 'Главная', to: '/' },
-                { icon: 'people', title: 'Пользователи', to: '/users', permissions: ['read-users'] },
+                { divider: true },                               
                 { icon: 'list', title: 'Список компаний', to: '/companies' },
                 { icon: 'directions_car', title: 'Все автомобили', to: '/cars' },
                 { icon: 'directions_car', title: 'Резервные автомобили', to: '/cars/reserved' },
+                { icon: 'people', title: 'Водители', to: '/drivers' },
                 { icon: 'people', title: 'Очередь водителей', to: '/drivers/queue' },
+                { divider: true }, 
+                { heading: 'Админка' },
+                { icon: 'people', title: 'Пользователи', to: { name: 'AdminUsers' }, permissions: ['read-users'] },
+                { icon: 'list', title: 'Компании', to: { name: 'AdminCompanies' }, permissions: ['read-companies'] },                
+                { icon: 'lock', title: 'Конструктор прав доступа', to: { name: 'AdminACL' }, permissions: ['read-acl'] },                
             ],
             miniVariant: false,
             rightDrawer: false,

@@ -11,17 +11,21 @@ export const Can = {
 
         if(permissions.length === 0)
             block = false;
-        // Check if a user has a required permission
-        permissions.map(permission => {
-            userPermissions.map(userPermission => {
+        // Check if a user has the required permission
+        for(let i = 0; i < permissions.length; i++) {
+            let permission = permissions[i];
+            for(let j = 0; j < userPermissions.length; j++) {
+                let userPermission = userPermissions[j];
                 if(permission === userPermission) {
                     block = false;
                 }
-            })
-        }) 
+            }
+        }
+
         // if not then delete an element 
-        if(block)
+        if(block) {
             el.remove();
+        }
     }
 }
 

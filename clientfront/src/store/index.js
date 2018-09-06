@@ -11,7 +11,7 @@ export default new Vuex.Store({
     state: {
         user: null,
         isLogged: false,
-        permissions: [],
+        permissions: null,
 
         car: {
             brand_name: '',

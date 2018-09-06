@@ -26,7 +26,6 @@ const actions = {
                 if(response.status === 200) { 
                     if(response.data.success) {
                         commit(types.SET_USER, response.data.user);
-                        commit(types.SET_PERMISSIONS, response.data.user.permissions);
 
                         cookie.set('auth.client.token', response.data.token, { expires: 1 });
                         window.localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -75,8 +74,15 @@ const actions = {
         commit(types.SET_EQUIPMENT, equipment);
     },
 
-    setPermissions({ commit }, permissions) {
-        commit(types.SET_PERMISSIONS, permissions);
+    setPermissions({ commit }) {
+        return new Promise((resolve, reject) => {
+            api.getUserPermissions().then(response => {
+                commit(types.SET_PERMISSIONS, response.data.rolePermissions);
+
+                resolve();
+            })
+            .catch(error => reject(error));
+        });        
     },
 
     setConsumable({ commit }, consumable) {

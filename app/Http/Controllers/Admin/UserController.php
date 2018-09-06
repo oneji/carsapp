@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\User;
-use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use JWTAuth;
+use Validator;
+use Illuminate\Validation\Rule;
+
 
 class UserController extends Controller
 {
@@ -16,7 +19,11 @@ class UserController extends Controller
      */
     public function getAll() 
     {
-        $users = User::where('deleted', 0)->with(['companies', 'stos', 'roles', 'permissions'])->get();
+        $user = JWTAuth::parseToken()->authenticate();
+        $users = User::where('deleted', 0)
+                        ->where('id', '<>', $user->id)
+                        ->with(['companies', 'stos', 'roles', 'permissions'])
+                        ->get();
         return response()->json($users);
     }
 
@@ -113,7 +120,10 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => [
+                'required',
+                Rule::unique('users')->ignore($id),
+            ],
         ]);
 
         if($validator->fails()) {
@@ -142,7 +152,7 @@ class UserController extends Controller
             'email' => $request->email,
             'avatar' => $fileNameToStore,
             'type' => $request->type
-        ]); 
+        ]);
         
         if($request->roles !== null)
             $user->syncRoles($request->roles);
@@ -151,7 +161,7 @@ class UserController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Пользователь успешно изменён!',
+            'message' => 'Пользователь успешно изменён.',
             'company' => $user
         ]);
     }

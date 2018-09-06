@@ -14,9 +14,9 @@ Validator.localize('ru', ru);
 Vue.use(VeeValidate)
 Vue.use(VueMoment)
 
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'vuetify/dist/vuetify.min.css'
 import 'babel-polyfill'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.config.productionTip = false
 

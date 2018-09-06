@@ -16,7 +16,7 @@
                     <TileBox :link="{ name: 'HomeReservedCars' }" title="Резервные автомобили" :value="reservedCarsList.length" box-icon="directions_car" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="3">
-                    <TileBox :link="{ name: 'HomeDriversQueue' }" title="Водители" :value="drivers.length" box-icon="people" />
+                    <TileBox :link="{ name: 'HomeDriversIndex' }" title="Водители" :value="drivers.length" box-icon="people" />
                 </v-flex>
                 <v-flex xs12 sm6 mg3 lg4 :key="4">
                     <TileBox :link="{ name: 'HomeDriversQueue' }" title="Водители в очереди" :value="queue.length" box-icon="people" />

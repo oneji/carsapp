@@ -20,29 +20,17 @@ router.beforeEach((to, from, next) => {
         if(token === undefined || user === null) {
             store.dispatch('resetUser')
             next('/login');
-        }
-
-        if(store.getters.permissions.length === 0) {
-            api.getUserPermissions().then(response => {
-                store.dispatch('setPermissions', response.data.rolePermissions)
-                next()
-            })
-            .catch(error => {
-                console.log(error);
-                next()
-            })
         } else {
-            if(checkPermissions(to.meta.permissions)) {
-                next()
+            if(store.getters.permissions === null) {
+                store.dispatch('setPermissions')
+                    .then(() => checkPermissions(to.meta.permissions) ? next() : next('/403'));
             } else {
-                next('/403')
+                checkPermissions(to.meta.permissions) ? next() : next('/403');
             }
-        }   
+        }
     } else {
         next()
     } 
 });
 
 export default router
-  
-  

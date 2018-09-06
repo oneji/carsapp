@@ -2,7 +2,7 @@
     <div>
         <v-layout row wrap>
             <v-flex xs12 sm12 md12 lg12>
-                <v-btn to="/users/create" color="success" v-can="['create-users']">Создать пользователя</v-btn>
+                <v-btn :to="{ name: 'AdminUserCreate' }" color="success" v-can="['create-users']">Создать пользователя</v-btn>
             </v-flex>
         </v-layout>
         
@@ -46,8 +46,10 @@
                     </v-card-title>
 
                     <v-card-actions>
-                        <!-- <v-btn flat color="green" :to="`/users/edit/${user.id}`" v-can="['update-users']">Изменить</v-btn> -->
                         <v-btn block flat color="red" @click="deleteUser(user.id, index)" v-can="['delete-users']">Удалить</v-btn>
+                        <v-btn color="grey" flat icon :to="{ name: 'AdminUserEdit', params: { id: user.id } }" v-can="['update-users']">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
                     </v-card-actions>                    
                 </v-card>
             </v-flex>

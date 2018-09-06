@@ -126,7 +126,7 @@ export default {
                 { divider: true },
                 { icon: 'business', title: 'Компании', to: { name: 'StoCompanies' } },
                 { icon: 'work', title: 'Услуги', to: { name: 'StoServices' } },
-                { icon: 'list_alt', title: 'Дефекты и ДВС', to: { name: 'StoDefects' } },
+                { icon: 'list', title: 'Дефекты и ДВС', to: { name: 'StoDefects' } },
             ],
             miniVariant: false,
             rightDrawer: false,

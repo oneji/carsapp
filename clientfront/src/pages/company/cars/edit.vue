@@ -22,7 +22,7 @@
                     <v-card-media :src="editCar.cover_image.url ? assetsURL + '/' + editCar.cover_image.url : '/static/images/no-photo.png'" height="200px"></v-card-media>
                 </v-card>
 
-                 <v-card>
+                <v-card>
                     <v-card-media>
                         <v-container>
                             <v-layout>

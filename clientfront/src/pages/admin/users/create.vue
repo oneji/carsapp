@@ -2,42 +2,6 @@
     <div>
         <MoveButtons />
         <v-layout row wrap>
-            <v-flex xs12 sm6 md4 lg4>
-                <v-card>
-                    <v-card-media>
-                        <v-container>
-                            <v-layout>
-                                <v-flex>
-                                    <p class="subheading my-0">Аватар</p>
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-media>
-                    <v-divider></v-divider>
-                    <v-card-title primary-title>
-                        <v-container>
-                            <v-layout row wrap>
-                                <v-flex>
-                                    <img v-if="newUser.avatar.url" class="avatar-preview" :src="newUser.avatar.url" height="150" />                                    
-                                    <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
-                                </v-flex>
-                            </v-layout>
-                        </v-container>
-                    </v-card-title>
-                    <v-divider></v-divider>
-                    <v-card-actions>
-                        <v-container class="pb-0 pt-3">
-                            <v-layout row wrap>
-                                <v-text-field label="Выберите аватар" @click="pickFile" v-model="newUser.avatar.name" 
-                                    prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deleteAvatar"
-                                ></v-text-field>
-                                <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
-                            </v-layout>
-                        </v-container>
-                    </v-card-actions>
-                </v-card>
-            </v-flex>
-
             <v-flex xs12 sm6 md8 lg8>
                 <v-card>
                     <v-form @submit.prevent="createUser">
@@ -91,8 +55,8 @@
                                         ></v-text-field>  
 
                                         <v-select :items="roles" v-model="newUser.roles" label="Выберите роли" multiple chips prepend-icon="people" persistent-hint></v-select>
-                                        <v-select :items="permissions" v-model="newUser.permissions" label="Выберите права доступа" prepend-icon="category" multiple chips persistent-hint></v-select>
-                                        <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="supervised_user_circle" persistent-hint
+                                        <v-select :items="permissions" v-model="newUser.permissions" label="Выберите права доступа" prepend-icon="people" multiple chips persistent-hint></v-select>
+                                        <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="person" persistent-hint
                                             name="type"
                                             v-validate="'required'" 
                                             :error-messages="errors.collect('type')"
@@ -104,16 +68,41 @@
                         </v-card-title>
                         <v-divider></v-divider>
                         <v-card-actions>
-                            <v-container class="py-1">
-                                <v-layout>
-                                    <v-flex>
-                                        <v-btn :loading="loading" color="success" type="submit">Создать</v-btn>
-                                        <v-btn color="info">Очистить</v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
+                            <v-btn block :loading="loading" color="success" type="submit">Создать</v-btn>            
                         </v-card-actions>   
                     </v-form> 
+                </v-card>
+            </v-flex>
+
+            <v-flex xs12 sm6 md4 lg4>
+                <v-card>
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Аватар</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <v-card-title>
+                        <v-container>
+                            <v-layout row wrap>
+                                <v-flex xs8 offset-xs2>
+                                    <img v-if="newUser.avatar.url" class="avatar-preview" :src="newUser.avatar.url" height="150" />                                    
+                                    <img v-else class="avatar-preview" src="/static/images/no-photo.png" alt="Нет фото">
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-actions>
+                        <v-text-field label="Выберите аватар" @click="pickFile" v-model="newUser.avatar.name" 
+                            prepend-icon="attach_file" append-icon="delete" :append-icon-cb="deleteAvatar"
+                        ></v-text-field>
+                        <input type="file" style="display: none" @change="onFilePicked" ref="image" accept="image/*">
+                    </v-card-actions>
                 </v-card>
             </v-flex>
         </v-layout>
@@ -203,7 +192,6 @@ export default {
                                 } else {
                                     this.loading = false;
                                     let errorMessages = JSON.parse(response.data.message);
-                                    console.log(errorMessages);
                                     for(let errorKey in errorMessages) {
                                         this.$validator.errors.add(errorKey, errorMessages[errorKey]);
                                     }
