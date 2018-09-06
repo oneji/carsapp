@@ -77,7 +77,7 @@
     
     <!-- A list of companies -->
     <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
-      <v-flex xs12 sm4 md3 lg2 v-for="item in items" :key="item.id">
+      <v-flex xs12 sm4 md3 lg3 v-for="item in items" :key="item.id">
         <v-card>
           <v-card-media height="150px">
             <v-layout row justify-center align-center>

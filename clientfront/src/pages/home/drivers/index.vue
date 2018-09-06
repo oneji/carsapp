@@ -91,7 +91,6 @@ export default {
             this.loading = true;
             axios.get('/all-cars')
                 .then(response => {
-                    console.log(response.data);
                     this.companies = response.data.companies;
 
                     this.companies.map(company => {
@@ -103,8 +102,6 @@ export default {
                             this.drivers.push(driverInfo);   
                         })
                     })
-
-                    console.log(this.drivers)
 
                     this.loading = false;
                 })
