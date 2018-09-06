@@ -30,12 +30,10 @@ class AclController extends Controller
 
     public function update(Request $request)
     {
-        $roles = $request->all();
-
-        foreach($roles as $r) {
-            $role = Role::where('id', $r['id'])->first();
-
-            $role->syncPermissions($r['permissions']);
+        $roles = $request->roles;
+        for($i = 0; $i < count($roles); $i++) {
+            $role = Role::where('id', $roles[$i]['id'])->first();
+            $role->syncPermissions($roles[$i]['permissions']);            
         }
 
         return response()->json([

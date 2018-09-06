@@ -209,6 +209,7 @@ export default {
         },
 
         changePassword() {
+            this.passwords.loading = true;
             this.$validator.validateAll('change-password-form')
                 .then(success => {
                     if(success) {
@@ -224,10 +225,12 @@ export default {
                                 this.snackbar.color = 'success';
                                 this.snackbar.text = response.data.message;
                                 this.snackbar.active = true;
+                                this.passwords.loading = false;
                             } else {
                                 this.snackbar.color = 'error';
                                 this.snackbar.text = response.data.message;
                                 this.snackbar.active = true;
+                                this.passwords.loading = false;                                
                             }
                         })
                         .catch(error => console.error());

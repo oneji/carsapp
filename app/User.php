@@ -96,8 +96,9 @@ class User extends Authenticatable implements JWTSubject
     public function getPermissionNames()
     {
         $permissions = [];
-        foreach($this->permissions as $permission)
+        foreach($this->permissions as $permission) {
             array_push($permissions, $permission->name);
+        }
         
         return $permissions;
     }

@@ -239,7 +239,7 @@ export default {
 
         editRoles() {
             this.loading.editRole = true;
-            axios.put(`admin/acl`, this.roles)
+            axios.put(`admin/acl`, { roles: this.roles })
                 .then(response => {
                     this.loading.editRole = false;
                     this.snackbar.color = 'success';
