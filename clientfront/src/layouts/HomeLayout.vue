@@ -4,7 +4,7 @@
         <v-navigation-drawer :mini-variant="miniVariant" clipped v-model="drawer" fixed app>
             <v-list>
                 <template v-for="(item, index) in items">
-                    <v-layout v-if="item.heading" :key="index" row align-center>
+                    <v-layout v-if="item.heading" :key="index" row align-center v-can="item.permissions">
                         <v-flex xs12>
                             <v-subheader v-if="item.heading">
                                 {{ item.heading }}
@@ -183,7 +183,7 @@ export default {
                 { icon: 'people', title: 'Водители', to: '/drivers' },
                 { icon: 'people', title: 'Очередь водителей', to: '/drivers/queue' },
                 { divider: true }, 
-                { heading: 'Админка' },
+                { heading: 'Админ панель', permissions: ['read-users'] },
                 { icon: 'people', title: 'Пользователи', to: { name: 'AdminUsers' }, permissions: ['read-users'] },
                 { icon: 'list', title: 'Компании', to: { name: 'AdminCompanies' }, permissions: ['read-companies'] },                
                 { icon: 'lock', title: 'Конструктор прав доступа', to: { name: 'AdminACL' }, permissions: ['read-acl'] },                

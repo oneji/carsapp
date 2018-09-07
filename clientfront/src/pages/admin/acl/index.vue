@@ -2,7 +2,7 @@
     <div>
         <v-layout>
             <v-flex>
-                <v-btn color="primary" @click.native="createRoleDialog = true" v-can="['create-role']">Создать роль</v-btn>
+                <v-btn color="success" @click.native="createRoleDialog = true" v-can="['create-role']">Создать роль</v-btn>
             </v-flex>
         </v-layout>
         <v-layout style="position: relative">
@@ -13,19 +13,17 @@
             <v-flex xs12 sm12 md12 lg12> 
                 <v-form @submit.prevent="editRoles">
                     <v-card>                    
-                        <v-tabs v-model="active" color="cyan" dark slider-color="yellow" show-arrows>
+                        <v-tabs v-model="active" color="blue" dark slider-color="white" show-arrows>
                             <v-tab v-for="role in roles" :key="role.id" ripple>
                                 {{ role.display_name }}
                             </v-tab>
                             <v-tab-item v-for="role in roles" :key="role.id">
                                 <v-card flat>
                                     <v-card-text>
-                                        <div  >
-                                            <v-checkbox :value="permission.id" 
-                                                v-for="permission in acl.permissions" :key="permission.id" :label="permission.display_name" 
-                                                v-model="role.permissions"
-                                            ></v-checkbox>
-                                        </div>
+                                        <v-checkbox :value="permission.id" color="blue" hide-details
+                                            v-for="permission in acl.permissions" :key="permission.id" :label="permission.display_name" 
+                                            v-model="role.permissions"
+                                        ></v-checkbox>
                                     </v-card-text>
                                 </v-card>
                             </v-tab-item>

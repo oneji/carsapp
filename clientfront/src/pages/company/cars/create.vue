@@ -60,7 +60,7 @@
                                                 :error-messages="errors.collect('number')"
                                             ></v-text-field>
 
-                                            <v-select autocomplete :items="shapes" v-model="newCar.shape_id" label="Выберите кузов" prepend-icon="category"
+                                            <v-select autocomplete :items="shapes" v-model="newCar.shape_id" label="Выберите кузов" prepend-icon="directions_car"
                                                 name="shape_id"
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('shape_id')"

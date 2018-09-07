@@ -7,7 +7,7 @@ export const Can = {
         let permissions = binding.value || [];
         
         let userPermissions = store.getters.permissions;
-        let block = true;
+        let block = true;       
 
         if(permissions.length === 0)
             block = false;
