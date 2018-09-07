@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Company;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -47,7 +48,7 @@ class CompanyController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Компания успешно создана!',
+            'message' => 'Компания успешно создана.',
             'company' => $company
         ]);
     }
@@ -60,13 +61,13 @@ class CompanyController extends Controller
      * 
      * @return  \Illuminate\Http\Response
      */
-    public function bindUser($company_id, $user_id)
+    public function bindUser(Request $request, $user_id)
     {
-        $company = Company::find($company_id)->users()->attach($user_id);
+        $user = User::find($user_id)->companies()->attach($request->companies);
         
         return response()->json([
             'success' => true,
-            'message' => 'Пользователь успешно привязан'
+            'message' => 'Пользователь успешно привязан.'
         ]);
     }
 }

@@ -16,7 +16,7 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
-            <v-flex v-for="(q, index) in queue" :key="q.driver.id" xs12 sm6 md3 lg2>
+            <v-flex v-for="(q, index) in queue" :key="q.driver.id" xs12 sm6 md3 lg3>
                 <v-card>
                     <v-card-media>                        
                         <v-container>
@@ -72,7 +72,7 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12> 
-                                <v-select autocomplete :items="selectItems.drivers" v-model="addToQueue.driverID" label="Выберите водителя" prepend-icon="category"
+                                <v-select autocomplete :items="selectItems.drivers" v-model="addToQueue.driverID" label="Выберите водителя" prepend-icon="person"
                                     name="driver_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('driver_id')"

@@ -11,7 +11,7 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
-            <v-flex v-for="(driver) in drivers" :key="driver.info.id" xs12 sm4 md3 lg2>
+            <v-flex v-for="(driver) in drivers" :key="driver.info.id" xs12 sm4 md3 lg3>
                 <v-card>
                     <v-card-media>                        
                         <v-container>

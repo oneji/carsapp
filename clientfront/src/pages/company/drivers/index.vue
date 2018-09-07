@@ -17,7 +17,7 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
-            <v-flex v-for="(driver, index) in drivers" :key="driver.id" xs12 sm4 md3 lg2>
+            <v-flex v-for="(driver, index) in drivers" :key="driver.id" xs12 sm4 md3 lg3>
                 <v-card>
                     <v-card-media>                        
                         <v-container>
@@ -59,7 +59,7 @@
                         <transition name="fade-transition" mode="out-in" v-else>
                             <v-btn flat block color="warning" :loading="loading.queue === driver.id" @click="backFromQueue(driver.id, index)" >Убрать из очереди</v-btn>
                         </transition>
-                        <v-btn icon :to="{ name: 'CompanyDriversEdit', params: { driver: driver.id } }">
+                        <v-btn color="grey" flat icon :to="{ name: 'CompanyDriversEdit', params: { driver: driver.id } }">
                             <v-icon>edit</v-icon>
                         </v-btn>
                     </v-card-actions>                    

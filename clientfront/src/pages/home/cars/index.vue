@@ -2,29 +2,31 @@
     <div>
         <div v-if="getTotalCarCount !== 0 && !loading">        
             <v-layout row wrap>  
-                <v-flex xs6 sm6 md3 lg3>     
+                <v-flex xs12 sm6 md3 lg3>     
                     <v-select
                         :items="selectItems.companies"
                         label="Фильтр по компаниям"
                         overflow
                         item-value="value"
                         v-model="query.company"
+                        hide-details
                     ></v-select>
                 </v-flex>      
-                <v-flex xs6 sm6 md3 lg3>     
+                <v-flex xs12 sm6 md3 lg3>     
                     <v-select
                         :items="selectItems.brands"
                         label="Фильтр по марке машины"
                         overflow
                         item-value="value"
                         v-model="query.brand"
+                        hide-details
                     ></v-select>
                 </v-flex>      
-                <v-flex xs6 sm6 md5 lg2>
+                <v-flex xs12 sm6 md3 lg3>
                     <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
                 </v-flex> 
-                <v-flex>
-                    <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
+                <v-flex xs12 sm6 md3 lg3>
+                    <v-btn block outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
                 </v-flex>   
             </v-layout> 
             <v-divider class="mb-3"></v-divider>
@@ -49,6 +51,7 @@
                         :item="car.info"
                         :can-reserve="true"
                         :details="true"
+                        :card="true"
                         @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
@@ -165,7 +168,7 @@ export default {
             });
 
             this.successSnackbar(params.message);
-        } 
+        }
     },
     created() {
         this.fetchUserProjects();

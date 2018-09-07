@@ -19,7 +19,7 @@
         </v-layout>            
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
+            <v-flex xs12 sm6 md4 lg3 v-for="car in cars" :key="car.id" v-cloak>
                 <Car 
                     :item="car" 
                     :edit="true" 
@@ -28,7 +28,6 @@
                     :details="true" 
                     :can-reserve="true"
                     @sale="onCarSale"
-                    @card-created="onCarCardCreated"
                     @reserve="onCarReserved" />
             </v-flex>
         </transition-group>
@@ -273,15 +272,6 @@ export default {
 
         onCarSale(params) {
             this.cars = this.cars.filter(car => car.id !== params.car_id);
-            this.successSnackbar(params.message);
-        },
-
-        onCarCardCreated(params) {
-            this.cars.map(car => {
-                if(car.id === params.car.car_id)
-                    car.card = params.car.card
-            });
-
             this.successSnackbar(params.message);
         },
 

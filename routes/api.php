@@ -46,7 +46,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function() {
         // Company routes
         Route::get('/companies', 'CompanyController@get');
         Route::post('/companies', 'CompanyController@store');
-        Route::post('/companies/{company}/bind/{user}', 'CompanyController@bindUser');
+        Route::post('/companies/bind/{user}', 'CompanyController@bindUser');
         // Sto routes
         Route::get('/stos', 'StoController@get');
         Route::post('/stos', 'StoController@store');

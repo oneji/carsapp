@@ -2,21 +2,24 @@
     <div>
         <div v-if="getTotalCarCount !== 0 && !loading">        
             <v-layout row wrap>
-                <v-flex xs6 sm6 md3 lg3>      
+                <v-flex xs12 sm6 md3 lg3>      
                     <v-select
                         :items="selectItems.companies"
                         label="Фильтр по компаниям"
                         overflow
                         item-value="value"
                         v-model="query.company"
+                        hide-details
                     ></v-select>
                 </v-flex>      
-                <v-flex xs6 sm6 md5 lg2>
+                <v-flex xs12 sm6 md3 lg3>
                     <v-btn block color="primary" @click="clearFilter">Очистить фильтр</v-btn>
                 </v-flex> 
-                <v-flex>
-                    <v-btn color="success" @click="addToReserve.dialog = true">Добавить в резерв</v-btn> 
-                    <v-btn outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
+                <v-flex xs12 sm6 md3 lg3>
+                    <v-btn block color="success" @click="addToReserve.dialog = true">Добавить в резерв</v-btn>
+                </v-flex>
+                <v-flex xs12 sm6 md3 lg3> 
+                    <v-btn block outline color="primary">Количество машин: {{ getTotalCarCount }}</v-btn> 
                 </v-flex>   
             </v-layout>  
             <v-divider class="mb-3"></v-divider>  
@@ -35,11 +38,16 @@
         </v-layout>       
 
         <v-layout row wrap>
-            <v-flex v-for="car in getCarsByCompany" :key="car.info.id" xs12 sm6 md3 lg3 v-cloak>
-                <Car :item="car.info" :can-reserve="true" :details="true" :companies="selectItems.companies" />
+            <v-flex v-for="car in getCarsByCompany" :key="car.info.id" xs12 sm6 md4 lg3 v-cloak>
+                <Car 
+                    :item="car.info" 
+                    :can-reserve="true" 
+                    :details="true"
+                    :card="true"
+                    :actions="false"
+                    :companies="selectItems.companies" />
             </v-flex>         
-        </v-layout>  
-
+        </v-layout> 
         
 
         <!-- Add to reserve reservation -->
@@ -50,7 +58,7 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12> 
-                                <v-select autocomplete :items="selectItems.cars" v-model="addToReserve.carID" label="Выберите автомобиль" prepend-icon="category"
+                                <v-select autocomplete :items="selectItems.cars" v-model="addToReserve.carID" label="Выберите автомобиль" prepend-icon="directions_car"
                                     name="car_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('car_id')"

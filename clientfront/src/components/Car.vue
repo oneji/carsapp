@@ -23,74 +23,86 @@
                 </div>
             </v-card-title>
             <v-card-actions class="mt-2">
-                <!-- Create card -->
-                <v-btn block flat color="success" v-if="item.card === null && card" @click="createCard(item.id)" :loading="loading.card === item.id">Создать карточку</v-btn>
                 <!-- Card link -->
-                <v-btn block flat color="primary" v-if="item.card !== null && card" :to="{ name: routeName, params: { car: item.id } }">Карточка</v-btn>
-                <v-btn block flat color="primary" v-if="item.card !== null && $route.name === 'HomeCars'" :to="`/c/${item.companies[0].slug}/cars/${item.id}/card`">Карточка</v-btn>
-                <!-- Back from reserve -->
+                <v-btn block flat color="primary" v-if="item.card !== null && card && $route.name !== 'HomeCars' && $route.name !== 'HomeReservedCars'" :to="{ name: routeName, params: { car: item.id } }">Карточка</v-btn>
+                <v-btn block flat color="primary" v-else-if="item.card !== null && $route.name === 'HomeCars'" :to="`/c/${item.companies[0].slug}/cars/${item.id}/card`">Карточка</v-btn>
+                <v-btn block flat color="primary" v-else-if="item.card !== null && $route.name === 'HomeReservedCars'" :to="`/c/${item.companies[0].slug}/cars/${item.id}/card`">Карточка</v-btn>
+                <!-- Create card -->
+                <v-btn block flat color="success" v-else-if="item.card === null && card" @click="createCard(item.id)" :loading="loading.card === item.id">Создать карточку</v-btn>
+                <!-- Back from sold -->
                 <v-btn block flat color="primary" v-if="item.sold === 1 && forSale" @click="changeSoldStatus(item.id, 0)" :loading="loading.sale === item.id">Вернуть</v-btn>
-                <!-- Reserve car -->
-                <v-btn block flat color="warning" v-if="canReserve && item.reserved === 0" @click="reserveCar(item.id)" :loading="loading.reserve === item.id">В резерв</v-btn> 
-                <!-- Back from reservation -->
-                <v-btn block flat color="success" v-if="canReserve && item.reserved === 1" @click="showUnReserveModal(item.id)">Вернуть</v-btn>
-
-                <v-tooltip bottom v-if="item.sold === 0 && forSale"> 
-                    <v-btn :disabled="item.drivers.length > 0 ? true : false" icon slot="activator" @click="changeSoldStatus(item.id, 1)" :loading="loading.sale === item.id">
-                        <v-icon>attach_money</v-icon>
+                <v-tooltip bottom v-if="canReserve && item.reserved === 1">
+                    <v-btn slot="activator" icon @click="showUnReserveModal(item.id)">
+                        <v-icon>settings_backup_restore</v-icon>
                     </v-btn>
-                    <span v-if="item.drivers.length > 0">Перед продажей отвяжите водителя</span>
-                    <span v-else>В список проданных</span>
-                </v-tooltip>                
-                <!-- Edit car -->
-                <div v-if="edit">
-                    <v-btn icon :to="{ name: 'CompanyCarsEdit', params: { car: item.id } }">
-                        <v-icon>edit</v-icon>
-                    </v-btn>
-                </div>
+                    <span>Вернуть из резерва</span>
+                </v-tooltip>
+                <!-- Actions menu -->
+                <v-tooltip bottom v-if="actions">   
+                    <v-menu bottom left slot="activator">
+                        <v-btn slot="activator" icon>
+                            <v-icon>more_vert</v-icon>
+                        </v-btn>
+                        <v-list>
+                            <!-- Reserve car -->
+                            <v-list-tile @click="reserveCar(item.id)" v-if="canReserve && item.reserved === 0">
+                                <v-list-tile-title>В резерв</v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile :to="{ name: 'CompanyCarsEdit', params: { car: item.id } }" v-if="edit">
+                                <v-list-tile-title>Изменить</v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile 
+                                v-if="item.sold === 0 && forSale" 
+                                :disabled="item.drivers.length > 0 ? true : false"
+                                @click="changeSoldStatus(item.id, 1)"
+                            >
+                                <v-list-tile-title>В список проданных</v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+                    <span>Действия</span>
+                </v-tooltip>
                 <!-- Car details -->
-                <div v-if="details">
-                    <v-btn icon @click.native="showCarInfo = item.id" v-if="showCarInfo !== item.id">
-                        <v-icon>keyboard_arrow_down</v-icon>
-                    </v-btn>
-                    <v-btn icon @click.native="showCarInfo = null" v-if="showCarInfo === item.id">
-                        <v-icon>keyboard_arrow_up</v-icon>
-                    </v-btn>
-                </div>
+                <v-btn icon @click.native="showCarInfo = item.id" v-if="showCarInfo !== item.id && details">
+                    <v-icon>keyboard_arrow_down</v-icon>
+                </v-btn>
+                <v-btn icon @click.native="showCarInfo = null" v-if="showCarInfo === item.id && details">
+                    <v-icon>keyboard_arrow_up</v-icon>
+                </v-btn>
             </v-card-actions>
             <v-slide-y-transition>
                 <!-- Car info -->
-                <v-card-text v-show="showCarInfo === item.id || expanded" class="pt-1 px-1">
+                <v-card-text v-show="showCarInfo === item.id || expanded" class="pt-1 px-0">
                     <v-flex>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-car car-icon"></i>
                             <strong>Номер:</strong> {{ item.number }}
                         </div>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-speedometer car-icon"></i>
                             <strong>Пробег:</strong> 
                             <span v-if="item.milage !== null">{{ item.milage }} км.</span>
                             <span v-else>Не установлен.</span>
                         </div>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-car car-icon"></i>
                             <strong>Vin код:</strong> {{ item.vin_code }}
                         </div>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-wheel car-icon"></i>
                             <strong>Гос-номер:</strong> {{ item.number }}
                         </div>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-engine car-icon"></i>
                             <strong>Объем двигателя:</strong> 
                             <span v-if="item.engine_capacity !== null">{{ item.engine_capacity }} л.</span>
                             <span v-else>Не установлен.</span>
                         </div>
-                        <div class="car-details-block subheading mb-2">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-fuel car-icon"></i>
                             <strong>Тип ДВС:</strong> {{ item.engine_type_name }}
                         </div>
-                        <div class="car-details-block subheading">
+                        <div class="car-details-block caption">
                             <i class="ic-transmission car-icon"></i>
                             <strong>Трансмиссия:</strong> {{ item.transmission_name }}
                         </div>
@@ -106,7 +118,7 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12> 
-                                <v-select autocomplete :items="companies" v-model="backFromReserve.companyID" label="Выберите компанию" prepend-icon="category"
+                                <v-select autocomplete :items="companies" v-model="backFromReserve.companyID" label="Выберите компанию" prepend-icon="list"
                                     name="company_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('company_id')"
@@ -137,6 +149,10 @@ export default {
     mixins: [assetsURL],
     props: {
         item: Object,
+        actions: {
+            type: Boolean,
+            default: true
+        },
         forSale: {
             type: Boolean,
             default: false
@@ -156,7 +172,7 @@ export default {
         details: {
             type: Boolean,
             default: false
-        },  
+        },
         expanded: {
             type: Boolean,
             default: false
@@ -164,7 +180,7 @@ export default {
         companies: {
             type: Array,
             default: () => { return [] },
-        }      
+        }
     },
     components: {
         MyLabel
@@ -202,13 +218,7 @@ export default {
             axios.post(`/company/${this.$route.params.slug}/cars/${car_id}/card`)
                 .then(response => {
                     this.loading.card = null;
-                    this.$emit('card-created', {
-                        car: {
-                            car_id: car_id,
-                            card: response.data.card
-                        },
-                        message: response.data.message
-                    });
+                    this.item.card = response.data.card;
                 })
                 .catch(error => console.log(error));
         },

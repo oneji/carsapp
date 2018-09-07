@@ -49,8 +49,8 @@
                       data-vv-name="user_id" data-vv-as='"Пользователь"'
                     ></v-select>
 
-                    <v-select :items="companies" v-model="bindUser.company_id" label="Выберите компанию" prepend-icon="business" persistent-hint
-                      name="company_id"
+                    <v-select :items="companies" v-model="bindUser.companies" label="Выберите компанию" prepend-icon="business" persistent-hint
+                      name="company_id" multiple
                       v-validate="'required'" 
                       :error-messages="errors.collect('company_id')"
                       data-vv-name="company_id" data-vv-as='"Компания"'
@@ -149,7 +149,7 @@ export default {
         },
         bindUser: {
           user_id: null,
-          company_id: null
+          companies: []
         },
 
         // API
@@ -241,16 +241,19 @@ export default {
         this.$validator.validateAll('bind-user-form')
           .then(success => {
             if(success) {
-              axios.post(`/admin/companies/${this.bindUser.company_id}/bind/${this.bindUser.user_id}`)
-                .then(response => {
-                  if(response.status === 200) {
-                    this.loading.button = false;
-                    this.snackbar.color = 'success';
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
-                  }
-                })
-                .catch(error => console.log(error));
+              axios.post(`/admin/companies/bind/${this.bindUser.user_id}`, {
+                'companies': this.bindUser.companies
+              })
+              .then(response => {
+                if(response.status === 200) {
+                  this.loading.button = false;
+                  this.snackbar.color = 'success';  
+                  this.snackbar.text = response.data.message;
+                  this.snackbar.active = true;
+                  this.bindUser.companies = [];
+                }
+              })
+              .catch(error => console.log(error));
             } else {
               this.loading.button = false;
             }

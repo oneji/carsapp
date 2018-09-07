@@ -11,8 +11,13 @@
         </v-layout>
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
-            <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id" v-cloak>
-                <Car :item="car" :for-sale="true" :details="true" @sale="onCarSale" />
+            <v-flex xs12 sm6 md4 lg3 v-for="car in cars" :key="car.id" v-cloak>
+                <Car 
+                    :item="car" 
+                    :for-sale="true" 
+                    :details="true"
+                    :actions="false"
+                    @sale="onCarSale" />
             </v-flex>
         </transition-group>
 
