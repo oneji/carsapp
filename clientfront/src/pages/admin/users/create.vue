@@ -56,12 +56,12 @@
 
                                         <v-select :items="roles" v-model="newUser.roles" label="Выберите роли" multiple chips prepend-icon="people" persistent-hint></v-select>
                                         <v-select :items="permissions" v-model="newUser.permissions" label="Выберите права доступа" prepend-icon="people" multiple chips persistent-hint></v-select>
-                                        <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="person" persistent-hint
+                                        <!-- <v-select :items="userTypes" v-model="newUser.type" label="Выберите тип пользователя" prepend-icon="person" persistent-hint
                                             name="type"
                                             v-validate="'required'" 
                                             :error-messages="errors.collect('type')"
                                             data-vv-name="type" data-vv-as='"Тип пользователя"'
-                                        ></v-select>
+                                        ></v-select> -->
                                     </v-flex> 
                                 </v-layout>
                             </v-container>
@@ -155,7 +155,7 @@ export default {
                     file: '',
                     url: ''
                 },
-                type: null,
+                type: 1,
                 roles: [],
                 permissions: []
             },   

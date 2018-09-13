@@ -73,10 +73,14 @@
           <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
       </v-flex>
-    </v-layout>    
+    </v-layout>
+
+    <v-layout v-if="loading.page" style="position: relative">
+      <Loading :loading="loading.page" />
+    </v-layout>
     
     <!-- A list of companies -->
-    <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">     
+    <transition-group tag="v-layout" class="row wrap" name="slide-x-transition" v-if="!loading.page">
       <v-flex xs12 sm4 md3 lg3 v-for="item in items" :key="item.id">
         <v-card>
           <v-card-media height="150px">
@@ -116,10 +120,14 @@
 <script>
 import axios from '@/axios'
 import config from '@/config'
+import Loading from '@/components/Loading'
 
 export default {
     $_veeValidate: {
       validator: 'new'
+    },
+    components: {
+      Loading
     },
     computed: {
       assetURL() {
@@ -135,7 +143,7 @@ export default {
           bindUser: false
         },  
         loading: {
-          table: false,
+          page: false,
           button: false
         },    
         alert: {
@@ -169,6 +177,7 @@ export default {
   },
   methods: {
       fetchCompanies() {
+          this.loading.page = true;
           this.alert.noCompanies = false;
           axios.get('/admin/companies')
               .then(response => {                    
@@ -183,6 +192,7 @@ export default {
                 if(this.items.length === 0) {
                   this.alert.noCompanies = true;
                 }
+                this.loading.page = false;
               })
               .catch(error => {
                 console.log(error);
