@@ -81,23 +81,17 @@
                 </v-layout>    
             </v-card-title>
             <v-divider></v-divider>
-            <v-card-actions v-if="!hasActions">
+            <v-card-actions>
                 <v-btn block flat color="primary"
                     v-if="item.car.card !== null 
                         && $route.name === 'StoRepairRequests'"
-                    :to="{ name: 'StoCarCard', params: { company: item.company_id, car: item.car_id } }"
+                    :to="{ name: 'StoCarCard', params: { company: item.company_id, car: item.car.id } }"
                 >
                     Карточка
                 </v-btn>
             </v-card-actions>
+            <v-divider></v-divider>
             <v-card-actions v-if="hasActions">
-                <v-btn block flat color="primary" 
-                    v-if="item.car.card !== null 
-                        && $route.name === 'StoRepairRequests'"
-                    :to="{ name: 'StoCarCard', params: { company: item.company_id,car: item.id } }"
-                >
-                    Карточка
-                </v-btn>
                 <!-- <div v-if="forSto" style="width: 100%"> -->
                     <v-btn color="warning" block flat v-if="queue && item.status === 0 && forSto" @click="dialog.queue = true">В очередь</v-btn>
                     <v-btn color="primary" block flat v-if="item.status === 1 && forSto" @click="carBrought" :loading="loading.brought">Заехал</v-btn>
