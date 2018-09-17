@@ -24,7 +24,7 @@
                     <v-divider></v-divider>           
                     <v-card-title primary-title>
                         <div>
-                            <h3 class="headline mb-0">{{ company.company_name }}</h3>
+                            <h3 class="subheading mb-0">{{ company.company_name }}</h3>
                             <div v-if="company.contact">Контакт: {{ company.contact }}</div>
                             <div v-else>Контакта нет</div>
                             <div><strong>Количество машин:</strong> {{ company.cars.length }}</div>

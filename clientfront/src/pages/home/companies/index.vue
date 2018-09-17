@@ -31,7 +31,7 @@
                     <v-divider></v-divider>           
                     <v-card-title primary-title>
                         <div>
-                            <h3 class="headline mb-0">{{ company.company_name }}</h3>
+                            <h3 class="subheading mb-0">{{ company.company_name }}</h3>
                             <div v-if="company.contact">{{ company.contact }}</div>
                             <div v-else>Контакта нет</div>
                         </div>
@@ -63,7 +63,7 @@
                     <v-divider></v-divider>           
                     <v-card-title primary-title>
                         <div>
-                            <h3 class="headline mb-0">{{ sto.sto_name }}</h3>
+                            <h3 class="subheading mb-0">{{ sto.sto_name }}</h3>
                             <div v-if="sto.contact">{{ sto.contact }}</div>
                             <div v-else>Контакта нет</div>
                         </div>

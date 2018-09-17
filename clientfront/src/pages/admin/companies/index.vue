@@ -105,7 +105,7 @@
           <v-divider></v-divider>           
           <v-card-title primary-title>
             <div>
-              <h3 class="title mb-0">{{ item.company_name }}</h3>
+              <h3 class="subheading mb-0">{{ item.company_name }}</h3>
               <div v-if="item.contact">{{ item.contact }}</div>
               <div v-else>Контакта нет</div>
             </div>

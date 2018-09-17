@@ -82,10 +82,10 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-actions v-if="!hasActions">
-                <v-btn block flat color="primary" 
+                <v-btn block flat color="primary"
                     v-if="item.car.card !== null 
                         && $route.name === 'StoRepairRequests'"
-                    :to="{ name: 'StoCarCard', params: { company: item.company_id,car: item.id } }"
+                    :to="{ name: 'StoCarCard', params: { company: item.company_id, car: item.car_id } }"
                 >
                     Карточка
                 </v-btn>
