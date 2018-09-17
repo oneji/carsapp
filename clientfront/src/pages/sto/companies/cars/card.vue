@@ -13,9 +13,10 @@
             <!-- Car card -->
             <transition name="fade-transition" mode="out-in">
                 <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad">
-                    <Car :item="car" :expanded="true" />
-
-                    <DefectActList v-if="!loading.pageLoad" :items="defectActs" :car="car" class="mt-3" />
+                    <Car 
+                        :item="car" 
+                        :expanded="true"
+                        :actions="false" />
                 </v-flex>
             </transition>
             
@@ -29,6 +30,11 @@
                         @change="onConsumableChanged" />                    
                     
                     <Attachments :files="lightboxImages" />
+
+                    <DefectActList 
+                        v-if="!loading.pageLoad" 
+                        :items="defectActs" 
+                        :car="car" class="mt-3" />                    
                 </v-flex>            
             </transition>
 
@@ -41,7 +47,7 @@
 
 
         <!-- Services price -->
-        <v-layout row wrap v-if="!loading.pageLoad">
+        <!-- <v-layout row wrap v-if="!loading.pageLoad">
             <v-flex xs12 sm12 md12 lg12>
                 <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>      
             </v-flex>
@@ -56,7 +62,6 @@
                 </v-alert>
             </v-flex>
             
-            <!-- Invoice list -->
             <v-flex xs12 sm12 md12 lg12 v-if="invoice.length > 0">         
                 <v-card>
                     <v-card-media>
@@ -88,7 +93,7 @@
                     </v-list>
                 </v-card>
             </v-flex>
-        </v-layout>
+        </v-layout> -->
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
             {{ snackbar.text }}

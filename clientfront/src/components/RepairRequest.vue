@@ -5,7 +5,8 @@
                 <v-layout>
                     <v-flex>                                
                         <v-list two-line>
-                            <v-list-tile avatar>
+                            <!-- Title and status -->
+                            <v-list-tile>
                                 <v-list-tile-content>
                                     <v-list-tile-title class="title mb-1">
                                         {{ forSto ? item.company_name : item.sto_name }} 
@@ -26,7 +27,8 @@
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider></v-divider>
-                            <v-list-tile avatar>
+                            <!-- Car model -->
+                            <v-list-tile>
                                 <v-list-tile-content>
                                     <v-list-tile-title>Автомобиль</v-list-tile-title>
                                     <v-list-tile-sub-title>
@@ -35,35 +37,40 @@
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider></v-divider>
-                            <v-list-tile avatar>
+                            <!-- Date -->
+                            <v-list-tile>
                                 <v-list-tile-content>
                                     <v-list-tile-title>Дата создания</v-list-tile-title>
                                     <v-list-tile-sub-title>{{ item.created_at | moment('MMMM D, YYYY') }} в {{ item.created_at | moment('H:mm:ss') }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider></v-divider>
-                            <v-list-tile avatar>
+                            <!-- Comment -->
+                            <v-list-tile>
                                 <v-list-tile-content>
                                     <v-list-tile-title>Комментарий</v-list-tile-title>
                                     <v-list-tile-sub-title>{{ item.comment }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider v-if="item.status === 1"></v-divider>
-                            <v-list-tile avatar v-if="item.status === 1">
+                            <!-- Income date -->
+                            <v-list-tile v-if="item.status === 1">
                                 <v-list-tile-content>
                                     <v-list-tile-title>Автомобиль должен быть в СТО</v-list-tile-title>
                                     <v-list-tile-sub-title>{{ item.receive_date | moment('MMMM D, YYYY') }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider v-if="item.status === 3"></v-divider>
-                            <v-list-tile avatar v-if="item.status === 3">
+                            <!-- Repair over date -->
+                            <v-list-tile v-if="item.status === 3">
                                 <v-list-tile-content>
                                     <v-list-tile-title>Дата окончания ремонта</v-list-tile-title>
                                     <v-list-tile-sub-title>{{ item.repair_date | moment('MMMM D, YYYY') }}</v-list-tile-sub-title>
                                 </v-list-tile-content>
                             </v-list-tile>                            
                             <v-divider v-if="item.status === 3"></v-divider>
-                            <v-list-tile avatar v-if="item.status === 3">
+                            <!-- Comment -->
+                            <v-list-tile v-if="item.status === 3">
                                 <v-list-tile-content>
                                     <v-list-tile-title>Комментарий к ремонту</v-list-tile-title>
                                     <v-list-tile-sub-title>{{ item.repair_comment !== null ? item.repair_comment : 'Комментария нет.' }}</v-list-tile-sub-title>
@@ -73,13 +80,29 @@
                     </v-flex>
                 </v-layout>    
             </v-card-title>
-            <v-divider v-if="hasActions"></v-divider>
+            <v-divider></v-divider>
+            <v-card-actions v-if="!hasActions">
+                <v-btn block flat color="primary" 
+                    v-if="item.car.card !== null 
+                        && $route.name === 'StoRepairRequests'"
+                    :to="{ name: 'StoCarCard', params: { company: item.company_id,car: item.id } }"
+                >
+                    Карточка
+                </v-btn>
+            </v-card-actions>
             <v-card-actions v-if="hasActions">
-                <div v-if="forSto" style="width: 100%">
-                    <v-btn color="warning" block flat v-if="queue && item.status === 0" @click="dialog.queue = true">В очередь</v-btn>
-                    <v-btn color="primary" block flat v-if="item.status === 1" @click="carBrought" :loading="loading.brought">Заехал</v-btn>
-                    <v-btn color="success" block flat v-if="item.status === 2" @click="dialog.repair = true" :loading="loading.repair">Ремонт окончен</v-btn>
-                </div>                
+                <v-btn block flat color="primary" 
+                    v-if="item.car.card !== null 
+                        && $route.name === 'StoRepairRequests'"
+                    :to="{ name: 'StoCarCard', params: { company: item.company_id,car: item.id } }"
+                >
+                    Карточка
+                </v-btn>
+                <!-- <div v-if="forSto" style="width: 100%"> -->
+                    <v-btn color="warning" block flat v-if="queue && item.status === 0 && forSto" @click="dialog.queue = true">В очередь</v-btn>
+                    <v-btn color="primary" block flat v-if="item.status === 1 && forSto" @click="carBrought" :loading="loading.brought">Заехал</v-btn>
+                    <v-btn color="success" block flat v-if="item.status === 2 && forSto" @click="dialog.repair = true" :loading="loading.repair">Ремонт окончен</v-btn>
+                <!-- </div>                 -->
                 <v-btn color="primary" block flat v-if="archive && item.status === 3" @click="archiveRequest">В архив</v-btn>
                 <v-tooltip bottom v-if="item.status > 0">
                     <v-btn icon slot="activator" @click="printDialog = true">

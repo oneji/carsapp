@@ -73,6 +73,7 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/requests/repair`)
                 .then(response => {
+                    console.log(response.data);
                     this.requests = response.data;
                     this.loading.pageLoad = false;
                 })

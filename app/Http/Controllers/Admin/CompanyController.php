@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Company;
 use App\User;
+use App\Sto;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -17,7 +18,11 @@ class CompanyController extends Controller
     public function get() 
     {
         $companies = Company::all();
-        return response()->json($companies);
+        $stos = Sto::all();
+        return response()->json([
+            'companies' => $companies,
+            'stos' => $stos
+        ]);
     }
 
     /**
@@ -63,7 +68,38 @@ class CompanyController extends Controller
      */
     public function bindUser(Request $request, $user_id)
     {
-        $user = User::find($user_id)->companies()->attach($request->companies);
+        $companiesCount = count($request->companies);
+        $stosCount = count($request->stos);
+        $user = User::find($user_id);
+
+        if($companiesCount === 0 && $stosCount === 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Не было выбрано ни одной компании/СТО.'
+            ]);
+        }
+
+        if($companiesCount > 0) {
+            $companies = $request->companies;
+            foreach ($companies as $index => $company) {
+                if($user->companies->contains($company)) {
+                    unset($companies[$index]);
+                }
+            }
+
+            $user->companies()->attach($companies);
+        }
+
+        if($stosCount > 0) {
+            $stos = $request->stos;
+            foreach ($stos as $index => $sto) {
+                if($user->stos->contains($sto)) {
+                    unset($stos[$index]);
+                }
+            }
+
+            $user->stos()->attach($stos);
+        }
         
         return response()->json([
             'success' => true,

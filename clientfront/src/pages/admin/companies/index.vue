@@ -49,11 +49,22 @@
                       data-vv-name="user_id" data-vv-as='"Пользователь"'
                     ></v-select>
 
-                    <v-select :items="companies" v-model="bindUser.companies" label="Выберите компанию" prepend-icon="business" persistent-hint
+                    <v-select 
+                      :items="companies" 
+                      v-model="bindUser.companies" 
+                      label="Выберите компанию" 
+                      prepend-icon="business" 
+                      persistent-hint
                       name="company_id" multiple
-                      v-validate="'required'" 
-                      :error-messages="errors.collect('company_id')"
-                      data-vv-name="company_id" data-vv-as='"Компания"'
+                    ></v-select>
+
+                    <v-select 
+                      :items="stos" 
+                      v-model="bindUser.stos" 
+                      label="Выберите СТО" 
+                      prepend-icon="business" 
+                      persistent-hint
+                      name="sto_id" multiple
                     ></v-select>
                   </v-flex>
                 </v-layout>
@@ -81,7 +92,7 @@
     
     <!-- A list of companies -->
     <transition-group tag="v-layout" class="row wrap" name="slide-x-transition" v-if="!loading.page">
-      <v-flex xs12 sm4 md3 lg3 v-for="item in items" :key="item.id">
+      <v-flex xs12 sm4 md3 lg3 v-for="item in items.companies" :key="item.id">
         <v-card>
           <v-card-media height="150px">
             <v-layout row justify-center align-center>
@@ -143,7 +154,7 @@ export default {
           bindUser: false
         },  
         loading: {
-          page: false,
+          page: true,
           button: false
         },    
         alert: {
@@ -157,7 +168,8 @@ export default {
         },
         bindUser: {
           user_id: null,
-          companies: []
+          companies: [],
+          stos: []
         },
 
         // API
@@ -172,26 +184,34 @@ export default {
           },
         },
         users: [],
-        companies: []
+        companies: [],
+        stos: []
       }
   },
   methods: {
       fetchCompanies() {
-          this.loading.page = true;
-          this.alert.noCompanies = false;
           axios.get('/admin/companies')
-              .then(response => {                    
+              .then(response => {
                 this.items = response.data;
-                this.items.map(company => {
+
+                this.items.companies.map(company => {
                   this.companies.push({
                     text: company.company_name,
                     value: company.id
-                  });                
+                  });
                 });
 
-                if(this.items.length === 0) {
+                this.items.stos.map(sto => {
+                  this.stos.push({
+                    text: sto.sto_name,
+                    value: sto.id
+                  })
+                });
+
+                if(this.items.companies.length === 0) {
                   this.alert.noCompanies = true;
                 }
+
                 this.loading.page = false;
               })
               .catch(error => {
@@ -252,9 +272,11 @@ export default {
           .then(success => {
             if(success) {
               axios.post(`/admin/companies/bind/${this.bindUser.user_id}`, {
-                'companies': this.bindUser.companies
-              })
-              .then(response => {
+                'companies': this.bindUser.companies,
+                'stos': this.bindUser.stos
+              }).then(response => {
+                console.log(response.data);
+                
                 if(response.status === 200) {
                   this.loading.button = false;
                   this.snackbar.color = 'success';  
@@ -262,8 +284,7 @@ export default {
                   this.snackbar.active = true;
                   this.bindUser.companies = [];
                 }
-              })
-              .catch(error => console.log(error));
+              }).catch(error => console.log(error));
             } else {
               this.loading.button = false;
             }

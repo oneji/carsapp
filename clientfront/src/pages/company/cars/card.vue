@@ -7,9 +7,10 @@
             <!-- Car info and defect act list -->
             <transition name="slide-x-transition" mode="out-in">
                 <v-flex xs12 sm12 md4 lg3 v-if="!loading.pageLoad" v-cloak>
-                    <Car :item="car" :expanded="true" />
-                    
-                    <DefectActList :items="defectActs" :show-defect="false" class="mt-3" />
+                    <Car 
+                        :item="car" 
+                        :expanded="true"
+                        :actions="false" />
                 </v-flex>
             </transition>
             
@@ -25,6 +26,11 @@
                     <Attachments :files="lightboxImages" />  
 
                     <Fines :items="fines" />
+
+                    <DefectActList 
+                        :items="defectActs"
+                        :show-defect="false"
+                        class="mt-3" />
                 </v-flex>            
             </transition>
 
@@ -40,6 +46,8 @@
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
+
+        <defect-act />
     </div>
 </template>
 
