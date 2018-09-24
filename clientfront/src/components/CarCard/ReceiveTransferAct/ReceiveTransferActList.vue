@@ -31,6 +31,11 @@
                                         : item.created_at | moment("MMMM D, YYYY") }}
                                 </v-list-tile-sub-title>                                
                             </v-list-tile-content>
+                            <v-list-tile-action>
+                                <v-btn icon ripple :to="{ name: 'StoRTActIndex', params: { act: item.id } }">
+                                    <v-icon color="grey lighten-1">remove_red_eye</v-icon>
+                                </v-btn>
+                            </v-list-tile-action>
                         </v-list-tile>
                     </template>
                 </v-list>

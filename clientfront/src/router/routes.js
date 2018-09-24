@@ -37,6 +37,7 @@ import StoDefects               from '@/pages/sto/defects/index'
 import StoCarCard               from '@/pages/sto/companies/cars/card'
 import StoCarCreate             from '@/pages/sto/companies/cars/create'
 import StoRepairRequests        from '@/pages/sto/requests/repair'
+import StoRTActIndex            from '@/pages/sto/rt_act/index'
 import StoRTAct                 from '@/pages/sto/rt_act/crud'
 import StoCreateRTAct           from '@/pages/sto/rt_act/create'
 // Error pages
@@ -120,6 +121,7 @@ const routes = [
             { path: 'services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true } },
             { path: 'defects', name: 'StoDefects', component: StoDefects, meta: { requiresAuth: true } },
             { path: 'rt-act/crud', name: 'StoRTAct', component: StoRTAct, meta: { requiresAuth: true } },
+            { path: 'rt-act/:act', name: 'StoRTActIndex', component: StoRTActIndex, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card/rt-act/create', name: 'StoCreateRTAct', component: StoCreateRTAct, meta: { requiresAuth: true } },
         ]
     }

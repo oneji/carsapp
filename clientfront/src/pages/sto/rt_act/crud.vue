@@ -12,7 +12,7 @@
             <Loading :loading="loading.page" />
         </v-layout>
         
-        <v-layout v-if="!loading.page">
+        <v-layout row wrap v-if="!loading.page">
             <!-- Checklists -->
             <v-flex xs12 sm6 md6 lg6>
                 <v-card>

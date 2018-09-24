@@ -41,6 +41,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::post('/car/{car}/consumables/create', 'ConsumableController@store');
 
     // RT act
+    Route::get('rt-act/getById/{act}', 'RtActController@getById');
     Route::post('rt-act', 'RtActController@store');
     Route::get('rt-act/info', 'RtActController@getFullInfo');
     // RT act checklists

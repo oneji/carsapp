@@ -10,6 +10,17 @@ use Illuminate\Http\Request;
 class RtActController extends Controller
 {
     /**
+     * 
+     */
+    public function getById($id)
+    {
+        $act = RtAct::where('id', $id)->with('checklist_items.rt_act_checklist')->first();
+
+        return response()->json([
+            'act' => $act
+        ]);
+    }
+    /**
      * Store a newly created RT act in the db.
      */
     public function store(Request $request)
