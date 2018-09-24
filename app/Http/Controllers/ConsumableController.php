@@ -81,7 +81,7 @@ class ConsumableController extends Controller
         $consumable = new Consumable();
         $consumable->consumable_name = $request->consumable_name;
         $consumable->car_card_id = $card->id;
-        $consumable->icon = '/static/icons/personal.svg';
+        $consumable->icon = '/static/icons/check-mark.svg';
         $consumable->save();
 
         return response()->json([

@@ -16,7 +16,7 @@
                 <v-container grid-list-lg>
                     <v-layout row wrap>
                         <!-- Defect options -->
-                        <v-flex xs12 sm12 md5 lg4>
+                        <!-- <v-flex xs12 sm12 md5 lg4>
                             <v-card v-for="defectType in defects" :key="defectType.id" :class="['mb-1', 'defect-type', { 'active': activeDefectType === defectType.id }]">
                                 <v-card-text @click="getDefectsFromDefectType(defectType.id)">
                                     {{ defectType.defect_type_name }}
@@ -64,8 +64,8 @@
                                     <Alert v-else type="info" message="Здесь пусто." />
                                 </v-card-text>
                             </v-card>
-                        </v-flex>
-
+                        </v-flex> -->
+                        
                         <!-- Defect act img -->
                         <v-flex xs12 sm12 lg4>
                             <v-card>
@@ -114,6 +114,57 @@
                                 </v-card-actions>
                             </v-card>
                         </v-flex>
+
+                        <v-flex xs12 sm12 md5 lg4>
+                            <v-expansion-panel>
+                                <v-expansion-panel-content v-for="defectType in defects" :key="defectType.id">
+                                    <div slot="header">{{ defectType.defect_type_name }}</div>
+                                    <v-card>
+                                        <v-card-text class="py-2 px-2">
+                                            <v-form v-if="currentDefectType.defects.length > 0">
+                                                <v-list three-line>
+                                                    <v-list-tile v-for="defect in currentDefectType.defects" :key="defect.id">                                                
+                                                        <v-list-tile-content >
+                                                            <v-list-tile-title>{{ defect.defect_name }}</v-list-tile-title>
+                                                            <v-list-tile-sub-title>
+                                                                <v-select
+                                                                    :items="selects.defectOptions[defect.id]"
+                                                                    v-model="selected.defectOptions"
+                                                                    label="Опция дефекта"
+                                                                    single-line
+                                                                    multiple 
+                                                                    hide-details                                                               
+                                                                ></v-select>
+                                                            </v-list-tile-sub-title>
+                                                        </v-list-tile-content>
+                                                    </v-list-tile>
+                                                </v-list>
+                                            </v-form>
+
+                                            <Alert v-else type="info" message="Здесь пусто." />
+                                        </v-card-text>
+                                    </v-card>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                        </v-flex>
+
+                        <v-flex xs12 sm12 md5 lg4>
+                            <v-card>                            
+                                <v-list subheader>
+                                    <v-subheader>Наличие:</v-subheader>
+                                    <v-list-tile avatar v-for="eq in equipment" :key="eq.id">
+                                        <v-list-tile-action>
+                                            <v-checkbox v-model="selected.equipment" :value="eq.id"></v-checkbox>
+                                        </v-list-tile-action>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ eq.equipment_type_name }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-card>
+                        </v-flex>
+
+                        
                     </v-layout>
                 </v-container>                
                 <v-divider></v-divider>
