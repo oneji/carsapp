@@ -30,9 +30,6 @@
                                 <v-btn icon class="mx-0" @click="showEditTypeDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
-                                <!-- <v-btn icon class="mx-0" @click="">
-                                    <v-icon color="pink">delete</v-icon>
-                                </v-btn> -->
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -148,7 +145,7 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectType.defect_type_name" name="defect_type_name" label="Тип дефекта" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defectType.defect_type_name" name="defect_type_name" label="Тип дефекта" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="defect_type_name" data-vv-as='"Тип дефекта"' required
                                     :error-messages="errors.collect('defect_type_name')"
@@ -173,7 +170,7 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectType.edit.defect_type_name" name="edit_defect_type_name" label="Тип дефекта" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defectType.edit.defect_type_name" name="edit_defect_type_name" label="Тип дефекта" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="edit_defect_type_name" data-vv-as='"Тип дефекта"' required
                                     :error-messages="errors.collect('edit_defect_type_name')"
@@ -199,13 +196,13 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defect.defect_name" name="defect_name" label="Дефект" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defect.defect_name" name="defect_name" label="Дефект" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="defect_name" data-vv-as='"Дефект"' required
                                     :error-messages="errors.collect('defect_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="types.selectItems" v-model="defect.defect_type_id" label="Выберите тип дефекта" prepend-icon="category"
+                                <v-select autocomplete :items="types.selectItems" v-model="defect.defect_type_id" label="Выберите тип дефекта" prepend-icon="list"
                                     name="defect_type_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('defect_type_id')"
@@ -231,13 +228,13 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defect.edit.defect_name" name="edit_defect_name" label="Дефект" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defect.edit.defect_name" name="edit_defect_name" label="Дефект" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="edit_defect_name" data-vv-as='"Дефект"' required
                                     :error-messages="errors.collect('edit_defect_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="types.selectItems" v-model="defect.edit.defect_type_id" label="Выберите тип дефекта" prepend-icon="category"
+                                <v-select autocomplete :items="types.selectItems" v-model="defect.edit.defect_type_id" label="Выберите тип дефекта" prepend-icon="list"
                                     name="edit_defect_type_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('edit_defect_type_id')"
@@ -264,13 +261,13 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectOption.defect_option_name" name="defect_option_name" label="Вид дефекта" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defectOption.defect_option_name" name="defect_option_name" label="Вид дефекта" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="defect_option_name" data-vv-as='"Вид дефекта"' required
                                     :error-messages="errors.collect('defect_option_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.defect_id" label="Выберите дефект" prepend-icon="category"
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.defect_id" label="Выберите дефект" prepend-icon="list"
                                     name="defect_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('defect_id')"
@@ -296,13 +293,13 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectOption.edit.defect_option_name" name="edit_defect_option_name" label="Вид дефекта" prepend-icon="directions_car"                 
+                                <v-text-field type="text" v-model="defectOption.edit.defect_option_name" name="edit_defect_option_name" label="Вид дефекта" prepend-icon="list"                 
                                     v-validate="'required'" 
                                     data-vv-name="edit_defect_option_name" data-vv-as='"Вид дефекта"' required
                                     :error-messages="errors.collect('edit_defect_option_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.edit.defect_id" label="Выберите дефект" prepend-icon="category"
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.edit.defect_id" label="Выберите дефект" prepend-icon="list"
                                     name="edit_defect_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('edit_defect_id')"
@@ -351,7 +348,7 @@ export default {
                 selectItems: [],
                 headers: [
                     { text: 'Тип дефекта', value: 'defect_type_name' }, 
-                    { text: 'Действия', value: 'action' },                     
+                    { text: 'Действия', value: 'action' },
                 ],
 
                 search: '',

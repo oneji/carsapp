@@ -19,17 +19,15 @@
                 </v-container>
             </v-card-media>
             <v-divider></v-divider>
-            <v-card-text primary-title class="pt-1 pb-1">
+            <v-card-text>
                 <v-alert outline transition="scale-transition" type="info" :value="true" v-if="items.length === 0">
                     Расходных материалов нет.
                 </v-alert>
-                <v-container>
-                    <v-layout row wrap>
-                        <template v-for="(item, index) in items">                        
-                            <ConsumablesListItem :item="item" :key="index" @show="onConsumableShowed" />                            
-                        </template>
-                    </v-layout>
-                </v-container>
+                <v-layout row wrap>
+                    <template v-for="(item, index) in items">                        
+                        <ConsumablesListItem :item="item" :key="index" @show="onConsumableShowed" />                            
+                    </template>
+                </v-layout>
             </v-card-text>
         </v-card>
 

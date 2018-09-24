@@ -22,11 +22,11 @@
                 </v-container>
             </v-card-media>
             <v-divider></v-divider>
-            <v-card-text primary-title class="pt-1 pb-1">
-                <v-list two-line>
-                    <v-alert outline transition="scale-transition" type="info" :value="true" v-if="filteredFines.length === 0">
-                        Штрафов нет.
-                    </v-alert>
+            <v-card-text primary-title class="py-1 px-1">
+                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="filteredFines.length === 0">
+                    Штрафов нет.
+                </v-alert>
+                <v-list two-line v-else>                    
                     <template v-for="fine in filteredFines">
                         <FineItem :key="fine.id" :item="fine" />
                     </template>

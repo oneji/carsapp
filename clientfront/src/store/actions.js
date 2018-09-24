@@ -58,6 +58,14 @@ const actions = {
         window.localStorage.removeItem('user');
     },
 
+    showSnackbar({ commit }, options) {
+        commit(types.SHOW_SNACKBAR, options);
+    },
+
+    hideSnackbar({ commit }, options) {
+        commit(types.HIDE_SNACKBAR);
+    },
+
     setCar({ commit }, car) {
         commit(types.SET_CAR, car);
     },

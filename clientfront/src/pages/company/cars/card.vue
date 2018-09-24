@@ -1,6 +1,13 @@
 <template>
     <div>
-        <MoveButtons />
+        <v-layout row wrap v-if="!loading.pageLoad"> 
+            <v-flex>
+                <v-btn color="success" append @click="$router.back()">Назад</v-btn>
+                <v-btn color="primary" append @click.native="driver.dialog = true" v-if="car.drivers.length === 0">Привязать водителя</v-btn>
+                <v-btn color="primary" append @click.native="unbindDriver" :loading="deleteDriver.loading" v-else>Отвязать водителя</v-btn>
+            </v-flex>
+        </v-layout> 
+
         <v-layout row wrap style="position: relative">
             <Loading :loading="loading.pageLoad" />
             
@@ -48,6 +55,38 @@
         </v-snackbar>
 
         <defect-act />
+
+        <!-- Bind driver -->
+        <v-dialog v-model="driver.dialog" max-width="500">
+            <form @submit.prevent="bindDriver" data-vv-scope="bind-driver-form">
+                <v-card>
+                    <v-card-title class="headline">Привязать водителя</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12>   
+                                <v-select 
+                                    autocomplete 
+                                    :items="driver.selectDriverItems" 
+                                    v-model="driver.driver_id" 
+                                    label="Выберите водителя" 
+                                    prepend-icon="person"
+                                    name="driver_id" required
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('driver_id')"
+                                    data-vv-name="driver_id" data-vv-as='"Водитель"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="driver.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="driver.loading" flat="flat" type="submit">Привязать</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
     </div>
 </template>
 
@@ -63,16 +102,26 @@ import CreateDefectAct from '@/components/CarCard/Defect/CreateDefectAct'
 import DefectAct from '@/components/CarCard/Defect/DefectAct'
 import DefectActList from '@/components/CarCard/Defect/DefectActList'
 import Car from '@/components/Car'
-import MoveButtons from '@/components/MoveButtons'
 import Comments from '@/components/CarCard/Comments/CarCardComments'
 import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import Fines from '@/components/CarCard/Fines/CarCardFine'
 import ConsumablesList from '@/components/CarCard/Consumables/ConsumablesList'
 
 export default {
+    $_veeValidate: {
+        validator: 'new'
+    },
     mixins: [ snackbar, assetsURL ],
     components: {
-        FileUpload, CreateDefectAct, DefectAct, Loading, DefectActList, Car, MoveButtons, Comments, Attachments, Fines,
+        FileUpload, 
+        CreateDefectAct, 
+        DefectAct, 
+        Loading, 
+        DefectActList, 
+        Car, 
+        Comments, 
+        Attachments, 
+        Fines,
         ConsumablesList
     },
     data() {
@@ -117,10 +166,89 @@ export default {
                 items: [],
                 removeAll: false
             },
-            createDefectActModal: false
+            createDefectActModal: false,
+            driver: {
+                dialog: false,
+                loading: false,
+                driver_id: null,
+                car_id: null,
+                selectDriverItems: [],
+                selectCarItems: [] 
+            },
+
+            deleteDriver: {
+                dialog: false,
+                loading: false,
+                driver_id: null,
+                car_id: null,
+                selectDriverItems: [],
+                selectCarItems: []
+            },
         }
     },
     methods: {
+        bindDriver() {
+            this.$validator.validateAll('bind-driver-form')
+                .then(success => {
+                    if(success) {
+                        this.driver.loading = true;
+                        axios.post(`/company/${this.$route.params.slug}/cars/drivers`, {
+                            'driver_id': this.driver.driver_id,
+                            'car_id': this.$store.getters.car.id
+                        })
+                        .then(response => {
+                            if(response.data.success) {
+                                let driver = {
+                                    ...response.data.driver,
+                                    pivot: {
+                                        active: 1
+                                    }
+                                }
+
+                                this.car.drivers.push(driver);                                
+                                this.driver.dialog = false;
+                                this.driver.loading = false;
+                                this.successSnackbar(response.data.message);
+                            } else {
+                                this.driver.loading = false;
+                                this.errorSnackbar(response.data.message);
+                            }
+                        })
+                        .catch(error => console.log(error));
+                    }
+                })
+        },
+
+        unbindDriver() {
+            this.deleteDriver.loading = true;
+            axios.put(`/company/${this.$route.params.slug}/cars/drivers`, {
+                car_id: this.$store.getters.car.id
+            })
+            .then(response => {
+                this.car.drivers = [];
+                this.fetchDrivers();
+                this.deleteDriver.dialog = false;
+                this.deleteDriver.loading = false;
+                this.successSnackbar(response.data.message);
+            })
+            .catch(error => console.log(error)); 
+        },
+
+        fetchDrivers() {
+            axios.get(`/company/${this.$route.params.slug}/drivers`)
+                .then(response => {
+                    let drivers = response.data.company.drivers;
+
+                    drivers.map(driver => {
+                        this.driver.selectDriverItems.push({
+                            text: driver.fullname,
+                            value: driver.id
+                        });
+                    });
+                })
+                .catch(error => console.log(error));
+        },
+
         fetchCarCardInfo() {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
@@ -176,6 +304,7 @@ export default {
     created() {
         this.fetchCarCardInfo();
         this.fetchConsumables();
+        this.fetchDrivers();
     }
 }
 </script>

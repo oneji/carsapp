@@ -28,6 +28,33 @@
                         </v-container>
                     </v-card-actions>
                 </v-card>
+
+                <v-card class="mt-3">
+                    <v-card-media>
+                        <v-container>
+                            <v-layout>
+                                <v-flex>
+                                    <p class="subheading my-0">Водитель</p>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-card-media>
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-layout row wrap>
+                            <v-flex xs12 sm12 md12 lg12>
+                                <v-select 
+                                    autocomplete 
+                                    :items="driver.selectDriverItems" 
+                                    v-model="newCar.driver_id" 
+                                    label="Выберите водителя" 
+                                    prepend-icon="person"
+                                    name="driver_id"
+                                ></v-select> 
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                </v-card>                
             </v-flex>
             <!-- Info -->
             <v-flex xs12 sm12 md4 lg5>
@@ -48,19 +75,40 @@
                                 <v-layout row wrap>
                                     <v-flex xs12 sm12 md12 lg12 class="v-divider pr-4">                                        
                                         <v-container grid-list-xs>
-                                            <v-text-field type="text" v-model="newCar.year" name="year" label="Выберите год" prepend-icon="event"                 
+                                            <v-text-field type="text" v-model="newCar.year" name="year" label="Введите год" prepend-icon="event"                 
                                                 v-validate="'required'" 
                                                 data-vv-name="year" data-vv-as='"Год автомобиля"'
                                                 :error-messages="errors.collect('year')"
                                             ></v-text-field>
 
-                                            <v-text-field type="text" v-model="newCar.number" name="number" label="Гос номер машины" prepend-icon="filter_2"                 
+                                            <v-text-field type="text" v-model="newCar.number" name="number" label="Гос номер" prepend-icon="filter_2"                 
                                                 v-validate="'required'" 
                                                 data-vv-name="number" data-vv-as='"Гос номер"'
                                                 :error-messages="errors.collect('number')"
                                             ></v-text-field>
 
-                                            <v-select autocomplete :items="shapes" v-model="newCar.shape_id" label="Выберите кузов" prepend-icon="directions_car"
+                                            <v-text-field type="text" 
+                                                v-model="newCar.color" 
+                                                name="color" 
+                                                label="Цвет" 
+                                                prepend-icon="color_lens"
+                                                hint="Например: Мокрый асфальт"
+                                            ></v-text-field>
+
+                                            <v-text-field type="number" 
+                                                v-model="newCar.price" 
+                                                name="color" 
+                                                label="Цена" 
+                                                prepend-icon="attach_money"
+                                                suffix="сом."
+                                            ></v-text-field>                                            
+
+                                            <v-select 
+                                                autocomplete 
+                                                :items="shapes" 
+                                                v-model="newCar.shape_id" 
+                                                label="Выберите кузов" 
+                                                prepend-icon="directions_car"
                                                 name="shape_id"
                                                 v-validate="'required'" 
                                                 :error-messages="errors.collect('shape_id')"
@@ -159,7 +207,8 @@
                                                     ></v-date-picker>
                                             </v-menu> 
 
-                                            <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>   
+                                            <v-checkbox label="В резерв" v-model="newCar.reserved"></v-checkbox>
+                                            <v-checkbox label="Есть GPS" v-model="newCar.has_gps"></v-checkbox>
                                             <v-radio-group v-model="newCar.type" row class="pt-0">
                                                 <v-radio label="Служебная" :value="0"></v-radio>
                                                 <v-radio label="Служебно-Личная" :value="1"></v-radio>
@@ -243,9 +292,16 @@ export default {
     data() {
         return {
             attachments: [],
+            driver: {
+                selectDriverItems: []
+            },
             newCar: {
+                driver_id: '',
                 year: null,
                 number: '',
+                color: '',
+                price: null,
+                has_gps: false,
                 shape_id: null,
                 brand_id: null,
                 model_id: null,
@@ -291,6 +347,9 @@ export default {
                         let formData = new FormData();
                         formData.append('year', this.newCar.year);
                         formData.append('number', this.newCar.number);
+                        formData.append('color', this.newCar.color);
+                        formData.append('price', this.newCar.price);
+                        formData.append('has_gps', this.newCar.has_gps);
                         formData.append('shape_id', this.newCar.shape_id);
                         formData.append('brand_id', this.newCar.brand_id);
                         formData.append('model_id', this.newCar.model_id);
@@ -304,6 +363,7 @@ export default {
                         formData.append('type', this.newCar.type);
                         formData.append('teh_osmotr_end_date', this.newCar.teh_osmotr_end_date);
                         formData.append('tint_end_date', this.newCar.tint_end_date);
+                        formData.append('driver_id', this.newCar.driver_id);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);
@@ -311,6 +371,7 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/cars`, formData)
                             .then(response => {
+                                console.log(response);
                                 this.loading = false;
                                 this.successSnackbar(response.data.message);
                             })
@@ -322,7 +383,6 @@ export default {
         fetchCarBodyInfo() {
             axios.get('/admin/cars/body/info')
                 .then(response => {
-                    console.log(response.data);
                     response.data.shapes.map(value => {
                         this.shapes.push({
                             text: value.shape_name,
@@ -358,6 +418,21 @@ export default {
                             value: value.id
                         });
                     }); 
+                })
+                .catch(error => console.log(error));
+        },
+
+        fetchDrivers() {
+            axios.get(`/company/${this.$route.params.slug}/drivers`)
+                .then(response => {
+                    let drivers = response.data.company.drivers;
+
+                    drivers.map(driver => {
+                        this.driver.selectDriverItems.push({
+                            text: driver.fullname,
+                            value: driver.id
+                        });
+                    });
                 })
                 .catch(error => console.log(error));
         },
@@ -397,6 +472,7 @@ export default {
     },
     created() {
         this.fetchCarBodyInfo();
+        this.fetchDrivers();
     }
 }
 </script>

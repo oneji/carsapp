@@ -8,7 +8,7 @@
             </v-flex>
         </v-layout>
         <!-- Companies heading -->
-        <v-layout row v-if="!noProjects && !loading">
+        <v-layout row v-if="!noProjects && !loading && companies.length > 0">
             <v-flex xs12 sm12 md12 lg12>
                 <v-btn block outline color="primary">Компании</v-btn>
             </v-flex>
@@ -43,7 +43,7 @@
             </v-flex>            
         </transition-group>
         <!-- STOs heading -->        
-        <v-layout row v-if="!noProjects && !loading">
+        <v-layout row v-if="!noProjects && !loading && stos.length > 0">
             <v-flex xs12 sm12 md12 lg12>
                 <v-btn block outline color="primary">СТО</v-btn>
             </v-flex>

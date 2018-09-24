@@ -40,14 +40,24 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>   
-                                <v-select autocomplete :items="driver.selectDriverItems" v-model="driver.driver_id" label="Выберите водителя" prepend-icon="category"
+                                <v-select 
+                                    autocomplete 
+                                    :items="driver.selectDriverItems" 
+                                    v-model="driver.driver_id" 
+                                    label="Выберите водителя" 
+                                    prepend-icon="person"
                                     name="driver_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('driver_id')"
                                     data-vv-name="driver_id" data-vv-as='"Водитель"'
                                 ></v-select>       
 
-                                <v-select autocomplete :items="driver.selectCarItems" v-model="driver.car_id" label="Выберите машину" prepend-icon="category"
+                                <v-select 
+                                    autocomplete 
+                                    :items="driver.selectCarItems" 
+                                    v-model="driver.car_id" 
+                                    label="Выберите машину" 
+                                    prepend-icon="directions_car"
                                     name="car_id" required
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('car_id')"
@@ -74,7 +84,12 @@
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12> 
-                                <v-select autocomplete :items="deleteDriver.selectCarItems" v-model="deleteDriver.car_id" label="Выберите машину" prepend-icon="category"
+                                <v-select 
+                                    autocomplete 
+                                    :items="deleteDriver.selectCarItems" 
+                                    v-model="deleteDriver.car_id" 
+                                    label="Выберите машину" 
+                                    prepend-icon="directions_car"
                                     name="delete_car_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('delete_car_id')"

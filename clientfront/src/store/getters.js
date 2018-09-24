@@ -7,6 +7,10 @@ const getters = {
         return state.isLogged;
     },
 
+    snackbar: state => {
+        return state.snackbar;
+    },
+
     car: state => {
         return state.car;
     },

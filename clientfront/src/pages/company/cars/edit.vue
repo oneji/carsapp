@@ -66,17 +66,33 @@
                                 <v-layout row wrap>
                                     <v-flex xs12 sm12 md12 lg12 class="v-divider pr-4">                                        
                                         <v-container grid-list-xs>
-                                            <v-text-field type="text" v-model="editCar.year" name="year" label="Год машины" prepend-icon="event"                 
+                                            <v-text-field type="text" v-model="editCar.year" name="year" label="Введите год" prepend-icon="event"                 
                                                 v-validate="'required'" 
-                                                data-vv-name="year" data-vv-as='"Гос номер"'
+                                                data-vv-name="year" data-vv-as='"Год"'
                                                 :error-messages="errors.collect('year')"
                                             ></v-text-field>
 
-                                            <v-text-field type="text" v-model="editCar.number" name="number" label="Гос-номер машины" prepend-icon="filter_2"                 
+                                            <v-text-field type="text" v-model="editCar.number" name="number" label="Гос-номер" prepend-icon="filter_2"                 
                                                 v-validate="'required'" 
                                                 data-vv-name="number" data-vv-as='"Гос номер"'
                                                 :error-messages="errors.collect('number')"
                                             ></v-text-field>
+
+                                            <v-text-field type="text" 
+                                                v-model="editCar.color" 
+                                                name="color" 
+                                                label="Цвет" 
+                                                prepend-icon="color_lens"
+                                                hint="Например: Мокрый асфальт"
+                                            ></v-text-field>
+
+                                            <v-text-field type="number" 
+                                                v-model="editCar.price" 
+                                                name="color" 
+                                                label="Цена" 
+                                                prepend-icon="attach_money"
+                                                suffix="сом."
+                                            ></v-text-field>    
 
                                             <v-select autocomplete :items="shapes" v-model="editCar.shape_id" label="Выберите кузов" prepend-icon="directions_car"
                                                 name="shape_id"
@@ -161,7 +177,9 @@
                                                     </v-date-picker>
                                             </v-menu>
 
-                                            <v-checkbox label="В резерв" v-model="editCar.reserved"></v-checkbox>   
+                                            <v-checkbox label="В резерв" v-model="editCar.reserved"></v-checkbox>
+                                            <v-checkbox label="Есть GPS" v-model="editCar.has_gps"></v-checkbox>
+
                                             <v-radio-group v-model="editCar.type" row class="pt-0">
                                                 <v-radio label="Служебная" :value="0"></v-radio>
                                                 <v-radio label="Служебно-Личная" :value="1"></v-radio>
@@ -228,6 +246,9 @@ export default {
             editCar: {
                 year: null,
                 number: '',
+                color: '',
+                price: '',
+                has_gps: false,
                 shape_id: null,
                 brand_id: null,
                 model_id: null,
@@ -320,6 +341,9 @@ export default {
                         let formData = new FormData();
                         formData.append('year', this.editCar.year);
                         formData.append('number', this.editCar.number);
+                        formData.append('color', this.editCar.color);
+                        formData.append('price', this.editCar.price);
+                        formData.append('has_gps', this.editCar.has_gps);
                         formData.append('shape_id', this.editCar.shape_id);
                         formData.append('brand_id', this.editCar.brand_id);
                         formData.append('model_id', this.editCar.model_id);

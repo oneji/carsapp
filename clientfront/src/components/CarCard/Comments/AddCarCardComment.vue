@@ -1,6 +1,6 @@
 <template>
-    <v-card class="mt-2"> 
-        <v-card-text>
+    <v-card class="mb-3"> 
+        <v-card-text class="py-1">
             <v-layout row wrap>
                 <v-flex xs12 sm12 md12 lg12>
                     <v-text-field
@@ -11,10 +11,11 @@
                         no-resize
                         v-model="newComment"
                         rows="3"
+                        hide-details
                     ></v-text-field>                                
                 </v-flex>
                 <v-flex xs12 sm12 md12 lg12>
-                    <v-btn color="success" block flat @click="storeComment" :loading="loading" class="py-0">Сохранить комментарий</v-btn>
+                    <v-btn color="success" block flat @click="storeComment" :loading="loading" class="py-0">Сохранить</v-btn>
                 </v-flex>
             </v-layout>
         </v-card-text>

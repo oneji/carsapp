@@ -61,11 +61,14 @@
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider v-if="item.status === 3"></v-divider>
-                            <!-- Repair over date -->
+                            <!-- Repair over date and time -->
                             <v-list-tile v-if="item.status === 3">
                                 <v-list-tile-content>
                                     <v-list-tile-title>Дата окончания ремонта</v-list-tile-title>
-                                    <v-list-tile-sub-title>{{ item.repair_date | moment('MMMM D, YYYY') }}</v-list-tile-sub-title>
+                                    <v-list-tile-sub-title>
+                                        {{ item.repair_date | moment('MMMM D, YYYY') }} 
+                                        в {{ item.repair_date | moment('H:mm:ss') }}
+                                    </v-list-tile-sub-title>
                                 </v-list-tile-content>
                             </v-list-tile>                            
                             <v-divider v-if="item.status === 3"></v-divider>
@@ -83,8 +86,7 @@
             <v-divider></v-divider>
             <v-card-actions>
                 <v-btn block flat color="primary"
-                    v-if="item.car.card !== null 
-                        && $route.name === 'StoRepairRequests'"
+                    v-if="item.car.card !== null && $route.name === 'StoRepairRequests'"
                     :to="{ name: 'StoCarCard', params: { company: item.company_id, car: item.car.id } }"
                 >
                     Карточка
@@ -92,19 +94,17 @@
             </v-card-actions>
             <v-divider></v-divider>
             <v-card-actions v-if="hasActions">
-                <!-- <div v-if="forSto" style="width: 100%"> -->
-                    <v-btn color="warning" block flat v-if="queue && item.status === 0 && forSto" @click="dialog.queue = true">В очередь</v-btn>
-                    <v-btn color="primary" block flat v-if="item.status === 1 && forSto" @click="carBrought" :loading="loading.brought">Заехал</v-btn>
-                    <v-btn color="success" block flat v-if="item.status === 2 && forSto" @click="dialog.repair = true" :loading="loading.repair">Ремонт окончен</v-btn>
-                <!-- </div>                 -->
+                <v-btn color="warning" block flat v-if="queue && item.status === 0 && forSto" @click="dialog.queue = true">В очередь</v-btn>
+                <v-btn color="primary" block flat v-if="item.status === 1 && forSto" @click="carBrought" :loading="loading.brought">Заехал</v-btn>
+                <v-btn color="success" block flat v-if="item.status === 2 && forSto" @click="dialog.repair = true" :loading="loading.repair">Ремонт окончен</v-btn>
                 <v-btn color="primary" block flat v-if="archive && item.status === 3" @click="archiveRequest">В архив</v-btn>
+                
                 <v-tooltip bottom v-if="item.status > 0">
                     <v-btn icon slot="activator" @click="printDialog = true">
                         <v-icon>print</v-icon>
                     </v-btn>
                     <span>Распечатать</span>
-                </v-tooltip>
-                
+                </v-tooltip>                
             </v-card-actions>  
         </v-card>
 
@@ -180,6 +180,9 @@
                                             label="Выберите дату окончания ремонта" 
                                             prepend-icon="event" 
                                             readonly
+                                            v-validate="'required'" 
+                                            data-vv-name="date" data-vv-as='"Дата окончания ремонта"'
+                                            :error-messages="errors.collect('date')"
                                         ></v-text-field>
                                         <v-date-picker 
                                             v-model="repairDate"
@@ -188,6 +191,37 @@
                                             :min="item.receive_date"
                                             @input="$refs.menu2.save(repairDate)"
                                         ></v-date-picker>
+                                </v-menu>
+
+                                <v-menu
+                                    ref="menu3"
+                                    :close-on-content-click="false"
+                                    v-model="menu3"
+                                    :nudge-right="40"
+                                    :return-value.sync="repairTime"
+                                    lazy
+                                    transition="scale-transition"
+                                    offset-y
+                                    full-width
+                                    max-width="290px"
+                                    min-width="290px"
+                                >
+                                    <v-text-field
+                                        slot="activator"
+                                        v-model="repairTime"
+                                        label="Выберите время окончания ремонта"
+                                        prepend-icon="access_time"
+                                        readonly
+                                        v-validate="'required'" 
+                                        data-vv-name="time" data-vv-as='"Время окончания ремонта"'
+                                        :error-messages="errors.collect('time')"
+                                    ></v-text-field>
+                                    <v-time-picker
+                                        v-if="menu3"
+                                        v-model="repairTime"
+                                        format="24hr"
+                                        @change="$refs.menu3.save(repairTime)"
+                                    ></v-time-picker>
                                 </v-menu>
 
                                 <v-text-field type="text" v-model="currentMilage" name="current_milage" label="Текущий пробег" prepend-icon="comment"
@@ -323,8 +357,10 @@ export default {
             },
             menu: false,
             menu2: false,
+            menu3: false,
             receiveDate: '',
             repairDate: '',
+            repairTime: null,
             currentMilage: '',
             repairComment: '',
             printDialog: false,
@@ -363,21 +399,25 @@ export default {
         },
         repairDone() {
             this.$validator.validateAll('repair-form')
-                .then(success => {
-                    this.loading.repair = true;
-                    axios.post(`/sto/${this.$route.params.slug}/requests/${this.item.id}/repair-done`, {
-                        'repair_date': this.repairDate,
-                        'repair_comment': this.repairComment,
-                        'current_milage': this.currentMilage
-                    })
-                    .then(response => {
-                        this.$emit('repair', response.data.message);
-                        this.item.status = 3;
-                        this.item.repair_date = response.data.request.repair_date.date;
-                        this.loading.repair = false;
-                        this.dialog.repair = false;
-                    })
-                    .catch(error => console.error());
+                .then(success => {                    
+                    if(success) {
+                        this.loading.repair = true;
+                        let repairDateTime = this.repairDate + ' ' + this.repairTime + ':00';
+
+                        axios.post(`/sto/${this.$route.params.slug}/requests/${this.item.id}/repair-done`, {
+                            'repair_date': repairDateTime,
+                            'repair_comment': this.repairComment,
+                            'current_milage': this.currentMilage
+                        })
+                        .then(response => {
+                            this.$emit('repair', response.data.message);
+                            this.item.status = 3;
+                            this.item.repair_date = response.data.request.repair_date.date;
+                            this.loading.repair = false;
+                            this.dialog.repair = false;
+                        })
+                        .catch(error => console.error());
+                    }                    
                 })
         },
         archiveRequest() {

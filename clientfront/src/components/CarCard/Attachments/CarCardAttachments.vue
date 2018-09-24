@@ -19,12 +19,13 @@
                 </v-container>
             </v-card-media>
             <v-divider></v-divider>
-            <v-card-text primary-title>
+            <v-card-text primary-title class="py-1 px-1">
                 <v-alert outline transition="scale-transition" type="info" :value="true" v-if="files.length === 0">
                     Вложений нет.
                 </v-alert>
                 
                 <lightbox
+                    style="padding: 10px"
                     id="car_attachments"
                     :images="files"
                     :image_class="'card_attachment'"

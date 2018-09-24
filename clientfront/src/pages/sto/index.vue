@@ -127,6 +127,7 @@ export default {
                 { icon: 'business', title: 'Компании', to: { name: 'StoCompanies' } },
                 { icon: 'work', title: 'Услуги', to: { name: 'StoServices' } },
                 { icon: 'list', title: 'Дефекты и ДВС', to: { name: 'StoDefects' } },
+                { icon: 'list', title: 'Акт приема передачи', to: { name: 'StoRTAct' } },
             ],
             miniVariant: false,
             rightDrawer: false,

@@ -11,22 +11,26 @@
                 </v-container>
             </v-card-media>
             <v-divider></v-divider>
-            <v-card-text primary-title class="pt-1 pb-1">
-                <v-list two-line>
-                    <v-alert outline transition="scale-transition" type="info" :value="true" v-if="items.length === 0">
-                        Дефектных актов нет.
-                    </v-alert>
-                    <template v-for="(item, index) in items" >
+            <v-card-text primary-title class="py-1 px-1">
+                <v-alert outline transition="scale-transition" type="info" :value="true" v-if="items.length === 0">
+                    Дефектных актов нет.
+                </v-alert>
+                <v-list two-line v-else>                    
+                    <template v-for="item in items" >
                         <v-list-tile :key="item.title" avatar>
                             <v-list-tile-avatar>
                                 <v-icon class="blue white--text">assignment</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title>Номер акта: #{{ item.id | generateActNum }}</v-list-tile-title>
-                                <v-list-tile-sub-title>Дата создания: {{ item.defect_act_date | moment("MMMM D, YYYY") }}</v-list-tile-sub-title>
+                                <v-list-tile-sub-title>
+                                    Дата создания: {{ typeof item.defect_act_date === 'object' 
+                                        ? item.defect_act_date.date 
+                                        : item.defect_act_date | moment("MMMM D, YYYY") }}
+                                    </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn v-if="showDefect" icon ripple @click="showDefectAct(index)">
+                                <v-btn v-if="showDefect" icon ripple @click="showDefectAct(item.id)">
                                     <v-icon color="grey lighten-1">remove_red_eye</v-icon>
                                 </v-btn>
                             </v-list-tile-action>
@@ -65,8 +69,8 @@ export default {
         }
     },
     methods: {
-        showDefectAct(act_index) {
-            let act = this.items[act_index];
+        showDefectAct(actId) {
+            let act = this.items.filter(item => item.id === actId)[0];
             this.$store.dispatch('setDefectAct', act);
             this.defectActDialog = true;
         },        

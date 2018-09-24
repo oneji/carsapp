@@ -53,4 +53,12 @@ class CarCard extends Model
     {
         return $this->belongsToMany('App\Consumable')->withPivot('change_date', 'change_date_milage', 'recommended_change_milage');
     }
+
+    /**
+     * 
+     */
+    public function rt_acts()
+    {
+        return $this->hasMany('App\RtAct');
+    }
 }

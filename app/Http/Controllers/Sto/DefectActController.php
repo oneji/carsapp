@@ -31,9 +31,20 @@ class DefectActController extends Controller
     {
         $defectOptions = $request->only('defect_options');
         $equipment = $request->only('equipment');
-        $defectAct = new DefectAct();
+
+        if($request->hasFile('defect_act_img')) {
+            $fileExtension = $request->file('defect_act_img')->getClientOriginalExtension();
+            $fileNameToStore = uniqid().'.'.$fileExtension;
+            $path = $request->file('defect_act_img')->move(public_path('/uploads/attachments/defect_acts'), $fileNameToStore);  
+            $fileNameToStore = 'uploads/attachments/defect_acts/'.$fileNameToStore;
+        } else {
+            $fileNameToStore = null;
+        }
+
+        $defectAct = new DefectAct($request->all());
         $defectAct->car_card_id = $card_id;
         $defectAct->defect_act_date = Carbon::now();
+        $defectAct->defect_act_img = $fileNameToStore;
         $defectAct->save();
 
         foreach($defectOptions as $option)
@@ -41,6 +52,8 @@ class DefectActController extends Controller
 
         foreach($equipment as $eq) 
             $defectAct->equipment()->attach($eq);
+
+        $defectAct->load(['defect_options.defect', 'equipment']);
 
         return response()->json([
             'success' => true,

@@ -1,43 +1,51 @@
-import { SET_USER, RESET_USER, REFRESH_TOKEN, SET_CAR, SET_DEFECT_ACT, SET_DEFECT_TYPES, SET_EQUIPMENT, SET_PERMISSIONS, SET_CONSUMABLE } from './mutation-types'
+import * as mutationTypes from './mutation-types'
 import router from '@/router'
 
 const mutations = {
-    [SET_USER] (state, user) {
+    [mutationTypes.SET_USER] (state, user) {
         state.user = user;
         state.isLogged = true;
     },
 
-    [RESET_USER] (state) {
+    [mutationTypes.RESET_USER] (state) {
         state.user = null;
         state.isLogged = false;
         state.permissions = null;
     },
 
-    [REFRESH_TOKEN] (state, token) {
+    [mutationTypes.REFRESH_TOKEN] (state, token) {
         state.token = token;
     },
     
-    [SET_CAR] (state, car) {
+    [mutationTypes.SHOW_SNACKBAR] (state, options) {
+        state.snackbar = options;
+    },
+
+    [mutationTypes.HIDE_SNACKBAR] (state) {
+        state.snackbar.active = false;
+    },
+
+    [mutationTypes.SET_CAR] (state, car) {
         state.car = car;
     },
     
-    [SET_DEFECT_ACT] (state, act) {
+    [mutationTypes.SET_DEFECT_ACT] (state, act) {
         state.defectAct = act;
     },
 
-    [SET_DEFECT_TYPES] (state, defectTypes) {
+    [mutationTypes.SET_DEFECT_TYPES] (state, defectTypes) {
         state.defectTypes = defectTypes;
     },
  
-    [SET_EQUIPMENT] (state, equipment) {
+    [mutationTypes.SET_EQUIPMENT] (state, equipment) {
         state.equipment = equipment;
     },
 
-    [SET_PERMISSIONS] (state, permissions) {
+    [mutationTypes.SET_PERMISSIONS] (state, permissions) {
         state.permissions = permissions;
     },
 
-    [SET_CONSUMABLE] (state, consumable) {
+    [mutationTypes.SET_CONSUMABLE] (state, consumable) {
         state.consumable  = consumable;
     }
 }

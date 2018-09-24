@@ -79,6 +79,18 @@
                             <strong>Номер:</strong> {{ item.number }}
                         </div>
                         <div class="car-details-block caption mb-2">
+                            <i class="ic-car car-icon"></i>
+                            <strong>Цвет:</strong>
+                            <span v-if="item.color !== null">{{ item.color }}</span>
+                            <span v-else>Не установлен.</span>
+                        </div>
+                        <div class="car-details-block caption mb-2">
+                            <i class="ic-car car-icon"></i>
+                            <strong>Цена:</strong> 
+                            <span v-if="item.price !== null">{{ item.price }} сом.</span>
+                            <span v-else>Не установлена.</span>
+                        </div>
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-speedometer car-icon"></i>
                             <strong>Пробег:</strong> 
                             <span v-if="item.milage !== null">{{ item.milage }} км.</span>
@@ -102,9 +114,25 @@
                             <i class="ic-fuel car-icon"></i>
                             <strong>Тип ДВС:</strong> {{ item.engine_type_name }}
                         </div>
-                        <div class="car-details-block caption">
+                        <div class="car-details-block caption mb-2">
                             <i class="ic-transmission car-icon"></i>
                             <strong>Трансмиссия:</strong> {{ item.transmission_name }}
+                        </div>
+                        <div class="car-details-block caption mb-2">
+                            <i class="ic-car car-icon"></i>
+                            <strong>GPS:</strong> {{ item.has_gps === 1 ? 'Да' : 'Нет' }}
+                        </div>
+                        <div class="car-details-block caption mb-2">
+                            <i class="ic-speedometer car-icon"></i>
+                            <strong>Тех осмотр:</strong> 
+                            <span v-if="item.teh_osmotr_end_date !== null">{{ item.teh_osmotr_end_date | moment('MMMM D, YYYY') }} </span>
+                            <span v-else>Не установлен.</span>
+                        </div>
+                        <div class="car-details-block caption mb-2">
+                            <i class="ic-speedometer car-icon"></i>
+                            <strong>Тонировка до:</strong> 
+                            <span v-if="item.tint_end_date !== null">{{ item.tint_end_date | moment('MMMM D, YYYY')}}</span>
+                            <span v-else>Не установлена.</span>
                         </div>
                     </v-flex>
                 </v-card-text>

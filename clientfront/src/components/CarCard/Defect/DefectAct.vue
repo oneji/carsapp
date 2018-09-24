@@ -5,10 +5,6 @@
                 <v-btn icon dark @click.native="$emit('close')">
                     <v-icon>close</v-icon>
                 </v-btn>
-                <v-spacer></v-spacer>
-                <v-toolbar-items>
-                    <v-btn dark flat>Сохранить</v-btn>
-                </v-toolbar-items>
             </v-toolbar>
             
             <v-container grid-list-lg>
@@ -24,7 +20,10 @@
                                     <div class="defect-act" id="defect-act" ref="defectAct">
                                         <p class="display-1 text-lg-center defect-act__title">Дефектный акт автомобиля</p> 
                                         <p><strong>Номер акта:</strong> №{{ act.id | generateActNum }}</p>
-                                        <p><strong>Дата осмотра автомобиля:</strong> {{ act.defect_act_date }}</p> 
+                                        <p>
+                                            <strong>Дата осмотра автомобиля:</strong> 
+                                            {{ typeof act.defect_act_date === 'object' ? act.defect_act_date.date : act.defect_act_date }}
+                                        </p> 
                                         <p> 
                                             <strong>Марка автомобиля:</strong> {{ car.brand_name }} 
                                             <strong>Модель:</strong> {{ car.model_name }}
@@ -175,14 +174,11 @@ export default {
             let lala = defectOptions.filter(option => option.defect.defect_type_id === defectTypeId);
             return lala;
         }
-    }, 
-    created() {   
-        
-    }
+    },
 }
 </script>
 
-
+<style>
     .defect-act {
         padding: 20px 40px;
     }

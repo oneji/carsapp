@@ -38,17 +38,17 @@ class CarController extends Controller
      */
     public function getCardInfo($company_slug, $car_id)
     {
-        $car = Car::select('cars.*', 'shape_name', 'brand_name', 'model_name','engine_type_name', 'transmission_name')
-                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
-                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
-                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
-                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
-                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                        ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments')
-                        ->where('sold', 0)
-                        ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
-                            $q->where('active', 1)->get();
-                        }])->first(); 
+        $car = Car::select('cars.*', 'shape_name', 'brand_name', 'model_name', 'engine_type_name', 'transmission_name')
+                    ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                    ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                    ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                    ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                    ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                    ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments')
+                    ->where('sold', 0)
+                    ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
+                        $q->where('active', 1)->get();
+                    }])->first(); 
 
         return response()->json([
             'car' => $car
@@ -156,6 +156,7 @@ class CarController extends Controller
         $car->year = $request->year;
         $car->cover_image = $coverImageNameToStore;
         $car->reserved = $request->reserved === 'true' ? 1 : 0;
+        $car->has_gps = $request->has_gps === 'true' ? 1 : 0;
 
         if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
             $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
@@ -170,6 +171,15 @@ class CarController extends Controller
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
             
         $car->save();       
+
+        if($request->driver_id !== null && $request->driver_id !== 'null') {
+            $car->drivers()->attach([
+                $request->driver_id => [
+                    'active' => 1,
+                    'start_date' => Carbon::now()
+                ]
+            ]);
+        }
         
         $company->cars()->attach($car->id);
 
@@ -238,7 +248,7 @@ class CarController extends Controller
                 'active' => 1,
                 'start_date' => Carbon::now()
             ]
-        ]);        
+        ]);
 
         $driver = Driver::find($request->driver_id);
         $car->load([
@@ -312,9 +322,16 @@ class CarController extends Controller
         $car = Car::find($id);
         $car->year = (int) $request->year;
         $car->number = $request->number;
+        $car->color = $request->color;
+        $car->price = $request->price;
         $car->shape_id = $request->shape_id;
         $car->brand_id = $request->brand_id;
         $car->model_id = $request->model_id;
+
+        if($request->has_gps === 'true')
+            $car->has_gps = 1;
+        else
+            $car->has_gps = 0;
 
         if($request->milage !== 'null') 
             $car->milage = $request->milage;

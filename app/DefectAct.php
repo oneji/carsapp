@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class DefectAct extends Model
 {
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'comment'
+    ];
+
+    /**
      * Get all defect act's defect options.
      */
     public function defect_options()

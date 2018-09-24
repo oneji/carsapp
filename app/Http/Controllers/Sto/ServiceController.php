@@ -60,6 +60,20 @@ class ServiceController extends Controller
         return response()->json($categories);
     }
 
+
+    public function updateServiceCategory(Request $request, $sto_slug, $id) 
+    {
+        $category = ServiceCategory::where('id', $id)->update([
+            'service_category_name' => $request->service_category_name
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Категория успешно изменена.',
+            'category' => $category
+        ]);
+    }
+
     /**
      * Store a newly created service to a database.
      * @param   string $sto_slug
@@ -84,7 +98,7 @@ class ServiceController extends Controller
         }
 
         $categories = ServiceCategory::find($request->service_category_id);
-        if(count($categories) === 0) {
+        if(empty($categories)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Такой категории не существует. Попытка подмены данных.'
@@ -110,6 +124,37 @@ class ServiceController extends Controller
         ]);
     }
 
+    public function updateServiceType(Request $request, $sto_slug, $id) 
+    {
+        $sto = Sto::where('slug', $sto_slug)->first();
+
+        $categories = ServiceCategory::find($request->service_category_id);
+        if(empty($categories)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Такой категории не существует. Попытка подмены данных.'
+            ], 400);
+        }
+
+        $servicePrice = $request->service_price;
+
+        if((bool) $request->approximate === true)
+            $servicePrice = null;
+
+        $service = ServiceType::where('id', $id)->update([
+            'service_type_name' => $request->service_type_name,
+            'service_category_id' => $request->service_category_id,
+            'service_price' => $servicePrice,
+            'defect_option_id' => $request->defect_option_id
+        ]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Услуга успешно изменена.',
+            'service' => $service
+        ]);
+    }
+
     /**
      * Get all service types from database for a specific STO.
      * 
@@ -120,7 +165,7 @@ class ServiceController extends Controller
     public function getTypes($sto_slug)
     {
         $sto = Sto::where('slug', $sto_slug)->first();
-        $types = ServiceType::select('service_types.id', 'service_type_name', 'service_price', 'service_category_name')
+        $types = ServiceType::select('service_types.*', 'service_type_name', 'service_price', 'service_category_name')
                             ->join('service_categories', 'service_types.service_category_id', '=', 'service_categories.id')
                             ->where('service_types.sto_id', $sto->id)->get();
 

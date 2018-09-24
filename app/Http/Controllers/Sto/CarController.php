@@ -74,23 +74,34 @@ class CarController extends Controller
         }
 
         $car = new Car($request->all());
-        $car->year = Carbon::parse($request->year)->year;
+        $car->year = $request->year;
         $car->cover_image = $coverImageNameToStore;
+        $car->reserved = $request->reserved === 'true' ? 1 : 0;
+        $car->has_gps = $request->has_gps === 'true' ? 1 : 0;
+        
+        if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
+        $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
 
-        if($request->milage !== 'null') 
+        if($request->tint_end_date !== null && $request->tint_end_date !== 'null')
+            $car->tint_end_date = Carbon::parse($request->tint_end_date);
+
+        if($request->milage !== null && $request->milage !== 'null') 
             $car->milage = $request->milage;
 
-        if($request->engine_capacity !== null)
+        if($request->engine_capacity !== null && $request->engine_capacity !== 'null')
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
-        else
-            $car->engine_capacity = null;
-
-        if($request->reserved === 'true')
-            $car->reserved = 1;
-        else 
-            $car->reserved = 0;
 
         $car->save();       
+
+        if($request->driver_id !== null && $request->driver_id !== 'null') {
+            $car->drivers()->attach([
+                $request->driver_id => [
+                    'active' => 1,
+                    'start_date' => Carbon::now()
+                ]
+            ]);
+        }
+        
         $company->cars()->attach($car->id);
 
         $carAttachments = array();
@@ -120,8 +131,7 @@ class CarController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Машина успешно создана.',
-            'files' => $carAttachments
+            'message' => 'Машина успешно создана.'
         ]);
     }
 

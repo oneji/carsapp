@@ -1,6 +1,8 @@
 export const SET_USER = 'setUser'
 export const RESET_USER = 'resetUser'
 export const REFRESH_TOKEN = 'refreshToken'
+export const SHOW_SNACKBAR = 'showSnackbar'
+export const HIDE_SNACKBAR = 'hideSnackbar'
 export const SET_CAR = 'setCar'
 export const SET_DEFECT_ACT = 'setDefectAct'
 export const SET_DEFECT_TYPES = 'setDefectTypes'

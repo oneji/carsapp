@@ -26,6 +26,7 @@ Route::post('auth/register', 'AuthController@register');
 Route::get('/token/refresh', 'AuthController@refreshToken');
 Route::get('/token/check', 'AuthController@checkToken');
 
+
 Route::group(['middleware' => ['jwt.auth']], function() {
     Route::post('auth/logout', 'AuthController@logout');
     Route::get('/me', 'AuthController@user');    
@@ -38,6 +39,17 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('/car/{car}/consumables', 'ConsumableController@get');
     Route::post('/car/{car}/consumables', 'ConsumableController@update');
     Route::post('/car/{car}/consumables/create', 'ConsumableController@store');
+
+    // RT act
+    Route::post('rt-act', 'RtActController@store');
+    Route::get('rt-act/info', 'RtActController@getFullInfo');
+    // RT act checklists
+    Route::get('rt-act/checklists', 'RtActChecklistController@get');
+    Route::get('rt-act/all', 'RtActChecklistController@getChecklistsAndChecklistItems');
+    Route::post('rt-act/checklists', 'RtActChecklistController@store');
+    // RT act checklist items
+    Route::get('rt-act/checklists/items', 'RtActChecklistItemController@get');
+    Route::post('rt-act/checklists/items', 'RtActChecklistItemController@store');
 }); 
 
 // Admin routes
@@ -134,11 +146,14 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/companies/{company}/cars', 'CompanyController@getCars');
         // Services routes
         Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
-        Route::get('/{slug}/services/types', 'ServiceController@getTypes');
+        Route::get('/{slug}/services/types', 'ServiceController@getTypes');        
         
         Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
         Route::post('/{slug}/services/types', 'ServiceController@storeService');
         Route::post('/{slug}/services/invoice', 'ServiceController@invoice');
+
+        Route::put('/{slug}/services/types/{type}', 'ServiceController@updateServiceType');
+        Route::put('/{slug}/services/categories/{category}', 'ServiceController@updateServiceCategory');
         // Car routes
         Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');

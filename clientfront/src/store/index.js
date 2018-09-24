@@ -12,6 +12,11 @@ export default new Vuex.Store({
         user: null,
         isLogged: false,
         permissions: null,
+        snackbar: {
+            color: 'success',
+            active: false,
+            text: '',
+        },
 
         car: {
             brand_name: '',
