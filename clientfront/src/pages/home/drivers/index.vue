@@ -40,7 +40,22 @@
                                             <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
-                                    <!-- <v-divider></v-divider> -->
+                                    <v-divider></v-divider>
+                                    <v-list-tile avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>Категория прав</v-list-tile-title>
+                                            <v-list-tile-sub-title v-if="driver.info.driver_license_category !== null">{{ driver.info.driver_license_category }}</v-list-tile-sub-title>
+                                            <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                    <v-divider></v-divider>
+                                    <v-list-tile avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>Email</v-list-tile-title>
+                                            <v-list-tile-sub-title v-if="driver.info.email !== null">{{ driver.info.email }}</v-list-tile-sub-title>
+                                            <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
                                 </v-list>
                             </v-flex>
                         </v-layout>    
@@ -91,6 +106,7 @@ export default {
             this.loading = true;
             axios.get('/all-cars')
                 .then(response => {
+                    console.log(response.data);
                     this.companies = response.data.companies;
 
                     this.companies.map(company => {

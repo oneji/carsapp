@@ -56,16 +56,8 @@
                                     <tbody>
                                         <tr v-for="item in checklist.checklist_items" :key="item.id">
                                             <td colspan="1">{{ item.item_name }}</td>
-                                            <td>
-                                                {{ 
-                                                    item.status === 0 ? 'Пройден' : 'Не пройден' 
-                                                }}
-                                            </td>
-                                            <td>
-                                                {{
-                                                    item.comment                                                         
-                                                }}
-                                            </td>
+                                            <td>{{ item.status === 0 ? 'Пройден' : 'Не пройден' }}</td>
+                                            <td>{{ item.comment !== '' ? item.comment : 'Комментария нет.' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -128,7 +120,6 @@ export default {
             
             Promise.all([this.fetchChecklistsAndChecklistItems(), this.fetchActInfo()])
                 .then(values => {
-                    console.log(values);
                     const { checklists } =  values[0].data;
                     const { act } = values[1].data;
                     // Check lists
@@ -143,13 +134,21 @@ export default {
                         }
                     });
 
-                    this.checklists = act.checklist_items.map(item => { 
+                    this.checklists = this.actChecklists.map(item => {
                         return {
                             checklist_name: item.rt_act_checklist.checklist_name,
                             id: item.rt_act_checklist.id,
                             checklist_items: []
                         }
                     });
+                    
+                    for(let i = 0; i < this.checklists.length; i++) {
+                        for(let j = 1; j < this.checklists.length; j++) {
+                            if(this.checklists[i].id === this.checklists[j].id) {
+                                this.checklists.splice(j, 1);
+                            }
+                        }
+                    }
 
                     this.checklists.map(list => {
                         this.actChecklists.map(item => {

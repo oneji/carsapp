@@ -50,25 +50,6 @@ export default {
     props: {
         items: Array,
     },
-    filters: {
-        generateActNum(value) {
-            return (value / 10000).toString().replace('.', '');
-        }
-    },
-    components: {
-        
-    },
-    data() {
-        return {
-            
-        }
-    },
-    methods: {
-               
-    },
-    created() {
-        console.log(this.items)
-    }
 }
 </script>
 

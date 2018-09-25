@@ -323,7 +323,7 @@ class CarController extends Controller
         $car->year = (int) $request->year;
         $car->number = $request->number;
         $car->color = $request->color;
-        $car->price = $request->price;
+        $car->price = $request->price !== 'null' ? $request->price : null;
         $car->shape_id = $request->shape_id;
         $car->brand_id = $request->brand_id;
         $car->model_id = $request->model_id;

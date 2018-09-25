@@ -121,9 +121,9 @@
                                     <div slot="header">{{ defectType.defect_type_name }}</div>
                                     <v-card>
                                         <v-card-text class="py-2 px-2">
-                                            <v-form v-if="currentDefectType.defects.length > 0">
+                                            <v-form v-if="defectType.defects.length > 0">
                                                 <v-list three-line>
-                                                    <v-list-tile v-for="defect in currentDefectType.defects" :key="defect.id">                                                
+                                                    <v-list-tile v-for="defect in defectType.defects" :key="defect.id">                                                
                                                         <v-list-tile-content >
                                                             <v-list-tile-title>{{ defect.defect_name }}</v-list-tile-title>
                                                             <v-list-tile-sub-title>

@@ -201,7 +201,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response.data);
                     this.car = response.data.car;
                     this.$store.dispatch('setCar', response.data.car);
                     this.defects = response.data.defects_info;

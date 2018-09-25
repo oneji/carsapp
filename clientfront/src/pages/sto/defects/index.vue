@@ -30,6 +30,9 @@
                                 <v-btn icon class="mx-0" @click="showEditTypeDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
+                                <v-btn icon class="mx-0" @click="showDefects(props.item)">
+                                    <v-icon color="grey">info</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -46,7 +49,7 @@
                 </v-card>
             </v-flex>
             <!-- Defects -->
-            <v-flex xs12 sm6 md4 lg4>
+            <v-flex xs12 sm6 md4 lg4 v-if="showDefectsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
                         Дефекты
@@ -66,6 +69,9 @@
                                 <v-btn icon class="mx-0" @click="showEditDefectDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
+                                <v-btn icon class="mx-0" @click="showDefectOptions(props.item)">
+                                    <v-icon color="grey">info</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -82,7 +88,7 @@
                 </v-card>
             </v-flex>
             <!-- Defect options -->
-            <v-flex xs12 sm6 md4 lg4>
+            <v-flex xs12 sm6 md4 lg4 v-if="showDefectOptionsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
                         Вид дефекта
@@ -98,7 +104,6 @@
                     <v-data-table :loading="options.loading.table" :headers="options.headers" :items="options.items" :search="options.search">
                         <template slot="items" slot-scope="props">
                             <td>{{ props.item.defect_option_name }}</td>
-                            <td>{{ props.item.defect_name }}</td>
                             <td class="justify-center">
                                 <v-btn icon class="mx-0" @click="showEditOptionDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
@@ -373,8 +378,7 @@ export default {
                 items: [],
                 selectItems: [],
                 headers: [
-                    { text: 'Вид дефекта', value: 'defect_option_name' }, 
-                    { text: 'Дефект', value: 'defect_name' }, 
+                    { text: 'Вид дефекта', value: 'defect_option_name' },
                     { text: 'Действия', value: 'action' },     
                 ],
 
@@ -427,10 +431,23 @@ export default {
                 }
             },
             createEngineType: false,
-            createTransmission: false
+            createTransmission: false,
+
+            showDefectsTrigger: false,
+            showDefectOptionsTrigger: false
         }
     },
     methods: {
+        showDefects(type) {
+            this.defects.items = [...type.defects];
+            this.showDefectsTrigger = true;
+        },
+
+        showDefectOptions(defect) {
+            this.options.items = [...defect.defect_options];
+            this.showDefectOptionsTrigger = true;
+        },
+
         addType() {            
             this.$validator.validateAll('create-defect-type-form')
                 .then(result => {
@@ -611,14 +628,14 @@ export default {
                         });
 
                         type.defects.map(defect => {
-                            this.defects.items.push(defect);
+                            // this.defects.items.push(defect);
                             this.defects.selectItems.push({
                                 text: defect.defect_name,
                                 value: defect.id
                             });
 
                             defect.defect_options.map(option => {
-                                this.options.items.push(option);
+                                // this.options.items.push(option);
                                 this.options.selectItems.push({
                                     text: option.defect_option_name,
                                     value: option.id

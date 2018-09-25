@@ -311,8 +311,12 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.company}/cars/${this.$route.params.car}/edit`)
                 .then(response => {
+                    console.log(response);
                     this.editCar.year = response.data.year;
                     this.editCar.number = response.data.number;
+                    this.editCar.color = response.data.color;
+                    this.editCar.price = response.data.price;
+                    this.editCar.has_gps = response.data.has_gps;
                     this.editCar.shape_id = response.data.shape_id;
                     this.editCar.brand_id = response.data.brand_id;
                     this.editCar.model_id = response.data.model_id;
@@ -360,6 +364,7 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {
+                                console.log(response.data)
                                 this.loading.edit = false;
                                 this.successSnackbar(response.data.message);
                             })
