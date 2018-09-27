@@ -44,13 +44,16 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('rt-act/getById/{act}', 'RtActController@getById');
     Route::post('rt-act', 'RtActController@store');
     Route::get('rt-act/info', 'RtActController@getFullInfo');
+    Route::get('rt-act/files/download', 'RtActController@downloadFile');
     // RT act checklists
     Route::get('rt-act/checklists', 'RtActChecklistController@get');
     Route::get('rt-act/all', 'RtActChecklistController@getChecklistsAndChecklistItems');
     Route::post('rt-act/checklists', 'RtActChecklistController@store');
+    Route::put('rt-act/checklists/{checklist}', 'RtActChecklistController@update');
     // RT act checklist items
     Route::get('rt-act/checklists/items', 'RtActChecklistItemController@get');
     Route::post('rt-act/checklists/items', 'RtActChecklistItemController@store');
+    Route::put('rt-act/checklists/items/{item}', 'RtActChecklistItemController@update');
 }); 
 
 // Admin routes

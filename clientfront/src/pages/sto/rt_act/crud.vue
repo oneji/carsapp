@@ -3,8 +3,8 @@
         <!-- Control buttons -->
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" @click.native="checklists.dialog = true" append>Добавить чек-лист</v-btn>
-                <v-btn color="primary" @click.native="checklistItems.dialog = true" append>Добавить элемент чек листа</v-btn>
+                <v-btn color="success" @click.native="showChecklistDialog(null, 'create')" append>Добавить чек-лист</v-btn>
+                <v-btn color="primary" @click.native="showChecklistItemDialog(null, 'create')" append>Добавить элемент чек листа</v-btn>
             </v-flex>
         </v-layout>
         <!-- Loading -->
@@ -30,6 +30,11 @@
                     <v-data-table :loading="loading.tables" :headers="checklists.tableHeaders" :items="checklists.items" :search="checklists.search">
                         <template slot="items" slot-scope="props">
                             <td>{{ props.item.checklist_name }}</td>
+                            <td class="justify-center">
+                                <v-btn icon class="mx-0" @click="showChecklistDialog(props.item, 'edit')">
+                                    <v-icon color="teal">edit</v-icon>
+                                </v-btn>
+                            </td>
                         </template>
                         <!-- No data slot -->
                         <template slot="no-data">
@@ -62,6 +67,11 @@
                         <template slot="items" slot-scope="props">
                             <td>{{ props.item.item_name }}</td>
                             <td>{{ props.item.checklist_name }}</td>
+                            <td class="justify-center">
+                                <v-btn icon class="mx-0" @click="showChecklistItemDialog(props.item, 'edit')">
+                                    <v-icon color="teal">edit</v-icon>
+                                </v-btn>
+                            </td>
                         </template>
                         <!-- No data slot -->
                         <template slot="no-data">
@@ -80,9 +90,11 @@
 
         <!-- Checklist modal -->
         <v-dialog v-model="checklists.dialog" max-width="500">
-            <form @submit.prevent="addChecklist" data-vv-scope="create-checklist-form">
+            <form @submit.prevent="executeChecklistAction" data-vv-scope="checklist-form">
                 <v-card>
-                    <v-card-title class="headline">Добавить чек лист</v-card-title>
+                    <v-card-title class="headline">
+                        {{ checklists.dialogType === 'create' ? 'Добавить' : 'Изменить' }} чек лист
+                    </v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
@@ -98,16 +110,19 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" flat="flat" @click.native="checklists.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="loading.checklistBtn" flat="flat" type="submit">Создать</v-btn>
+                        <v-btn v-if="checklists.dialogType === 'create'" color="green darken-1" :loading="loading.checklistBtn" flat="flat" type="submit">Создать</v-btn>
+                        <v-btn v-else-if="checklists.dialogType === 'edit'" color="green darken-1" :loading="loading.checklistBtn" flat="flat" type="submit">Изменить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
         </v-dialog>
         <!-- Checklist item modal -->
         <v-dialog v-model="checklistItems.dialog" max-width="500">
-            <form @submit.prevent="addChecklistItem" data-vv-scope="create-checklist-item-form">
+            <form @submit.prevent="executeChecklistItemAction" data-vv-scope="checklist-item-form">
                 <v-card>
-                    <v-card-title class="headline">Добавить элемент чек листа</v-card-title>
+                    <v-card-title class="headline">
+                        {{ checklistItems.dialogType === 'create' ? 'Добавить' : 'Изменить' }} элемент чек листа
+                    </v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
@@ -130,7 +145,8 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" flat="flat" @click.native="checklistItems.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="loading.checklistItemBtn" flat="flat" type="submit">Создать</v-btn>
+                        <v-btn v-if="checklistItems.dialogType === 'create'" color="green darken-1" :loading="loading.checklistItemBtn" flat="flat" type="submit">Создать</v-btn>
+                        <v-btn v-else-if="checklistItems.dialogType === 'edit'" color="green darken-1" :loading="loading.checklistItemBtn" flat="flat" type="submit">Изменить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
@@ -158,9 +174,12 @@ export default {
                 // Controls
                 tableHeaders: [
                     { text: 'Чек лист', value: 'checklist_name' },
+                    { text: 'Действия', value: 'actions' },
                 ],
                 search: '',
-                dialog: false
+                dialog: false,
+                dialogType: '',
+                editObject: {}
             },
             checklistItems: {
                 items: [],                
@@ -170,9 +189,12 @@ export default {
                 tableHeaders: [
                     { text: 'Элемент чек листа', value: 'item_name' },
                     { text: 'Чек лист', value: 'checklist_name' },
+                    { text: 'Действия', value: 'actions' },
                 ],
                 search: '',
-                dialog: false
+                dialog: false,
+                dialogType: '',
+                editObject: {}
             },
             loading: {
                 page: false,
@@ -199,11 +221,10 @@ export default {
                 .catch(error => console.log(error));
         },
         addChecklist() {
-            this.$validator.validateAll('create-checklist-form')
+            this.$validator.validateAll('checklist-form')
                 .then(success => {
                     if(success) {
                         this.loading.checklistBtn = true;
-                        console.log('[Validation] OK!');
 
                         axios.post('rt-act/checklists', { 'checklist_name': this.checklists.checklistName })
                             .then(response => {
@@ -228,8 +249,31 @@ export default {
                     }
                 });
         },
+        editChecklist() {
+            this.$validator.validateAll('checklist-form')
+                .then(success => {
+                    if(success) {
+                        this.loading.checklistBtn = true;
+
+                        axios.put(`rt-act/checklists/${this.checklists.editObject.id}`, { 'checklist_name': this.checklists.checklistName })
+                            .then(response => {
+                                let item = this.checklists.items.filter(it => it.id === this.checklists.editObject.id)[0];
+                                item.checklist_name = this.checklists.checklistName;
+                                this.checklists.checklist_name = '';
+                                this.loading.checklistBtn = false;
+                                this.checklists.dialog = false;
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'success',
+                                    active: true,
+                                    text: response.data.message
+                                });
+                            })
+                            .catch(error => console.log(error));
+                    }
+                });
+        },
         addChecklistItem() {
-            this.$validator.validateAll('create-checklist-item-form')
+            this.$validator.validateAll('checklist-item-form')
                 .then(success => {
                     if(success) {
                         this.loading.checklistItemBtn = true;
@@ -256,6 +300,65 @@ export default {
                         .catch(error => console.log(error));
                     }
                 });
+        },
+        editChecklistItem() {
+            console.log(this.checklistItems.editObject)
+
+            this.$validator.validateAll('checklist-item-form')
+                .then(success => {
+                    if(success) {
+                        this.loading.checklistItemBtn = true;
+                        console.log('[Validation] OK!');
+
+                        axios.put(`rt-act/checklists/items/${this.checklistItems.editObject.id}`, {
+                            'item_name': this.checklistItems.itemName,
+                            'rt_act_checklist_id': this.checklistItems.checklistId
+                        })
+                        .then(response => {
+                            this.fetchChecklistsAndChecklistItems();
+                            this.loading.checklistItemBtn = false;
+                            this.checklistItems.dialog = false;
+                            this.checklistItems.itemName = '';
+                            this.checklistItems.checklistId = null;
+
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                active: true,
+                                text: response.data.message
+                            });
+                        })
+                        .catch(error => console.log(error));
+                    }
+                });
+        },
+        showChecklistDialog(item, type) {
+            this.checklists.dialogType = type;
+            this.checklists.dialog = true;
+            if(type === 'edit') {
+                this.checklists.editObject = item;
+                this.checklists.checklistName = item.checklist_name;
+            }
+        },
+        showChecklistItemDialog(item, type) {
+            this.checklistItems.dialogType = type;            
+            if(type === 'edit') {
+                this.checklistItems.editObject = item;
+                this.checklistItems.itemName = item.item_name;
+                this.checklistItems.checklistId = item.rt_act_checklist_id;
+            } 
+            this.checklistItems.dialog = true;
+        },
+        executeChecklistAction() {
+            if(this.checklists.dialogType === 'create')
+                this.addChecklist();
+            else
+                this.editChecklist();
+        },
+        executeChecklistItemAction() {
+            if(this.checklistItems.dialogType === 'create')
+                this.addChecklistItem();
+            else
+                this.editChecklistItem();
         }
     },
     created() {

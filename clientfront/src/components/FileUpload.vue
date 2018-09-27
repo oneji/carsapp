@@ -5,7 +5,7 @@
         class-name="my-pond"
         label-idle="Кликните или перетащите файлы сюда..."
         allow-multiple="true"
-        accepted-file-types="image/jpeg, image/png, image/svg+xml"
+        :accepted-file-types="types"
         allow-file-size-validation="true"
         max-file-size="1MB"
         label-max-file-size="Максимальный размер файла {filesize}"
@@ -32,6 +32,10 @@ export default {
         removeFiles: {
             type: Boolean,
             default: false,
+        },
+        types: {
+            types: String,
+            default: () => []
         }
     },
     data() {

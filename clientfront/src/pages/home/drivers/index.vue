@@ -56,6 +56,20 @@
                                             <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                     </v-list-tile>
+                                    <v-divider></v-divider>
+                                    <v-list-tile avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>Автомобили</v-list-tile-title>
+                                            <v-list-tile-sub-title v-if="driver.info.cars.length > 0">
+                                                <MyLabel style="margin: 0 5px 5px 0"
+                                                    v-for="car in driver.info.cars" 
+                                                    :key="car.id"
+                                                    :text="`${car.brand_name} ${car.model_name} ${car.number}`" 
+                                                    type="primary" /> <br>
+                                            </v-list-tile-sub-title>
+                                            <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>                                            
+                                        </v-list-tile-content>
+                                    </v-list-tile>
                                 </v-list>
                             </v-flex>
                         </v-layout>    
@@ -88,11 +102,13 @@ import axios from '@/axios'
 import assetsURL from '@/components/mixins/assets-url'
 import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
+import MyLabel from '@/components/Label'
 
 export default {
     mixins: [assetsURL, snackbar],
     components: {
-        Loading
+        Loading,
+        MyLabel
     },
     data() {
         return {

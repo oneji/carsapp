@@ -33,7 +33,7 @@ class RtActChecklistItemController extends Controller
         $checklistItem = new RtActChecklistItem($request->all());
         $checklistItem->save();
 
-        $checklistItem = RtActChecklistItem::select('rt_act_checklist_items.id', 'item_name', 'checklist_name')
+        $checklistItem = RtActChecklistItem::select('rt_act_checklist_items.*', 'item_name', 'checklist_name')
             ->join('rt_act_checklists', 'rt_act_checklist_items.rt_act_checklist_id', 'rt_act_checklists.id')
             ->where('rt_act_checklist_items.id', $checklistItem->id)
             ->first();
@@ -42,6 +42,21 @@ class RtActChecklistItemController extends Controller
             'success' => true,
             'message' => 'Элемент чек листа успешно создан.',
             'checklist_item' => $checklistItem
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function update(Request $request, $id) {
+        $checklistItem = RtActChecklistItem::where('id', $id)->update([
+            'item_name' => $request->item_name,
+            'rt_act_checklist_id' => $request->rt_act_checklist_id
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Элемент чек листа успешно изменен.'
         ]);
     }
 }

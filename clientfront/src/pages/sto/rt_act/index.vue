@@ -14,23 +14,23 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="1">Тип акта</td>
+                            <td colspan="1"><strong>Тип акта</strong></td>
                             <td colspan="2">{{ act.type === 0 ? 'Приём' : 'Передача' }}</td>
                         </tr>
                         <tr>
-                            <td colspan="1">От</td>
+                            <td colspan="1"><strong>От</strong></td>
                             <td colspan="2">{{ act.company_from }}</td>
                         </tr>
                         <tr>
-                            <td colspan="1">Ответственный сотрудник</td>
+                            <td colspan="1"><strong>Ответственный сотрудник</strong></td>
                             <td colspan="2">{{ act.responsible_employee }}</td>
                         </tr>
                         <tr>
-                            <td colspan="1">Кому</td>
+                            <td colspan="1"><strong>Кому</strong></td>
                             <td colspan="2">{{ act.company_to }}</td>
                         </tr>
                         <tr>
-                            <td colspan="1">Водитель</td>
+                            <td colspan="1"><strong>Водитель</strong></td>
                             <td colspan="2">                                    
                                 <p>{{ act.driver_id === null ? 'Водителя нет' : act.driver_name }}</p>
                             </td>
@@ -45,9 +45,9 @@
                                 <table class="rt-act">
                                     <thead>
                                         <tr class="rt-act-title" v-if="index === 0">
-                                            <td><strong>Наименование части осмотра</strong></td>
-                                            <td><strong>Чек лист</strong></td>
-                                            <td><strong>Комментарии</strong></td>
+                                            <th>Наименование части осмотра</th>
+                                            <th>Чек лист</th>
+                                            <th>Комментарии</th>
                                         </tr>
                                         <tr>
                                             <th class="rt-act-checklist-title" colspan="3">{{ checklist.checklist_name }}</th>
@@ -55,7 +55,7 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="item in checklist.checklist_items" :key="item.id">
-                                            <td colspan="1">{{ item.item_name }}</td>
+                                            <td colspan="1"><strong>{{ item.item_name }}</strong></td>
                                             <td>{{ item.status === 0 ? 'Пройден' : 'Не пройден' }}</td>
                                             <td>{{ item.comment !== '' ? item.comment : 'Комментария нет.' }}</td>
                                         </tr>
@@ -65,6 +65,22 @@
                         </tr>
                     </tbody>
                     <tfoot>
+                        <tr>
+                            <th colspan="3" class="rt-act-checklist-title">Файлы</th>
+                        </tr>
+                        <tr >
+                            <td colspan="3">
+                                <MyLabel 
+                                    v-for="file in files" 
+                                    :key="file.file" 
+                                    :text="file.name" 
+                                    type="primary"
+                                    :style="{ marginRight: '10px' }" />
+                            </td>
+                            <!-- <td colspan="1">
+                                <v-btn class="my-0 mx-0" small color="success" @click="downloadFile(file.file)">Скачать</v-btn>
+                            </td> -->
+                        </tr>
                         <tr>
                             <td colspan="3">
                                 <v-btn block color="success" @click.native="$router.back()">Вернуться назад</v-btn>
@@ -81,6 +97,7 @@
 import axios from '@/axios'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
+import MyLabel from '@/components/Label'
 
 export default {
     $_veeValidate: {
@@ -88,7 +105,8 @@ export default {
     },
     components: {
         Loading,
-        MoveButtons
+        MoveButtons,
+        MyLabel
     },
     data() {
         return {
@@ -101,6 +119,7 @@ export default {
             companyTo: '',
             driver: null,
             comments: [],
+            files: [],
             values: [],
             result: {
                 values: [],
@@ -124,6 +143,7 @@ export default {
                     const { act } = values[1].data;
                     // Check lists
                     this.act = act;
+                    this.files = JSON.parse(act.files);
                     this.actChecklists = act.checklist_items.map(item => {
                         return {
                             id: item.id,
@@ -164,6 +184,20 @@ export default {
         fetchChecklistsAndChecklistItems() { return axios.get('rt-act/all') },
         fetchActInfo() {
             return axios.get(`rt-act/getById/${this.$route.params.act}`)
+        },
+        downloadFile(file) {
+            axios({
+                url: `rt-act/files/download?filename=${file}`,
+                method: 'GET',
+                responseType: 'blob'
+            }).then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = `rt-act/files/download?filename=${file}`;
+                link.setAttribute('download', 'download');
+                document.body.appendChild(link);
+                link.click();
+            }).catch(error => console.log(error))
         }
     },
     created() {
@@ -175,9 +209,6 @@ export default {
 <style>
     .rt-act {
         width: 100%;
-    }
-    .rt-act tbody tr:nth-of-type(odd) {        
-        /* background-color: rgba(0, 0, 0, .05); */
     }
     .rt-act td, .rt-act th {
         padding: .75rem;

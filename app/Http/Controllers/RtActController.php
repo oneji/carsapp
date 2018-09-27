@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\RtAct;
 use App\Sto;
 use App\Car;
+use App\CarCard;
+use App\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RtActController extends Controller
 {
@@ -25,7 +28,37 @@ class RtActController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->company_to_type === 'inner') {
+            $company = Company::where('company_name', $request->company_to)->first();
+            $card = CarCard::find($request->car_card_id);
+            $carId = $card->car_id;
+            DB::table('car_company')->where('car_id', $card->car_id)->update([ 'company_id' => $company->id ]);
+        } else if($request->company_to_type === 'outer') {
+            $card = CarCard::find($request->car_card_id);
+            $car = Car::find($card->car_id);
+            $car->sold = 1;
+            $car->save();
+        }
+
+        $files = [];
+        if($request->hasFile('attachments')) {
+            foreach($request->attachments as $file) {
+                $fileFullName = $file->getClientOriginalName();                 
+                $fileExtension = $file->getClientOriginalExtension();
+                $fileNameToStore = uniqid().'.'.$fileExtension;
+                $path = $file->move(public_path('/uploads/rt_act_files'), $fileNameToStore);
+                
+                array_push($files, [
+                    'file' => $fileNameToStore,
+                    'name' => $fileFullName
+                ]);
+            }
+        } else {
+            $files = null;
+        }
+
         $act = new RtAct($request->all());
+        $act->files = json_encode($files, JSON_UNESCAPED_UNICODE);
         $act->save();
 
         $values = json_decode($request->values);
@@ -37,7 +70,6 @@ class RtActController extends Controller
                 ]);
             }
         }
-            
 
         return response()->json([
             'success' => true,
@@ -68,5 +100,10 @@ class RtActController extends Controller
             'car' => $car,
             'companies' => $companies
         ]);
+    }
+
+    public function downloadFile(Request $request) 
+    {
+        return response()->download(public_path('uploads/car_cover_images/1528122979.jpg'));
     }
 }

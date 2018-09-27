@@ -44,7 +44,9 @@ class CompanyController extends Controller
                     ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                     ->with(['drivers' => function($q) {
                         $q->where('active', 1)->get();
-                    }])->get(); 
+                    }])
+                    ->where('sold', 0)
+                    ->get(); 
             }, 
             'cars.card'
         ])->first();

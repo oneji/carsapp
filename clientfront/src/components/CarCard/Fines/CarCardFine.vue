@@ -77,7 +77,10 @@
                                 </v-menu>
                             </v-flex>
                             <v-flex xs12 sm12 md12 lg12>     
-                                <FileUpload @files-changed="getFineAttachments" :remove-files="newFine.removeAll" />
+                                <FileUpload 
+                                    @files-changed="getFineAttachments" 
+                                    :remove-files="newFine.removeAll" 
+                                    types="image/jpeg, image/png, image/svg+xml" />
                             </v-flex>
                         </v-layout>
                     </v-card-text>

@@ -16,7 +16,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="1">Тип акта</td>
+                                <td colspan="1"><strong>Тип акта</strong></td>
                                 <td colspan="2">
                                     <v-radio-group v-model="type" hide-details :style="{ padding: '0' }">
                                         <v-radio label="Приём" :value="0"></v-radio>
@@ -25,29 +25,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="1">От</td>
+                                <td colspan="1"><strong>От</strong></td>
                                 <td colspan="2">
                                     <v-select autocomplete label="Выберите компанию"
                                         name="company_name"
                                         v-validate="'required'" 
-                                        :error-messages="errors.collect('company_name_select')"
-                                        data-vv-name="company_name_select" data-vv-as='"Компания"'
+                                        :error-messages="errors.collect('company_from_select')"
+                                        data-vv-name="company_from_select" data-vv-as='"Компания"'
                                         v-model="companyFromSelect"
                                         :items="companies"
                                         :disabled="companyFromText.length > 0"></v-select>
                                     или
                                     <v-text-field 
                                         v-model="companyFromText" 
-                                        label="Введите компанию" 
+                                        label="Введите название компании" 
                                         hide-details
                                         v-validate="'required'" 
-                                        :error-messages="errors.collect('company_name_text')"
-                                        data-vv-name="company_name_text" data-vv-as='"Компания"'
-                                        :disabled="companyFromSelect.length > 0"></v-text-field>                                
+                                        :error-messages="errors.collect('company_from')"
+                                        data-vv-name="company_from" data-vv-as='"Компания"'
+                                        :disabled="companyFromSelect.length > 0"></v-text-field>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="1">Ответственный сотрудник</td>
+                                <td colspan="1"><strong>Ответственный сотрудник</strong></td>
                                 <td colspan="2">
                                     <v-text-field 
                                         v-model="responsibleEmployee" 
@@ -60,19 +60,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="1">Кому</td>
+                                <td colspan="1"><strong>Кому</strong></td>
                                 <td colspan="2">
+                                    <v-select autocomplete label="Выберите компанию"
+                                        name="company_name"
+                                        v-validate="'required'" 
+                                        :error-messages="errors.collect('company_to_select')"
+                                        data-vv-name="company_to_select" data-vv-as='"Компания"'
+                                        v-model="companyToSelect"
+                                        :items="companies"
+                                        :disabled="companyToText.length > 0"></v-select>
+                                    или
                                     <v-text-field 
-                                        v-model="companyTo" 
+                                        v-model="companyToText" 
                                         label="Введите название компании"
                                         v-validate="'required'" 
                                         :error-messages="errors.collect('company_to')"
                                         data-vv-name="company_to" data-vv-as='"Компания"' 
-                                        hide-details></v-text-field>
+                                        hide-details
+                                        :disabled="companyToSelect.length > 0"></v-text-field>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="1">Водитель</td>
+                                <td colspan="1"><strong>Водитель</strong></td>
                                 <td colspan="2">
                                     <p v-if="car.drivers.length > 0">
                                         <span v-for="driver in car.drivers" :key="driver.id">                                    
@@ -133,6 +143,13 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3">
+                                    <FileUpload 
+                                        @files-changed="onFileChanged" 
+                                        types="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
                                     <v-btn block color="success" :loading="loading.saveBtn" type="submit">Сохранить</v-btn>
                                 </td>
                             </tr>
@@ -148,6 +165,7 @@
 import axios from '@/axios'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
+import FileUpload from '@/components/FileUpload'
 
 export default {
     $_veeValidate: {
@@ -155,7 +173,8 @@ export default {
     },
     components: {
         Loading,
-        MoveButtons
+        MoveButtons,
+        FileUpload
     },
     data() {
         return {
@@ -166,10 +185,12 @@ export default {
             companyFromSelect: '',
             companyFromText: '',
             responsibleEmployee: '',
-            companyTo: '',
+            companyToSelect: '',
+            companyToText: '',
             driver: null,
             comments: [],
             values: [],
+            files: [],
             result: {
                 values: [],
                 comments: []
@@ -217,14 +238,23 @@ export default {
 
                         this.loading.saveBtn = true;
                         let formData = new FormData();
+                        let fileList = [];
+                        this.files.map(value => {
+                            fileList.push(value.file);
+                        });                      
 
                         formData.append('type', this.type);
                         formData.append('car_card_id', this.car.card.id);
                         formData.append('company_from', this.companyFromSelect || this.companyFromText);
                         formData.append('responsible_employee', this.responsibleEmployee);
-                        formData.append('company_to', this.companyTo);
+                        formData.append('company_to', this.companyToSelect || this.companyToText);
+                        formData.append('company_to_type', this.companyToSelect ? 'inner' : 'outer');
+                        
                         if(this.driver !== undefined) {
                             formData.append('driver_id', this.driver.id);                            
+                        }
+                        for(let i = 0; i < fileList.length; i++) {
+                            formData.append('attachments[]', fileList[i]);
                         }
 
                         let newArr = this.result.values.map((value, index) => {
@@ -250,11 +280,18 @@ export default {
                             })
                             .catch(error => console.log(error));
                     } else {
-                        console.log('[Validation] Failed!')
+                        this.$store.dispatch('showSnackbar', {
+                            color: 'warning',
+                            active: true,
+                            text: 'Пожалуйста заполните все поля.'
+                        });
                     }
                 });
 
             
+        },
+        onFileChanged(file) {
+            this.files = file;
         }
     },
     created() {
@@ -266,9 +303,6 @@ export default {
 <style>
     .rt-act {
         width: 100%;
-    }
-    .rt-act tbody tr:nth-of-type(odd) {        
-        /* background-color: rgba(0, 0, 0, .05); */
     }
     .rt-act td, .rt-act th {
         padding: .75rem;
