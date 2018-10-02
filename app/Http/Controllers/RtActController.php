@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\RtAct;
+use App\Driver;
 use App\Sto;
 use App\Car;
 use App\CarCard;
 use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Mail;
+use Dompdf\Dompdf;
 
 class RtActController extends Controller
 {
+    private $htmlToPdf = '';
     /**
      * 
      */
@@ -59,7 +63,24 @@ class RtActController extends Controller
 
         $act = new RtAct($request->all());
         $act->files = json_encode($files, JSON_UNESCAPED_UNICODE);
-        $act->save();
+        $act->save();        
+
+        $this->htmlToPdf = $request->htmlToPdf;
+            
+        $fileName = $this->generateActFile();
+
+        $driver = Driver::find($request->driver_id);
+        if($driver->email !== null) {
+            Mail::send('welcome', [], function($message) use ($driver, $fileName) {
+                $message->subject('Акт приема передачи автомобиля');
+                $message->from('sto@the55group.com');
+                $message->to($driver->email);
+                $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
+                    'as' => 'Акт приема передачи',
+                    'mime' => 'application/pdf'
+                ]);
+            });
+        }                
 
         $values = json_decode($request->values);
         for($i = 0; $i < count($values); $i++) {
@@ -73,7 +94,9 @@ class RtActController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Акт приема передачи успешно создан.'
+            'message' => 'Акт приема передачи успешно создан.',
+            'file' => $fileName,
+            'data' => $request->all()
         ]);
     }
 
@@ -91,7 +114,7 @@ class RtActController extends Controller
                         ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
                         ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment')
                         ->where('sold', 0)
-                        ->where('cars.id', $request->car_id)->with([ 'drivers' => function($q) {
+                        ->where('cars.id', $request->car_id)->with([ 'companies', 'drivers' => function($q) {
                             $q->where('active', 1)->get();
                         }])->first(); 
         $companies = $sto->companies;
@@ -105,5 +128,16 @@ class RtActController extends Controller
     public function downloadFile(Request $request) 
     {
         return response()->download(public_path('uploads/car_cover_images/1528122979.jpg'));
+    }
+
+    public function generateActFile()
+    {   
+        $fileName = uniqid().'.pdf';
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($this->htmlToPdf);
+        $dompdf->render();
+        file_put_contents(public_path('/uploads/rt_acts/'.$fileName), $dompdf->output());
+
+        return $fileName;
     }
 }

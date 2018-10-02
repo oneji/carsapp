@@ -7,10 +7,5 @@
         <title>Laravel</title>
     </head>
     <body>
-        <form action="/welcome" method="POST" enctype="multipart/form-data">
-            {{ csrf_field() }}
-            <input type="file" name="fucking_image" />
-            <button type="submit">Отправить</button>
-        </form>
     </body>
 </html>

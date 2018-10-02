@@ -65,21 +65,18 @@
                         </tr>
                     </tbody>
                     <tfoot>
-                        <tr>
+                        <tr v-if="files.length > 0">
                             <th colspan="3" class="rt-act-checklist-title">Файлы</th>
                         </tr>
-                        <tr >
+                        <tr v-if="files.length > 0">
                             <td colspan="3">
-                                <MyLabel 
-                                    v-for="file in files" 
-                                    :key="file.file" 
-                                    :text="file.name" 
-                                    type="primary"
-                                    :style="{ marginRight: '10px' }" />
+                                <Lightbox
+                                    id="rt_act_files"
+                                    :images="files"
+                                    :image_class="'rt_act_file'"
+                                    :album_class="'my-album-class'"
+                                    :options="{ history: false }" />
                             </td>
-                            <!-- <td colspan="1">
-                                <v-btn class="my-0 mx-0" small color="success" @click="downloadFile(file.file)">Скачать</v-btn>
-                            </td> -->
                         </tr>
                         <tr>
                             <td colspan="3">
@@ -95,18 +92,22 @@
 
 <script>
 import axios from '@/axios'
+import assetsURL from '@/components/mixins/assets-url'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
 import MyLabel from '@/components/Label'
+import Lightbox from 'vue-simple-lightbox'
 
 export default {
+    mixins: [assetsURL],
     $_veeValidate: {
         validator: 'new'
     },
     components: {
         Loading,
         MoveButtons,
-        MyLabel
+        MyLabel,
+        Lightbox
     },
     data() {
         return {
@@ -143,7 +144,15 @@ export default {
                     const { act } = values[1].data;
                     // Check lists
                     this.act = act;
-                    this.files = JSON.parse(act.files);
+                    let files = JSON.parse(act.files) || [];
+
+                    files.map(file => {
+                        this.files.push({
+                            src: this.assetsURL + '/uploads/rt_act_files/' + file.file,
+                            title: file.name
+                        });
+                    });
+
                     this.actChecklists = act.checklist_items.map(item => {
                         return {
                             id: item.id,
@@ -229,5 +238,14 @@ export default {
         text-transform: uppercase;
         font-weight: bold;
         text-align: center;
+    }
+    .rt_act_file {
+        margin-right: 5px;
+        border: 1px solid #ccc !important;
+        padding: 3px;
+        width: 75px !important;
+        height: 70px !important;
+        border-radius: 100%;
+        float: none !important;
     }
 </style>
