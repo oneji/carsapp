@@ -61,27 +61,31 @@ class RtActController extends Controller
             $files = null;
         }
         $this->htmlToPdf = $request->htmlToPdf;
-        $fileName = $this->generateActFile();
+        return response()->json([
+            'html' => $request->htmlToPdf
+        ]);
+
+        // $fileName = $this->generateActFile();
 
         $act = new RtAct($request->all());
         $act->files = json_encode($files, JSON_UNESCAPED_UNICODE);
-        $act->rt_act_file = $fileName;
+        // $act->rt_act_file = $fileName;
         $act->save();
         
-        $driver = Driver::find($request->driver_id);
-        if($driver !== null) {
-            if($driver->email !== null) {
-                Mail::send('welcome', [], function($message) use ($driver, $fileName) {
-                    $message->subject('Акт приема передачи автомобиля');
-                    $message->from('sto@the55group.com');
-                    $message->to($driver->email);
-                    $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
-                        'as' => 'Акт приема передачи',
-                        'mime' => 'application/pdf'
-                    ]);
-                });
-            }
-        }                        
+        // $driver = Driver::find($request->driver_id);
+        // if($driver !== null) {
+        //     if($driver->email !== null) {
+        //         Mail::send('welcome', [], function($message) use ($driver, $fileName) {
+        //             $message->subject('Акт приема передачи автомобиля');
+        //             $message->from('sto@the55group.com');
+        //             $message->to($driver->email);
+        //             $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
+        //                 'as' => 'Акт приема передачи',
+        //                 'mime' => 'application/pdf'
+        //             ]);
+        //         });
+        //     }
+        // }                        
 
         $values = json_decode($request->values);
         for($i = 0; $i < count($values); $i++) {
