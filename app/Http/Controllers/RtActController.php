@@ -61,9 +61,6 @@ class RtActController extends Controller
             $files = null;
         }
         $this->htmlToPdf = $request->htmlToPdf;
-        return response()->json([
-            'html' => $request->htmlToPdf
-        ]);
 
         // $fileName = $this->generateActFile();
 
@@ -99,9 +96,7 @@ class RtActController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Акт приема передачи успешно создан.',
-            'file' => $fileName,
-            'data' => $request->all()
+            'message' => 'Акт приема передачи успешно создан.'
         ]);
     }
 
