@@ -142,7 +142,7 @@
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <v-btn block color="success" :loading="loading.saveBtn" type="submit">Сохранить</v-btn>
+                                    <v-btn block color="success" :loading="loading.saveBtn" type="submit">Сохранить и отправить на почту</v-btn>
                                 </td>
                             </tr>
                         </tfoot>
