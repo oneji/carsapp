@@ -69,17 +69,19 @@ class RtActController extends Controller
         $act->save();
         
         $driver = Driver::find($request->driver_id);
-        if($driver->email !== null) {
-            Mail::send('welcome', [], function($message) use ($driver, $fileName) {
-                $message->subject('Акт приема передачи автомобиля');
-                $message->from('sto@the55group.com');
-                $message->to($driver->email);
-                $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
-                    'as' => 'Акт приема передачи',
-                    'mime' => 'application/pdf'
-                ]);
-            });
-        }                
+        if($driver !== null) {
+            if($driver->email !== null) {
+                Mail::send('welcome', [], function($message) use ($driver, $fileName) {
+                    $message->subject('Акт приема передачи автомобиля');
+                    $message->from('sto@the55group.com');
+                    $message->to($driver->email);
+                    $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
+                        'as' => 'Акт приема передачи',
+                        'mime' => 'application/pdf'
+                    ]);
+                });
+            }
+        }                        
 
         $values = json_decode($request->values);
         for($i = 0; $i < count($values); $i++) {
