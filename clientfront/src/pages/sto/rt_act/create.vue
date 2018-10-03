@@ -405,6 +405,8 @@ export default {
                                 </html>`
                             );
 
+                            console.log(this.$refs.htmlForm.innerHTML);
+
                             axios.post('rt-act', formData)
                             .then(response => {
                                 console.log(response.data);
