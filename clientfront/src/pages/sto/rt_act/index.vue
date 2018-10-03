@@ -5,6 +5,13 @@
         </v-layout>
 
         <v-layout v-if="!loading.page" row wrap>
+            <v-flex xs12 sm12 md12 lg12>
+                <v-btn color="success" @click.native="$router.back()">Вернуться назад</v-btn>
+                <a v-if="act.rt_act_file !== null" class="btn success" :href="`${assetsURL}/api/rt-act/files/download?id=${$route.params.act}`" download="download">
+                    <div class="btn__content">Скачать PDF</div>
+                </a>
+            </v-flex>
+            
             <v-flex xs12 sm12 md12 lg12>   
                 <table class="rt-act" :style="{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid #e6e6e6' }">
                     <thead>
@@ -78,11 +85,6 @@
                                     :options="{ history: false }" />
                             </td>
                         </tr>
-                        <tr>
-                            <td colspan="3">
-                                <v-btn block color="success" @click.native="$router.back()">Вернуться назад</v-btn>
-                            </td>
-                        </tr>
                     </tfoot>
                 </table>
             </v-flex>
@@ -111,7 +113,9 @@ export default {
     },
     data() {
         return {
-            act: {},
+            act: {
+                rt_act_file: null
+            },
             actChecklists: [],
             type: 0,
             companyFromSelect: '',
@@ -196,13 +200,13 @@ export default {
         },
         downloadFile(file) {
             axios({
-                url: `rt-act/files/download?filename=${file}`,
+                url: `rt-act/files/download?id=${this.$route.params.act}`,
                 method: 'GET',
                 responseType: 'blob'
             }).then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
-                link.href = `rt-act/files/download?filename=${file}`;
+                link.href = `${this.assetsURL}/rt-act/files/download?id=${this.$route.params.act}`;
                 link.setAttribute('download', 'download');
                 document.body.appendChild(link);
                 link.click();

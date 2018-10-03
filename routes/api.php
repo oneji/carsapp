@@ -25,6 +25,7 @@ Route::post('auth/login', 'AuthController@login');
 Route::post('auth/register', 'AuthController@register');
 Route::get('/token/refresh', 'AuthController@refreshToken');
 Route::get('/token/check', 'AuthController@checkToken');
+Route::get('rt-act/files/download', 'RtActController@downloadFile');
 
 
 Route::group(['middleware' => ['jwt.auth']], function() {
@@ -46,7 +47,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('rt-act/getById/{act}', 'RtActController@getById');
     Route::post('rt-act', 'RtActController@store');
     Route::get('rt-act/info', 'RtActController@getFullInfo');
-    Route::get('rt-act/files/download', 'RtActController@downloadFile');
+    
     // RT act checklists
     Route::get('rt-act/checklists', 'RtActChecklistController@get');
     Route::get('rt-act/all', 'RtActChecklistController@getChecklistsAndChecklistItems');

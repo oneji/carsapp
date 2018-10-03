@@ -60,15 +60,14 @@ class RtActController extends Controller
         } else {
             $files = null;
         }
+        $this->htmlToPdf = $request->htmlToPdf;
+        $fileName = $this->generateActFile();
 
         $act = new RtAct($request->all());
         $act->files = json_encode($files, JSON_UNESCAPED_UNICODE);
-        $act->save();        
-
-        $this->htmlToPdf = $request->htmlToPdf;
-            
-        $fileName = $this->generateActFile();
-
+        $act->rt_act_file = $fileName;
+        $act->save();
+        
         $driver = Driver::find($request->driver_id);
         if($driver->email !== null) {
             Mail::send('welcome', [], function($message) use ($driver, $fileName) {
@@ -127,7 +126,13 @@ class RtActController extends Controller
 
     public function downloadFile(Request $request) 
     {
-        return response()->download(public_path('uploads/car_cover_images/1528122979.jpg'));
+        $act = RtAct::find($request->id);
+        $file = public_path('/uploads/rt_acts/'.$act->rt_act_file);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+        ];
+
+        return response()->download($file, $act->rt_act_file, $headers);
     }
 
     public function generateActFile()
