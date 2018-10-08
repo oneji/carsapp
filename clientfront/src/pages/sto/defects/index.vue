@@ -25,8 +25,8 @@
                     </v-card-title>
                     <v-data-table :loading="types.loading.table" :headers="types.headers" :items="types.items" :search="types.search">
                         <template slot="items" slot-scope="props">
-                            <td>{{ props.item.defect_type_name }}</td>
-                            <td class="justify-center">
+                            <td :class="{ 'active-line': types.active === props.item.id }">{{ props.item.defect_type_name }}</td>
+                            <td :class="{ 'active-line': types.active === props.item.id, 'justify-center': true }">
                                 <v-btn icon class="mx-0" @click="showEditTypeDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
@@ -64,8 +64,8 @@
                     </v-card-title>
                     <v-data-table :loading="defects.loading.table" :headers="defects.headers" :items="defects.items" :search="defects.search">
                         <template slot="items" slot-scope="props">
-                            <td>{{ props.item.defect_name }}</td>
-                            <td class="justify-center">
+                            <td :class="{ 'active-line': defects.active === props.item.id }">{{ props.item.defect_name }}</td>
+                            <td :class="{ 'active-line': defects.active === props.item.id, 'justify-content': true }">
                                 <v-btn icon class="mx-0" @click="showEditDefectDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
@@ -359,7 +359,8 @@ export default {
                 search: '',
                 loading: {
                     table: false
-                }
+                },
+                active: null
             },
             defects: {
                 items: [],
@@ -372,7 +373,8 @@ export default {
                 search: '',
                 loading: {
                     table: false
-                }
+                },
+                active: null
             },
             options: {
                 items: [],
@@ -439,16 +441,20 @@ export default {
     },
     methods: {
         showDefects(type) {
+            this.options.items = [];
+            this.showDefectOptionsTrigger = false;
             this.defects.items = [...type.defects];
             this.showDefectsTrigger = true;
+            this.types.active = type.id;
         },
 
         showDefectOptions(defect) {
             this.options.items = [...defect.defect_options];
             this.showDefectOptionsTrigger = true;
+            this.defects.active = defect.id;
         },
 
-        addType() {            
+        addType() {
             this.$validator.validateAll('create-defect-type-form')
                 .then(result => {
                     if(result) {
@@ -658,5 +664,7 @@ export default {
 </script>
 
 <style>
-
+    .active-line {
+        background-color: #eee;
+    }
 </style>

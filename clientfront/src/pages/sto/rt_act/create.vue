@@ -73,6 +73,14 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td colspan="1"><strong>Марка автомобиля</strong></td>
+                                <td colspan="2">{{ car.brand_name + ' ' + car.model_name }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Номер автомобиля</strong></td>
+                                <td colspan="2">{{ car.number }}</td>
+                            </tr>
+                            <tr>
                                 <td colspan="1"><strong>Водитель</strong></td>
                                 <td colspan="2">
                                     <p v-if="car.drivers.length > 0">
@@ -82,7 +90,11 @@
                                     </p>
                                     <p v-else>Водителя нет</p>
                                 </td>
-                            </tr>                        
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Акт создал</strong></td>
+                                <td colspan="2">{{ user.fullname }}</td>
+                            </tr>
                         </tbody>
                     </table>
                     <!-- RT act checklists -->
@@ -106,7 +118,7 @@
                                                 <td colspan="1">{{ item.item_name }}</td>
                                                 <td>
                                                     <v-radio-group 
-                                                        v-model="result.values[item.id]"
+                                                        v-model="values[item.id].status"
                                                         :error-messages="errors.collect(`radio_${item.id}`)"
                                                         hide-details
                                                         :style="{ padding: '0' }"
@@ -117,7 +129,7 @@
                                                 </td>
                                                 <td>
                                                     <v-text-field
-                                                        v-model="result.comments[item.id]"
+                                                        v-model="values[item.id].comment"
                                                         label="Введите комментарий"
                                                         multi-line 
                                                         clearable
@@ -156,7 +168,7 @@
                 <table class="rt-act">
                     <thead>
                         <tr class="rt-act-title">
-                            <th colspan="3" :style="{ padding: 0 }"><h2>Акт приёма передачи автомобиля</h2></th>
+                            <th colspan="3"><h2>Акт приёма передачи автомобиля</h2></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -177,37 +189,49 @@
                             <td colspan="2">{{ forPDF.companyTo }}</td>
                         </tr>
                         <tr>
+                            <td colspan="1"><strong>Марка автомобиля</strong></td>
+                            <td colspan="2">{{ forPDF.car }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Номер автомобиля</strong></td>
+                            <td colspan="2">{{ forPDF.carNumber }}</td>
+                        </tr>
+                        <tr>
                             <td colspan="1"><strong>Водитель</strong></td>
                             <td colspan="2">{{ forPDF.driver }}</td>
-                        </tr>                        
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Акт создал</strong></td>
+                            <td colspan="2">{{ forPDF.createdBy }}</td>
+                        </tr>
                     </tbody>
                 </table>
 
                 <table class="rt-act">
                     <tbody>
-                        <tr v-for="(item, index) in forPDF.filteredChecklists" :key="item.index">
-                            <td colspan="3" :style="{ padding: '0px', border: '0px' }">
-                                <table class="rt-act">
-                                    <thead v-if="index === 0">
-                                        <tr class="rt-act-title" >
-                                            <th>Наименование части осмотра</th>
-                                            <th>Чек лист</th>
-                                            <th>Комментарии</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-if="item.heading">
-                                            <th class="rt-act-checklist-title" colspan="3">{{ item.checklist_name }}</th>
-                                        </tr>
-                                        <tr v-else>
-                                            <td colspan="1"><strong>{{ item.item_name }}</strong></td>
-                                            <td>{{ item.status }}</td>
-                                            <td>{{ item.comment }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
+                        <template 
+                            v-for="(item, index) in forPDF.filteredChecklists"
+                            :class="{ 'rt-act-title': index === 0 }"
+                        >
+                            <tr class="rt-act-title" :key="index" v-if="index === 0">
+                                <th>Наименование части осмотра</th>
+                                <th>Чек лист</th>
+                                <th>Комментарии</th>
+                            </tr>
+                            <tr v-if="item.heading" :key="item.uuid">
+                                <th class="rt-act-checklist-title" colspan="3">{{ item.checklist_name }}</th>                            
+                            </tr>
+                            <tr :key="item.uuid" v-else>
+                                <td colspan="1"><strong>{{ item.item_name }}</strong></td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.comment }}</td>
+                            </tr>
+                            <!-- <tr :key="item.uuid" v-else>
+                                <td colspan="1"><strong>{{ item.item_name }}</strong></td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.comment }}</td>
+                            </tr> -->
+                        </template>
                     </tbody>
                 </table>
             </v-flex>
@@ -220,6 +244,7 @@ import axios from '@/axios'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
 import FileUpload from '@/components/FileUpload'
+import UUID from 'uuid-js'
 
 export default {
     $_veeValidate: {
@@ -229,6 +254,11 @@ export default {
         Loading,
         MoveButtons,
         FileUpload
+    },
+    computed: {
+        user() {
+            return JSON.parse(localStorage.getItem('user'));
+        }
     },
     data() {
         return {
@@ -245,10 +275,7 @@ export default {
             comments: [],
             values: [],
             files: [],
-            result: {
-                values: [],
-                comments: []
-            },
+            values: [],
             companies: [],
             checklists: [],
             loading: {
@@ -260,7 +287,10 @@ export default {
                 companyFrom: '',
                 responsibleEmployee: '',
                 companyTo: '',
+                car: '',
+                carNumber: '',
                 driver: null,
+                createdBy: '',
                 checklists: [],
                 filteredChecklists: []
             }
@@ -277,10 +307,15 @@ export default {
                     // Check lists
                     this.forPDF.checklists = checklists;
                     this.checklists = checklists;
+                    this.values = [];
                     for(let i = 0; i < checklists.length; i++) {
                         for(let j = 0; j < checklists[i].checklist_items.length; j++) {
                             let item = checklists[i].checklist_items[j];
-                            this.result.values[item.id] = null;
+                            this.values[item.id] = {
+                                id: item.id,
+                                status: null,
+                                comment: ''
+                            };
                         }
                     }
                     
@@ -301,8 +336,8 @@ export default {
                 .then(success => {
                     // Validate radio buttons
                     let radiosValidated = true;
-                    for(let i = 0; i < this.result.values.length; i++) {
-                        let val = this.result.values[i];
+                    for(let i = 0; i < this.values.length; i++) {
+                        let val = this.values[i];
 
                         if(val === null) {
                             radiosValidated = false;
@@ -326,7 +361,7 @@ export default {
                         formData.append('responsible_employee', this.responsibleEmployee);
                         formData.append('company_to', this.companyToSelect || this.companyToText);
                         formData.append('company_to_type', this.companyToSelect ? 'inner' : 'outer');
-                        // formData.append('htmlToPdf', this.$refs.htmlForm.innerHTML);
+                        formData.append('created_by', this.user.id);
                         
                         if(this.driver !== undefined) {
                             formData.append('driver_id', this.driver.id);                            
@@ -335,34 +370,31 @@ export default {
                             formData.append('attachments[]', fileList[i]);
                         }
 
-                        let newArr = this.result.values.map((value, index) => {
-                            return {
-                                id: index,
-                                status: value,
-                                comment: '' 
-                            }
-                        });
-                        this.result.comments.map((comment, index) => newArr[index].comment = comment);
-
                         // Generating data for PDF file
+                        this.forPDF.filteredChecklists = [];
                         this.forPDF.type = this.type === 0 ? 'Приём' : 'Передача';
                         this.forPDF.companyFrom = this.companyFromText;
                         this.forPDF.responsibleEmployee = this.responsibleEmployee;
                         this.forPDF.companyTo = this.companyToSelect || this.companyToText;
+                        this.forPDF.car = this.car.brand_name + ' ' + this.car.model_name;
+                        this.forPDF.carNumber = this.car.number;
                         this.forPDF.driver = this.driver !== undefined ? this.driver.fullname : 'Водителя нет.'
+                        this.forPDF.createdBy = this.user.fullname;
                         for(let i = 0; i < this.forPDF.checklists.length; i++) {
                             let checklist = this.forPDF.checklists[i];
                             checklist.heading = true;
+                            checklist.uuid = UUID.create().toString();
                             this.forPDF.filteredChecklists.push(checklist);
                             for(let j = 0; j < checklist.checklist_items.length; j++) {
                                 let checklistItem = checklist.checklist_items[j];
                                 checklistItem.heading = false;
                                 this.forPDF.filteredChecklists.push(checklistItem);
-                                for(let k = 0; k < newArr.length; k++) {
-                                    if(newArr[k]) {
-                                        if(newArr[k].id === checklistItem.id) {
-                                            checklistItem.status = newArr[k].status === 0 ? 'Пройден' : 'Не пройден';
-                                            checklistItem.comment = newArr[k].comment;
+                                for(let k = 0; k < this.values.length; k++) {
+                                    if(this.values[k]) {
+                                        if(this.values[k].id === checklistItem.id) {
+                                            checklistItem.status = this.values[k].status === 0 ? 'Пройден' : 'Не пройден';
+                                            checklistItem.comment = this.values[k].comment;
+                                            checklistItem.uuid = UUID.create().toString();
                                         }
                                     }                                    
                                 }
@@ -370,7 +402,7 @@ export default {
                         }
 
                         this.$nextTick(() => {
-                            formData.append('values', JSON.stringify(newArr));
+                            formData.append('values', JSON.stringify(this.values));
                             formData.append('htmlToPdf', 
                                 `<html>
                                     <head>
@@ -407,7 +439,6 @@ export default {
 
                             axios.post('rt-act', formData)
                             .then(response => {
-                                console.log(response.data);
                                 this.loading.saveBtn = false;
 
                                 this.$store.dispatch('showSnackbar', {

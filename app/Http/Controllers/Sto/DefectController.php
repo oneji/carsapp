@@ -21,7 +21,7 @@ class DefectController extends Controller
     public function getOptions($sto_slug)
     {
         $sto = Sto::where('slug', $sto_slug)->first();
-        $options = DefectOption::where('sto_id', $sto->id)->get();
+        $options = DefectOption::all();
 
         return response()->json($options);
     }
@@ -35,9 +35,7 @@ class DefectController extends Controller
      */
     public function getTypes($sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $types = DefectType::all();
-
         return response()->json($types);
     }
 
@@ -51,7 +49,7 @@ class DefectController extends Controller
     public function getFullInfo($sto_slug)
     {
         $sto = Sto::where('slug', $sto_slug)->first();
-        $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
+        $defect_info = DefectType::with('defects.defect_options')->get();
 
         return response()->json([
             'success' => true,
@@ -69,7 +67,6 @@ class DefectController extends Controller
      */
     public function storeOption(Request $request, $sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $option = new DefectOption();
         $option->defect_option_name = $request->defect_option_name;
         $option->defect_id = $request->defect_id;
@@ -92,10 +89,8 @@ class DefectController extends Controller
      */
     public function storeType(Request $request, $sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $type = new DefectType();
         $type->defect_type_name = $request->defect_type_name;
-        $type->sto_id = $sto->id;
         $type->save();
 
         return response()->json([
@@ -107,9 +102,7 @@ class DefectController extends Controller
     
     public function getAll($sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first(); 
-
-        $allDefects = DefectType::where('sto_id', $sto->id)->with([
+        $allDefects = DefectType::with([
             'defects' => function($query) {
                 $query->with('defect_options')->get();
             }
@@ -155,7 +148,6 @@ class DefectController extends Controller
      */
     public function updateType(Request $request, $sto_slug, $id) 
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $defectType = DefectType::find($id);
         $defectType->defect_type_name = $request->defect_type_name;
         $defectType->save();
@@ -176,7 +168,6 @@ class DefectController extends Controller
      */
     public function updateDefect(Request $request, $sto_slug, $id) 
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $defect = Defect::find($id);
         $defect->defect_name = $request->defect_name;
         $defect->defect_type_id = $request->defect_type_id;
@@ -198,7 +189,6 @@ class DefectController extends Controller
      */
     public function updateOption(Request $request, $sto_slug, $id) 
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $defectOption = DefectOption::find($id);
         $defectOption->defect_option_name = $request->defect_option_name;
         $defectOption->defect_id = $request->defect_id;

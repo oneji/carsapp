@@ -75,7 +75,7 @@ class CarCardController extends Controller
                             $q->where('active', 1)->get();
                         }])->first(); 
                         
-        $defect_info = DefectType::where('sto_id', $sto->id)->with('defects.defect_options')->get();
+        $defect_info = DefectType::with('defects.defect_options')->get();
         $equipment = EquipmentType::all();
 
         return response()->json([

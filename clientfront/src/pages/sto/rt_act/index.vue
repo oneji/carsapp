@@ -37,11 +37,31 @@
                             <td colspan="2">{{ act.company_to }}</td>
                         </tr>
                         <tr>
+                            <td colspan="1"><strong>Марка автомобиля</strong></td>
+                            <td colspan="2">{{ car.brand_name + ' ' + car.model_name }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Номер автомобиля</strong></td>
+                            <td colspan="2">{{ car.number }}</td>
+                        </tr>
+                        <tr>
                             <td colspan="1"><strong>Водитель</strong></td>
                             <td colspan="2">                                    
                                 <p>{{ act.driver_id === null ? 'Водителя нет' : act.driver_name }}</p>
                             </td>
                         </tr>                        
+                        <tr>
+                            <td colspan="1"><strong>Акт создал</strong></td>
+                            <td colspan="2">                                    
+                                <p>{{ act.created_by_name }}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Дата создания акта</strong></td>
+                            <td colspan="2">                                    
+                                <p>{{ act.created_at | moment("MMMM D, YYYY") }}</p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <!-- RT act checklists -->
@@ -116,7 +136,7 @@ export default {
             act: {
                 rt_act_file: null
             },
-            actChecklists: [],
+            car: {},
             type: 0,
             companyFromSelect: '',
             companyFromText: '',
@@ -145,51 +165,51 @@ export default {
             Promise.all([this.fetchChecklistsAndChecklistItems(), this.fetchActInfo()])
                 .then(values => {
                     const { checklists } =  values[0].data;
-                    const { act } = values[1].data;
+                    const { act, car } = values[1].data;
                     // Check lists
                     this.act = act;
+                    this.car = car;
                     let files = JSON.parse(act.files) || [];
 
-                    files.map(file => {
-                        this.files.push({
-                            src: this.assetsURL + '/uploads/rt_act_files/' + file.file,
-                            title: file.name
-                        });
-                    });
-
-                    this.actChecklists = act.checklist_items.map(item => {
-                        return {
-                            id: item.id,
-                            item_name: item.item_name,
-                            status: item.pivot.status,
-                            comment: item.pivot.comment,
-                            rt_act_checklist: item.rt_act_checklist
-                        }
-                    });
-
-                    this.checklists = this.actChecklists.map(item => {
+                    if(files.length > 0) {
+                        for(let i = 0; i < files.length; i++) {
+                            this.files.push({
+                                src: this.assetsURL + '/uploads/rt_act_files/' + files[i].file,
+                                title: files[i].name
+                            });
+                        }                        
+                    }
+                    
+                    this.checklists = act.checklist_items.map(item => {
                         return {
                             checklist_name: item.rt_act_checklist.checklist_name,
                             id: item.rt_act_checklist.id,
                             checklist_items: []
                         }
                     });
-                    
+
                     for(let i = 0; i < this.checklists.length; i++) {
                         for(let j = 1; j < this.checklists.length; j++) {
-                            if(this.checklists[i].id === this.checklists[j].id) {
+                            if(this.checklists[i].id === this.checklists[j].id && i !== j) {
                                 this.checklists.splice(j, 1);
                             }
                         }
                     }
 
-                    this.checklists.map(list => {
-                        this.actChecklists.map(item => {
+                    for(let i = 0; i < this.checklists.length; i++) {
+                        let list = this.checklists[i];
+                        for(let j = 0; j < act.checklist_items.length; j++) {
+                            let item = act.checklist_items[j];
                             if(item.rt_act_checklist.id === list.id) {
-                                list.checklist_items.push(item);
+                                list.checklist_items.push({
+                                    id: item.id,
+                                    item_name: item.item_name,
+                                    status: item.pivot.status,
+                                    comment: item.pivot.comment,
+                                });
                             }
-                        });
-                    });
+                        }
+                    }
 
                     this.loading.page = false;
                 });

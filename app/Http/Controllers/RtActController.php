@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mail;
 use Dompdf\Dompdf;
+use Spipu\Html2Pdf\Html2Pdf;
 
 class RtActController extends Controller
 {
@@ -21,10 +22,23 @@ class RtActController extends Controller
      */
     public function getById($id)
     {
-        $act = RtAct::where('id', $id)->with('checklist_items.rt_act_checklist')->first();
+        $act = RtAct::select('rt_acts.*', 'drivers.fullname as driver_name', 'users.fullname as created_by_name')
+            ->join('drivers', 'rt_acts.driver_id', '=', 'drivers.id')
+            ->join('users', 'rt_acts.created_by', '=', 'users.id')
+            ->where('rt_acts.id', $id)->with('checklist_items.rt_act_checklist')->first();
+        $card = CarCard::where('id', $act->car_card_id)->with(['car' => function($query) {
+            $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'engine_type_name', 'transmission_name')
+                ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+                ->get();
+        }])->first();
 
         return response()->json([
-            'act' => $act
+            'act' => $act,
+            'car' => $card->car
         ]);
     }
     /**
@@ -62,27 +76,27 @@ class RtActController extends Controller
         }
         $this->htmlToPdf = $request->htmlToPdf;
 
-        // $fileName = $this->generateActFile();
+        $fileName = $this->generateActFile();
 
         $act = new RtAct($request->all());
         $act->files = json_encode($files, JSON_UNESCAPED_UNICODE);
-        // $act->rt_act_file = $fileName;
+        $act->rt_act_file = $fileName;
         $act->save();
         
-        // $driver = Driver::find($request->driver_id);
-        // if($driver !== null) {
-        //     if($driver->email !== null) {
-        //         Mail::send('welcome', [], function($message) use ($driver, $fileName) {
-        //             $message->subject('Акт приема передачи автомобиля');
-        //             $message->from('sto@the55group.com');
-        //             $message->to($driver->email);
-        //             $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
-        //                 'as' => 'Акт приема передачи',
-        //                 'mime' => 'application/pdf'
-        //             ]);
-        //         });
-        //     }
-        // }                        
+        $driver = Driver::find($request->driver_id);
+        if($driver !== null) {
+            if($driver->email !== null) {
+                Mail::send('welcome', [], function($message) use ($driver, $fileName) {
+                    $message->subject('Акт приема передачи автомобиля');
+                    $message->from('sto@the55group.com');
+                    $message->to($driver->email);
+                    $message->attach(public_path('/uploads/rt_acts/'.$fileName), [
+                        'as' => 'Акт приема передачи',
+                        'mime' => 'application/pdf'
+                    ]);
+                });
+            }
+        }                        
 
         $values = json_decode($request->values);
         for($i = 0; $i < count($values); $i++) {
@@ -138,11 +152,17 @@ class RtActController extends Controller
 
     public function generateActFile()
     {   
+        /* Mpdf */
         $fileName = uniqid().'.pdf';
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($this->htmlToPdf);
-        $dompdf->render();
-        file_put_contents(public_path('/uploads/rt_acts/'.$fileName), $dompdf->output());
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->WriteHTML($this->htmlToPdf);
+        $mpdf->Output(public_path('/uploads/rt_acts/'.$fileName), \Mpdf\Output\Destination::FILE);
+        
+        /* Dompdf */
+        // $dompdf = new Dompdf();
+        // $dompdf->loadHtml($this->htmlToPdf);
+        // $dompdf->render();
+        // file_put_contents(public_path('/uploads/rt_acts/'.$fileName), $dompdf->output());
 
         return $fileName;
     }

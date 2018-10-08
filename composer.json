@@ -12,8 +12,10 @@
         "itsgoingd/clockwork": "^2.2",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
+        "mpdf/mpdf": "^7.1",
         "phpoffice/phpword": "^0.15.0",
         "santigarcor/laratrust": "5.0.*",
+        "spipu/html2pdf": "^5.2",
         "tymon/jwt-auth": "1.0.0-rc.1"
     },
     "require-dev": {

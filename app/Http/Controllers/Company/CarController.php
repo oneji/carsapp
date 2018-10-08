@@ -8,6 +8,8 @@ use App\CarAttachment;
 use App\Company;
 use App\Driver;
 use App\Fine;
+use App\DefectType;
+use App\EquipmentType;
 use App\FineAttachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -44,14 +46,19 @@ class CarController extends Controller
                     ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                     ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                     ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                    ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments')
+                    ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments', 'card.rt_acts.checklist_items')
                     ->where('sold', 0)
                     ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
                         $q->where('active', 1)->get();
                     }])->first(); 
-
+        
+        $defect_info = DefectType::with('defects.defect_options')->get();
+        $equipment = EquipmentType::all();
+                    
         return response()->json([
-            'car' => $car
+            'car' => $car,
+            'defects_info' => $defect_info,
+            'equipment' => $equipment
         ]);
     }
 

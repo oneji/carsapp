@@ -36,7 +36,6 @@
 
                     <DefectActList 
                         :items="defectActs"
-                        :show-defect="false"
                         class="mt-3" />
                 </v-flex>            
             </transition>
@@ -45,6 +44,8 @@
             <transition name="slide-x-transition" mode="out-in"> 
                 <v-flex xs12 sm12 md6 lg4 v-if="!loading.pageLoad">
                     <Comments :items="comments" @add="onCommentAdded" />
+
+                    <RTActsList :items="car.card.rt_acts" />
                 </v-flex>
             </transition>
         </v-layout>
@@ -106,6 +107,7 @@ import Comments from '@/components/CarCard/Comments/CarCardComments'
 import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import Fines from '@/components/CarCard/Fines/CarCardFine'
 import ConsumablesList from '@/components/CarCard/Consumables/ConsumablesList'
+import RTActsList from '@/components/CarCard/ReceiveTransferAct/ReceiveTransferActList'
 
 export default {
     $_veeValidate: {
@@ -122,7 +124,8 @@ export default {
         Comments, 
         Attachments, 
         Fines,
-        ConsumablesList
+        ConsumablesList,
+        RTActsList
     },
     data() {
         return {
@@ -253,12 +256,17 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
+                    console.log(response.data);
                     this.car = response.data.car;
+                    // Vuex actions
                     this.$store.dispatch('setCar', response.data.car);
                     this.$store.dispatch('setDefectTypes', response.data.defects_info);
+                    this.$store.dispatch('setEquipment', response.data.equipment);
+                    
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
                     this.fines = this.car.card.fines;
+                    this.equipment = response.data.equipment;
                     this.defectActs =  this.car.card.defect_acts;
 
                     this.attachments.map(file => {
