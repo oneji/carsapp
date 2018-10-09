@@ -23,6 +23,14 @@ instance.interceptors.response.use(function(response) {
         store.dispatch('resetUser');
         router.push('/login');
     }
+
+    if(error.response.status === 500) {
+        store.dispatch('showSnackbar', {
+            color: 'error',
+            active: true,
+            text: 'Неизвестная ошибка на сервере.'
+        });
+    }
 });
 
 export default instance

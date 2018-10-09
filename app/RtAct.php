@@ -12,7 +12,13 @@ class RtAct extends Model
      * @var array
      */
     protected $fillable = [
-        'type', 'car_card_id', 'company_from', 'responsible_employee', 'company_to', 'driver_id', 'created_by'
+        'type', 
+        'car_card_id', 
+        'company_from', 
+        'responsible_employee', 
+        'company_to', 
+        'driver_id', 
+        'created_by'
     ];
 
     /**

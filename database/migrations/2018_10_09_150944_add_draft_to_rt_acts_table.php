@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class DropStoIdFromDefectTypesTable extends Migration
+class AddDraftToRtActsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class DropStoIdFromDefectTypesTable extends Migration
      */
     public function up()
     {
-        Schema::table('defect_types', function(Blueprint $table) {
-            $table->dropColumn('sto_id');
+        Schema::table('rt_acts', function(Blueprint $table) {
+            $table->integer('draft')->default(0)->after('created_by');
         });
     }
 
@@ -25,9 +25,8 @@ class DropStoIdFromDefectTypesTable extends Migration
      */
     public function down()
     {
-        Schema::table('defect_types', function(Blueprint $table) {
-            $table->integer('sto_id')->unsigned()->nullable();
-            $table->foreign('sto_id')->references('id')->on('stos');
+        Schema::table('rt_acts', function(Blueprint $table) {
+            $table->dropColumn('draft');
         });
     }
 }

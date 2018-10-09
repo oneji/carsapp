@@ -40,6 +40,7 @@ import StoRepairRequests        from '@/pages/sto/requests/repair'
 import StoRTActIndex            from '@/pages/sto/rt_act/index'
 import StoRTAct                 from '@/pages/sto/rt_act/crud'
 import StoCreateRTAct           from '@/pages/sto/rt_act/create'
+import StoEditRTAct           from '@/pages/sto/rt_act/edit'
 // Error pages
 import NotFound                 from '@/pages/errors/404'
 import NoAccess                 from '@/pages/errors/403'
@@ -123,6 +124,7 @@ const routes = [
             { path: 'rt-act/crud', name: 'StoRTAct', component: StoRTAct, meta: { requiresAuth: true } },
             { path: 'rt-act/:act', name: 'StoRTActIndex', component: StoRTActIndex, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card/rt-act/create', name: 'StoCreateRTAct', component: StoCreateRTAct, meta: { requiresAuth: true } },
+            { path: 'companies/:company/cars/:car/card/rt-act/:act/edit', name: 'StoEditRTAct', component: StoEditRTAct, meta: { requiresAuth: true } },
         ]
     }
 ]

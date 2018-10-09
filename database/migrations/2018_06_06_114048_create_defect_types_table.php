@@ -16,9 +16,6 @@ class CreateDefectTypesTable extends Migration
         Schema::create('defect_types', function (Blueprint $table) {
             $table->increments('id');
             $table->string('defect_type_name');
-            $table->integer('sto_id')->unsigned();
-
-            $table->foreign('sto_id')->references('id')->on('stos');
         });
     }
 

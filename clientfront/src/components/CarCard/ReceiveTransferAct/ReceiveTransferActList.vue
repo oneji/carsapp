@@ -16,27 +16,8 @@
                     Актов нет.
                 </v-alert>
                 <v-list two-line v-else>                    
-                    <template v-for="item in items" >
-                        <v-list-tile :key="item.title" avatar class="mb-3">
-                            <v-list-tile-avatar>
-                                <v-icon class="blue white--text">assignment</v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>Акт {{ item.type === 0 ? 'приёма' : 'передачи' }}</v-list-tile-title>
-                                <v-list-tile-sub-title>Ответственный: {{ item.responsible_employee }}</v-list-tile-sub-title>
-                                <v-list-tile-sub-title>От {{ item.company_from }} к {{ item.company_to }}</v-list-tile-sub-title>
-                                <v-list-tile-sub-title>
-                                    Дата создания: {{ typeof item.created_at === 'object' 
-                                        ? item.created_at.date 
-                                        : item.created_at | moment("MMMM D, YYYY") }}
-                                </v-list-tile-sub-title>                                
-                            </v-list-tile-content>
-                            <v-list-tile-action>
-                                <v-btn icon ripple :to="{ name: 'StoRTActIndex', params: { act: item.id } }">
-                                    <v-icon color="grey lighten-1">remove_red_eye</v-icon>
-                                </v-btn>
-                            </v-list-tile-action>
-                        </v-list-tile>
+                    <template v-for="item in items">
+                        <RtActItem :item="item" :key="item.id" />
                     </template>
                 </v-list>
             </v-card-text>
@@ -45,11 +26,15 @@
 </template>
 
 <script>
+import RtActItem from './ReceiveTransferActItem'
 
 export default {
     props: {
         items: Array,
     },
+    components: {
+        RtActItem
+    }
 }
 </script>
 

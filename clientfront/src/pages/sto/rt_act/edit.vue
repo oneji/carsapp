@@ -3,7 +3,6 @@
         <v-layout row>
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn> 
-                <v-btn color="primary" :loading="loading.draft" @click="saveToDraft">В черновик</v-btn>        
             </v-flex>
         </v-layout>
         <v-layout style="position: relative">
@@ -305,13 +304,18 @@ export default {
         makeRequests() {
             this.loading.page = true;
             
-            Promise.all([this.fetchChecklistsAndChecklistItems(), this.fetchFullInfo()])
+            Promise.all([this.fetchChecklistsAndChecklistItems(), this.fetchFullInfo(), this.fetchActInfo()])
                 .then(values => {
                     const { checklists } =  values[0].data;
                     const { car, companies } =  values[1].data;
+                    const { act } = values[2].data;
+                    // The old data
+                    this.type = act.type;
+                    this.companyFrom = act.company_from;
+                    this.responsibleEmployee = act.responsible_employee;
                     // Check lists
                     this.forPDF.checklists = checklists;
-                    this.checklists = checklists;
+                    // this.checklists = checklists;
                     this.values = [];
                     for(let i = 0; i < checklists.length; i++) {
                         for(let j = 0; j < checklists[i].checklist_items.length; j++) {
@@ -321,6 +325,47 @@ export default {
                                 status: null,
                                 comment: ''
                             };
+                        }
+                    }
+
+                    this.checklists = act.checklist_items.map(item => {
+                        return {
+                            checklist_name: item.rt_act_checklist.checklist_name,
+                            id: item.rt_act_checklist.id,
+                            checklist_items: []
+                        }
+                    });
+
+                    for(let i = 0; i < this.checklists.length; i++) {
+                        for(let j = 1; j < this.checklists.length; j++) {
+                            if(this.checklists[i].id === this.checklists[j].id && i !== j) {
+                                this.checklists.splice(j, 1);
+                            }
+                        }
+                    }
+
+                    for(let i = 0; i < this.checklists.length; i++) {
+                        let list = this.checklists[i];
+                        for(let j = 0; j < act.checklist_items.length; j++) {
+                            let item = act.checklist_items[j];
+                            if(item.rt_act_checklist.id === list.id) {
+                                list.checklist_items.push({
+                                    id: item.id,
+                                    item_name: item.item_name,
+                                    status: item.pivot.status,
+                                    comment: item.pivot.comment,
+                                });
+                            }
+                        }
+                    }
+
+                    for(let i = 0; i < this.checklists.length; i++) {
+                        let list = this.checklists[i];
+                        for(let j = 0; j < list.checklist_items.length; j++) {
+                            let item = list.checklist_items[j];
+                            this.values[item.id].id = item.id;
+                            this.values[item.id].status = item.status;
+                            this.values[item.id].comment = item.comment;
                         }
                     }
                     
@@ -334,6 +379,9 @@ export default {
         fetchChecklistsAndChecklistItems() { return axios.get('rt-act/all') },
         fetchFullInfo() {
             return axios.get(`rt-act/info?sto_slug=${this.$route.params.slug}&car_id=${this.$route.params.car}`);
+        },
+        fetchActInfo() {
+            return axios.get(`rt-act/getById/${this.$route.params.act}`)
         },
         createRT() {
             this.$validator.errors.clear();
@@ -443,8 +491,9 @@ export default {
                                 </html>`
                             );
 
-                            axios.post('rt-act', formData)
+                            axios.post(`rt-act/edit/${this.$route.params.act}`, formData)
                             .then(response => {
+                                console.log(response);
                                 this.loading.saveBtn = false;
 
                                 this.$store.dispatch('showSnackbar', {
