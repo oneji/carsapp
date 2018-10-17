@@ -329,7 +329,7 @@ class CarController extends Controller
         $car = Car::find($id);
         $car->year = (int) $request->year;
         $car->number = $request->number;
-        $car->color = $request->color;
+        $car->color = $request->color !== 'null' ? $request->color : null;
         $car->price = $request->price !== 'null' ? $request->price : null;
         $car->shape_id = $request->shape_id;
         $car->brand_id = $request->brand_id;
@@ -370,13 +370,15 @@ class CarController extends Controller
         if($coverImageNameToStore !== null)
             $car->cover_image = $coverImageNameToStore;
         
-        $car->engine_capacity = $request->engine_capacity;
+        // $car->engine_capacity = $request->engine_capacity !== 'null' ? $request->engine_capacity : null;
         $car->engine_type_id = $request->engine_type_id;
         $car->transmission_id = $request->transmission_id;
         
         if($request->engine_capacity !== 'null' && $request->engine_capacity !== null)
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
-        
+        else 
+            $car->engine_capacity = null;
+
         if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
             $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
 

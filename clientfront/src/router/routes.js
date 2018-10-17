@@ -40,7 +40,7 @@ import StoRepairRequests        from '@/pages/sto/requests/repair'
 import StoRTActIndex            from '@/pages/sto/rt_act/index'
 import StoRTAct                 from '@/pages/sto/rt_act/crud'
 import StoCreateRTAct           from '@/pages/sto/rt_act/create'
-import StoEditRTAct           from '@/pages/sto/rt_act/edit'
+import StoEditRTAct             from '@/pages/sto/rt_act/edit'
 // Error pages
 import NotFound                 from '@/pages/errors/404'
 import NoAccess                 from '@/pages/errors/403'
@@ -117,6 +117,8 @@ const routes = [
             { path: 'companies/:company', name: 'StoCompany', component: StoCompany, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card', name: 'StoCarCard', component: StoCarCard, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/create', name: 'StoCarCreate', component: StoCarCreate, meta: { requiresAuth: true } },
+            { path: 'companies/:company/cars/:car/edit', name: 'StoCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true } },
+            
 
             { path: 'pricelist', name: 'StoPricelist', component: StoPricelist, meta: { requiresAuth: true } },
             { path: 'services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true } },

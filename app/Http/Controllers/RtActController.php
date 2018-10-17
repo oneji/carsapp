@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Mail;
 use Dompdf\Dompdf;
 use Spipu\Html2Pdf\Html2Pdf;
+use Image;
 
 class RtActController extends Controller
 {
@@ -71,10 +72,20 @@ class RtActController extends Controller
         $files = [];
         if($request->hasFile('attachments')) {
             foreach($request->attachments as $file) {
-                $fileFullName = $file->getClientOriginalName();                 
+                $fileFullName = $file->getClientOriginalName();
                 $fileExtension = $file->getClientOriginalExtension();
+                $fileDetails = getimagesize($file); 
+                // Compressing image
+                $compressedImage = Image::make($file->getRealPath());
+
+                if($fileDetails[0] > 1290) {
+                    $compressedImage->resize(1290, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
+                
                 $fileNameToStore = uniqid().'.'.$fileExtension;
-                $path = $file->move(public_path('/uploads/rt_act_files'), $fileNameToStore);
+                $compressedImage->save(public_path('uploads/rt_act_files/'.$fileNameToStore));
                 
                 array_push($files, [
                     'file' => $fileNameToStore,
@@ -165,21 +176,6 @@ class RtActController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        // return response()->json([
-        //     'values' => json_decode($request->values)
-        // ]);
-        // // Determine a company's type
-        // if($request->company_to_type === 'inner') {
-        //     $company = Company::where('company_name', $request->company_to)->first();
-        //     $card = CarCard::find($request->car_card_id);
-        //     $carId = $card->car_id;
-        //     DB::table('car_company')->where('car_id', $card->car_id)->update([ 'company_id' => $company->id ]);
-        // } else if($request->company_to_type === 'outer') {
-        //     $card = CarCard::find($request->car_card_id);
-        //     $car = Car::find($card->car_id);
-        //     $car->sold = 1;
-        //     $car->save();
-        // }
         // RT act files
         $files = [];
         if($request->hasFile('attachments')) {
@@ -314,7 +310,7 @@ class RtActController extends Controller
         $fileName = uniqid().'.pdf';
         $mpdf = new \Mpdf\Mpdf();
         $mpdf->WriteHTML($this->htmlToPdf);
-        $mpdf->Output(public_path('/uploads/rt_acts/'.$fileName), \Mpdf\Output\Destination::FILE);
+        $mpdf->Output(public_path('uploads/rt_acts/'.$fileName), \Mpdf\Output\Destination::FILE);
         
         /* Dompdf */
         // $dompdf = new Dompdf();
@@ -323,5 +319,53 @@ class RtActController extends Controller
         // file_put_contents(public_path('/uploads/rt_acts/'.$fileName), $dompdf->output());
 
         return $fileName;
+    }
+
+    /**
+     * 
+     */
+    public function addMoreFiles(Request $request, $id)
+    {
+        $act = RtAct::find($id);
+        $currentFiles = json_decode($act->files);
+        // RT act files
+        $newFiles = [];
+        if($request->hasFile('attachments')) {
+            foreach($request->attachments as $file) {
+                $fileFullName = $file->getClientOriginalName();
+                $fileExtension = $file->getClientOriginalExtension();
+                $fileDetails = getimagesize($file); 
+                // Compressing image
+                $compressedImage = Image::make($file->getRealPath());
+
+                if($fileDetails[0] > 1290) {
+                    $compressedImage->resize(1290, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
+                
+                $fileNameToStore = uniqid().'.'.$fileExtension;
+                $compressedImage->save(public_path('uploads/rt_act_files/'.$fileNameToStore));
+                
+                array_push($newFiles, [
+                    'file' => $fileNameToStore,
+                    'name' => $fileFullName
+                ]);
+            }
+        } else {
+            $newFiles = null;
+        }
+
+        if($newFiles !== null) {
+            $mergedFilesArray = array_merge($currentFiles, $newFiles);
+            $act->files = json_encode($mergedFilesArray, JSON_UNESCAPED_UNICODE);
+            $act->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Файлы успешно добавлены.',
+            'files' => json_decode($act->files)
+        ]);
     }
 }

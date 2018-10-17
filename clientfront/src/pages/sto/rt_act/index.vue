@@ -10,6 +10,7 @@
                 <a v-if="act.rt_act_file !== null" class="btn success" :href="`${assetsURL}/api/rt-act/files/download?id=${$route.params.act}`" download="download">
                     <div class="btn__content">Скачать PDF</div>
                 </a>
+                <!-- <v-btn color="primary" @click="addMoreFilesDialog = true">Добавить вложение</v-btn> -->
             </v-flex>
             
             <v-flex xs12 sm12 md12 lg12>   
@@ -105,6 +106,17 @@
                                     :options="{ history: false }" />
                             </td>
                         </tr>
+                        <tr>
+                            <th colspan="3" class="rt-act-checklist-title">Добавить файлы</th>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <FileUpload 
+                                    @files-changed="onFileChanged" 
+                                    types="image/jpeg, image/png, image/svg+xml" />
+                                <v-btn color="success" block @click="addMoreFiles">Добавить файлы</v-btn>
+                            </td>
+                        </tr>
                     </tfoot>
                 </table>
             </v-flex>
@@ -119,6 +131,7 @@ import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
 import MyLabel from '@/components/Label'
 import Lightbox from 'vue-simple-lightbox'
+import FileUpload from '@/components/FileUpload'
 
 export default {
     mixins: [assetsURL],
@@ -129,7 +142,8 @@ export default {
         Loading,
         MoveButtons,
         MyLabel,
-        Lightbox
+        Lightbox,
+        FileUpload
     },
     data() {
         return {
@@ -155,7 +169,10 @@ export default {
             loading: {
                 page: false,
                 saveBtn: false
-            }
+            },
+            addMoreFilesDialog: false,
+            addMoreFilesLoading: false,
+            moreFiles: []
         }
     },
     methods: {
@@ -231,6 +248,27 @@ export default {
                 document.body.appendChild(link);
                 link.click();
             }).catch(error => console.log(error))
+        },
+        onFileChanged(file) {
+            this.moreFiles = file;
+        },
+        addMoreFiles() {
+            let formData = new FormData();
+            // Add files to a FormData
+            for(let i = 0; i < this.moreFiles.length; i++) {
+                formData.append('attachments[]', this.moreFiles[i].file);
+            }
+            // Send files to the server
+            axios.post(`rt-act/${this.$route.params.act}/files/add`, formData)
+                .then(response => {
+                    console.log(response)
+                    this.$store.dispatch('showSnackbar', {
+                        color: 'success',
+                        active: true,
+                        text: response.data.message
+                    });
+                })
+                .catch(error => console.log(error));
         }
     },
     created() {

@@ -18,28 +18,26 @@
 
         <transition-group tag="v-layout" class="row wrap" name="slide-x-transition">               
             <v-flex xs12 sm6 md3 lg3 v-for="car in cars" :key="car.id">
-                <Car :item="car" :card="true" :details="true" @card-created="onCarCardCreated" />
+                <Car 
+                    :item="car" 
+                    :card="true" 
+                    :details="true" 
+                    :edit="true"
+                    @card-created="onCarCardCreated" />
             </v-flex>
         </transition-group>
-        
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
 import config from '@/config'
-import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 import Alert from '@/components/Alert'
 import MoveButtons from '@/components/MoveButtons'
 import Car from '@/components/Car'
 
 export default {
-    mixins: [ snackbar ],
     components: {
         Loading, Alert, MoveButtons, Car
     },
@@ -75,7 +73,11 @@ export default {
                     car.card = params.car.card
             });
 
-            this.successSnackbar(params.message);
+            this.$store.dispatch('showSnackbar', {
+                color: 'success',
+                text: params.message,
+                active: true
+            });
         }
     },
     created() {

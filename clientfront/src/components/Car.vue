@@ -48,7 +48,10 @@
                             <v-list-tile @click="reserveCar(item.id)" v-if="canReserve && item.reserved === 0">
                                 <v-list-tile-title>В резерв</v-list-tile-title>
                             </v-list-tile>
-                            <v-list-tile :to="{ name: 'CompanyCarsEdit', params: { car: item.id } }" v-if="edit">
+                            <v-list-tile v-if="$route.name === 'StoCompany' && edit" :to="{ name: 'StoCarsEdit', params: { car: item.id } }">
+                                <v-list-tile-title>Изменить</v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile v-if="$route.name !== 'StoCompany' && edit" :to="{ name: 'CompanyCarsEdit', params: { car: item.id } }">
                                 <v-list-tile-title>Изменить</v-list-tile-title>
                             </v-list-tile>
                             <v-list-tile 

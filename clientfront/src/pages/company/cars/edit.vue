@@ -203,11 +203,6 @@
                 </v-card>
             </v-flex>
         </v-layout>
-
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
     </div>
 </template>
 
@@ -223,7 +218,6 @@ const FilePond = vueFilePond(FilePondPluginFileValidateType, FilepondPluginImage
 
 import axios from '@/axios'
 import config from '@/config'
-import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 import MoveButtons from '@/components/MoveButtons'
 
@@ -231,7 +225,6 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar ],
     components: {
         Loading, FilePond, MoveButtons
     },
@@ -285,7 +278,7 @@ export default {
                     file: '',
                     url: ''
                 },
-                engine_capacity: '',
+                engine_capacity: null,
                 engine_type_id: null,
                 transmission_id: null,
                 reserved: false,
@@ -311,7 +304,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.company}/cars/${this.$route.params.car}/edit`)
                 .then(response => {
-                    console.log(response);
                     this.editCar.year = response.data.year;
                     this.editCar.number = response.data.number;
                     this.editCar.color = response.data.color;
@@ -364,9 +356,12 @@ export default {
 
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {
-                                console.log(response.data)
                                 this.loading.edit = false;
-                                this.successSnackbar(response.data.message);
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'success',
+                                    text: response.data.message,
+                                    active: true
+                                });
                             })
                             .catch(error => console.log(error));
                 }
