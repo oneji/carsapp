@@ -7,9 +7,6 @@
         allow-multiple="true"
         :accepted-file-types="types"
         allow-file-size-validation="true"
-        max-file-size="1MB"
-        label-max-file-size="Максимальный размер файла {filesize}"
-        label-max-file-size-exceeded="Файл слишком большой"
         @addfile="filesChanged"
         @removefile="filesChanged" />
 </template>

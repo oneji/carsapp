@@ -114,7 +114,7 @@
                                 <FileUpload 
                                     @files-changed="onFileChanged" 
                                     types="image/jpeg, image/png, image/svg+xml" />
-                                <v-btn color="success" block @click="addMoreFiles">Добавить файлы</v-btn>
+                                <v-btn color="success" block :loading="addMoreFilesLoading" @click="addMoreFiles">Добавить файлы</v-btn>
                             </td>
                         </tr>
                     </tfoot>
@@ -254,6 +254,7 @@ export default {
             this.moreFiles = file;
         },
         addMoreFiles() {
+            this.addMoreFilesLoading = true;
             let formData = new FormData();
             // Add files to a FormData
             for(let i = 0; i < this.moreFiles.length; i++) {
@@ -262,7 +263,7 @@ export default {
             // Send files to the server
             axios.post(`rt-act/${this.$route.params.act}/files/add`, formData)
                 .then(response => {
-                    console.log(response)
+                    this.addMoreFilesLoading = false;
                     this.$store.dispatch('showSnackbar', {
                         color: 'success',
                         active: true,
