@@ -306,7 +306,6 @@ export default {
             
             Promise.all([this.fetchChecklistsAndChecklistItems(), this.fetchFullInfo(), this.fetchActInfo()])
                 .then(values => {
-                    console.log(values[2].data)
                     const { checklists } =  values[0].data;
                     const { car, companies } =  values[1].data;
                     const { act } = values[2].data;

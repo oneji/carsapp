@@ -196,20 +196,21 @@ export default {
                             });
                         }                        
                     }
-                    
-                    this.checklists = act.checklist_items.map(item => {
-                        return {
-                            checklist_name: item.rt_act_checklist.checklist_name,
-                            id: item.rt_act_checklist.id,
-                            checklist_items: []
-                        }
-                    });
 
-                    for(let i = 0; i < this.checklists.length; i++) {
-                        for(let j = 1; j < this.checklists.length; j++) {
-                            if(this.checklists[i].id === this.checklists[j].id && i !== j) {
-                                this.checklists.splice(j, 1);
+                    for(let i = 0; i < act.checklist_items.length; i++) {
+                        let exists = false;
+                        for(let j = 0; j < this.checklists.length; j++) {
+                            if(act.checklist_items[i].rt_act_checklist.id === this.checklists[j].id) {
+                                exists = true;
                             }
+                        }
+
+                        if(!exists) {
+                            this.checklists.push({
+                                checklist_name: act.checklist_items[i].rt_act_checklist.checklist_name,
+                                id: act.checklist_items[i].rt_act_checklist.id,
+                                checklist_items: []
+                            });
                         }
                     }
 

@@ -62,10 +62,8 @@
                                             <v-list-tile-title>Автомобили</v-list-tile-title>
                                             <v-list-tile-sub-title v-if="driver.info.cars.length > 0">
                                                 <MyLabel style="margin: 0 5px 5px 0"
-                                                    v-for="car in driver.info.cars" 
-                                                    :key="car.id"
-                                                    :text="`${car.brand_name} ${car.model_name} ${car.number}`" 
-                                                    type="primary" /> <br>
+                                                    :text="`${driver.info.cars[0].brand_name} ${driver.info.cars[0].model_name} ${driver.info.cars[0].number}`" 
+                                                    type="primary" />
                                             </v-list-tile-sub-title>
                                             <v-list-tile-sub-title v-else>Нет</v-list-tile-sub-title>                                            
                                         </v-list-tile-content>
@@ -122,7 +120,6 @@ export default {
             this.loading = true;
             axios.get('/all-cars')
                 .then(response => {
-                    console.log(response.data);
                     this.companies = response.data.companies;
 
                     this.companies.map(company => {
