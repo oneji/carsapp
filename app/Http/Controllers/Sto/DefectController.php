@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sto;
 use App\Sto;
 use App\DefectOption;
 use App\DefectType;
+use App\DefectConclusion;
 use App\Defect;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -49,7 +50,7 @@ class DefectController extends Controller
     public function getFullInfo($sto_slug)
     {
         $sto = Sto::where('slug', $sto_slug)->first();
-        $defect_info = DefectType::with('defects.defect_options')->get();
+        $defect_info = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
 
         return response()->json([
             'success' => true,
@@ -102,11 +103,7 @@ class DefectController extends Controller
     
     public function getAll($sto_slug)
     {
-        $allDefects = DefectType::with([
-            'defects' => function($query) {
-                $query->with('defect_options')->get();
-            }
-        ])->get();
+        $allDefects = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
 
         return response()->json([
             'success' => true,
@@ -197,6 +194,51 @@ class DefectController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Вид дефекта успешно изменен.'
+        ]);
+    }
+
+    /**
+     * Get all defect conslusions.
+     */
+    public function getConclusions()
+    {
+        $conclusions = DefectConclusion::select('defect_conclusions.id as id', 'conclusion_name', 'defect_name')
+            ->join('defects', 'defect_conclusions.defect_id', '=', 'defects.id')
+            ->get();
+
+        return response()->json($conclusions);
+    }
+    
+    /**
+     * 
+     */
+    public function storeConclusion(Request $request)
+    {
+        $conclusion = new DefectConclusion();
+        $conclusion->conclusion_name = $request->conclusion_name;
+        $conclusion->defect_id = $request->defect_id;
+        $conclusion->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Заключение успешно создано.',
+            'conclusion' => $conclusion
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function updateConclusion(Request $request, $sto_slug, $id)
+    {
+        $conclusion = DefectConclusion::find($id);
+        $conclusion->conclusion_name = $request->conclusion_name;
+        $conclusion->defect_id = $request->defect_id;
+        $conclusion->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Заключение успешно изменено.'
         ]);
     }
 }

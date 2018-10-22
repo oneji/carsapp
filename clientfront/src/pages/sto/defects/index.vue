@@ -2,9 +2,10 @@
     <div>
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" @click.native="defectType.dialog = true" append>Добавить тип дефекта</v-btn>
-                <v-btn color="primary" @click.native="defect.dialog = true" append>Добавить дефект</v-btn>
-                <v-btn color="primary" @click.native="defectOption.dialog = true" append>Добавить вид дефекта</v-btn>
+                <v-btn color="primary" @click.native="defectType.dialog = true" append>Добавить чек лист</v-btn>
+                <v-btn color="primary" @click.native="defect.dialog = true" append>Добавить деталь</v-btn>
+                <v-btn color="primary" @click.native="defectOption.dialog = true" append>Добавить состояние</v-btn>
+                <v-btn color="primary" @click.native="defectConclusion.dialog = true" append>Добавить заключение</v-btn>
             </v-flex>
         </v-layout>
 
@@ -13,7 +14,7 @@
             <v-flex xs12 sm6 md4 lg4>
                 <v-card>
                     <v-card-title class="py-1">
-                        Типы дефектов
+                        Чек листы
                         <v-spacer></v-spacer>
                         <v-text-field
                             v-model="types.search"
@@ -52,7 +53,7 @@
             <v-flex xs12 sm6 md4 lg4 v-if="showDefectsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
-                        Дефекты
+                        Детали
                         <v-spacer></v-spacer>
                         <v-text-field
                             v-model="defects.search"
@@ -91,7 +92,7 @@
             <v-flex xs12 sm6 md4 lg4 v-if="showDefectOptionsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
-                        Вид дефекта
+                        Состояния
                         <v-spacer></v-spacer>
                         <v-text-field
                             v-model="options.search"
@@ -123,6 +124,42 @@
                     </v-data-table>
                 </v-card>
             </v-flex>            
+            <!-- Defect conclusions -->
+            <v-flex xs12 sm6 md4 lg4 v-if="showDefectConclusionsTrigger">
+                <v-card>
+                    <v-card-title class="py-1">
+                        Заключения
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="conclusions.search"
+                            append-icon="search"
+                            label="Поиск"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table :loading="conclusions.loading.table" :headers="conclusions.headers" :items="conclusions.items" :search="conclusions.search">
+                        <template slot="items" slot-scope="props">
+                            <td>{{ props.item.conclusion_name }}</td>
+                            <td class="justify-center">
+                                <v-btn icon class="mx-0" @click="showEditConclusionDialog(props.item)">
+                                    <v-icon color="teal">edit</v-icon>
+                                </v-btn>
+                            </td>
+                        </template>
+                        <!-- No data slot -->
+                        <template slot="no-data">
+                            <v-alert :value="true" outline color="info" icon="warning">
+                                Нет данных для отображения.
+                            </v-alert>
+                        </template>
+                        <!-- No results slot -->
+                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
+                            Нет результатов для "{{ conclusions.search }}".
+                        </v-alert>
+                    </v-data-table>
+                </v-card>
+            </v-flex>            
         </v-layout>
 
         <v-layout row wrap>
@@ -146,13 +183,13 @@
         <v-dialog v-model="defectType.dialog" max-width="500">
             <form @submit.prevent="addType" data-vv-scope="create-defect-type-form">
                 <v-card>
-                    <v-card-title class="headline">Добавить тип дефекта</v-card-title>
+                    <v-card-title class="headline">Добавить чек лист</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectType.defect_type_name" name="defect_type_name" label="Тип дефекта" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defectType.defect_type_name" name="defect_type_name" label="Чек лист" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="defect_type_name" data-vv-as='"Тип дефекта"' required
+                                    data-vv-name="defect_type_name" data-vv-as='"Чек лист"' required
                                     :error-messages="errors.collect('defect_type_name')"
                                 ></v-text-field>
                             </v-flex>
@@ -171,13 +208,13 @@
         <v-dialog v-model="defectType.edit.dialog" max-width="500">
             <form @submit.prevent="editType" data-vv-scope="edit-defect-type-form">
                 <v-card>
-                    <v-card-title class="headline">Изменить тип дефекта</v-card-title>
+                    <v-card-title class="headline">Изменить чек лист</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectType.edit.defect_type_name" name="edit_defect_type_name" label="Тип дефекта" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defectType.edit.defect_type_name" name="edit_defect_type_name" label="Чек лист" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="edit_defect_type_name" data-vv-as='"Тип дефекта"' required
+                                    data-vv-name="edit_defect_type_name" data-vv-as='"Чек лист"' required
                                     :error-messages="errors.collect('edit_defect_type_name')"
                                 ></v-text-field>
                             </v-flex>
@@ -197,21 +234,21 @@
         <v-dialog v-model="defect.dialog" max-width="500">
             <form @submit.prevent="addDefect" data-vv-scope="create-defect-form">
                 <v-card>
-                    <v-card-title class="headline">Добавить дефект</v-card-title>
+                    <v-card-title class="headline">Добавить деталь</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defect.defect_name" name="defect_name" label="Дефект" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defect.defect_name" name="defect_name" label="Деталь" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="defect_name" data-vv-as='"Дефект"' required
+                                    data-vv-name="defect_name" data-vv-as='"Деталь"' required
                                     :error-messages="errors.collect('defect_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="types.selectItems" v-model="defect.defect_type_id" label="Выберите тип дефекта" prepend-icon="list"
+                                <v-select autocomplete :items="types.selectItems" v-model="defect.defect_type_id" label="Выберите чек лист" prepend-icon="list"
                                     name="defect_type_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('defect_type_id')"
-                                    data-vv-name="defect_type_id" data-vv-as='"Тип дефекта"'
+                                    data-vv-name="defect_type_id" data-vv-as='"Чек лист"'
                                 ></v-select>
                             </v-flex>
                         </v-layout>
@@ -229,21 +266,21 @@
         <v-dialog v-model="defect.edit.dialog" max-width="500">
             <form @submit.prevent="editDefect" data-vv-scope="edit-defect-form">
                 <v-card>
-                    <v-card-title class="headline">Изменить дефект</v-card-title>
+                    <v-card-title class="headline">Изменить деталь</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defect.edit.defect_name" name="edit_defect_name" label="Дефект" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defect.edit.defect_name" name="edit_defect_name" label="Деталь" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="edit_defect_name" data-vv-as='"Дефект"' required
+                                    data-vv-name="edit_defect_name" data-vv-as='"Деталь"' required
                                     :error-messages="errors.collect('edit_defect_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="types.selectItems" v-model="defect.edit.defect_type_id" label="Выберите тип дефекта" prepend-icon="list"
+                                <v-select autocomplete :items="types.selectItems" v-model="defect.edit.defect_type_id" label="Выберите чек лист" prepend-icon="list"
                                     name="edit_defect_type_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('edit_defect_type_id')"
-                                    data-vv-name="edit_defect_type_id" data-vv-as='"Тип дефекта"'
+                                    data-vv-name="edit_defect_type_id" data-vv-as='"Чек лист"'
                                 ></v-select>
                             </v-flex>
                         </v-layout>
@@ -262,21 +299,21 @@
         <v-dialog v-model="defectOption.dialog" max-width="500">
             <form @submit.prevent="addOption" data-vv-scope="create-defect-option-form">
                 <v-card>
-                    <v-card-title class="headline">Добавить вид дефекта</v-card-title>
+                    <v-card-title class="headline">Добавить состояние</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectOption.defect_option_name" name="defect_option_name" label="Вид дефекта" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defectOption.defect_option_name" name="defect_option_name" label="Состояние" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="defect_option_name" data-vv-as='"Вид дефекта"' required
+                                    data-vv-name="defect_option_name" data-vv-as='"Состояние"' required
                                     :error-messages="errors.collect('defect_option_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.defect_id" label="Выберите дефект" prepend-icon="list"
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.defect_id" label="Выберите деталь" prepend-icon="list"
                                     name="defect_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('defect_id')"
-                                    data-vv-name="defect_id" data-vv-as='"Вид дефекта"'
+                                    data-vv-name="defect_id" data-vv-as='"Деталь"'
                                 ></v-select>
                             </v-flex>
                         </v-layout>
@@ -290,25 +327,25 @@
                 </v-card>
             </form>
         </v-dialog>
-        <!-- Defect options modal -->
+        <!-- Defect options edit modal -->
         <v-dialog v-model="defectOption.edit.dialog" max-width="500">
             <form @submit.prevent="editOption" data-vv-scope="edit-defect-option-form">
                 <v-card>
-                    <v-card-title class="headline">Изменить вид дефекта</v-card-title>
+                    <v-card-title class="headline">Изменить состояние</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12>                    
-                                <v-text-field type="text" v-model="defectOption.edit.defect_option_name" name="edit_defect_option_name" label="Вид дефекта" prepend-icon="list"                 
+                                <v-text-field type="text" v-model="defectOption.edit.defect_option_name" name="edit_defect_option_name" label="Состояние" prepend-icon="list"                 
                                     v-validate="'required'" 
-                                    data-vv-name="edit_defect_option_name" data-vv-as='"Вид дефекта"' required
+                                    data-vv-name="edit_defect_option_name" data-vv-as='"Состояние"' required
                                     :error-messages="errors.collect('edit_defect_option_name')"
                                 ></v-text-field>
 
-                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.edit.defect_id" label="Выберите дефект" prepend-icon="list"
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectOption.edit.defect_id" label="Выберите деталь" prepend-icon="list"
                                     name="edit_defect_id"
                                     v-validate="'required'" 
                                     :error-messages="errors.collect('edit_defect_id')"
-                                    data-vv-name="edit_defect_id" data-vv-as='"Вид дефекта"'
+                                    data-vv-name="edit_defect_id" data-vv-as='"Деталь"'
                                 ></v-select>
                             </v-flex>
                         </v-layout>
@@ -318,6 +355,71 @@
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" flat="flat" @click.native="defectOption.edit.dialog = false">Закрыть</v-btn>
                         <v-btn color="green darken-1" :loading="defectOption.loading.button" flat="flat" type="submit">Создать</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
+
+        <!-- Defect conclusions modal -->
+        <v-dialog v-model="defectConclusion.dialog" max-width="500">
+            <form @submit.prevent="addConclusion" data-vv-scope="create-defect-conclusion-form">
+                <v-card>
+                    <v-card-title class="headline">Добавить заключение</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12>                    
+                                <v-text-field type="text" v-model="defectConclusion.conclusion_name" name="conclusion_name" label="Заключение" prepend-icon="list"                 
+                                    v-validate="'required'" 
+                                    data-vv-name="conclusion_name" data-vv-as='"Заключение"' required
+                                    :error-messages="errors.collect('conclusion_name')"
+                                ></v-text-field>
+
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectConclusion.defect_id" label="Выберите деталь" prepend-icon="list"
+                                    name="defect_id"
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('defect_id')"
+                                    data-vv-name="defect_id" data-vv-as='"Деталь"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="defectConclusion.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="defectConclusion.loading.button" flat="flat" type="submit">Создать</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </form>
+        </v-dialog>
+        <!-- Defect conclusions edit modal -->
+        <v-dialog v-model="defectConclusion.edit.dialog" max-width="500">
+            <form @submit.prevent="editConclusion" data-vv-scope="edit-defect-conclusion-form">
+                <v-card>
+                    <v-card-title class="headline">Изменить заключение</v-card-title>
+                    <v-card-text>
+                        <v-layout>
+                            <v-flex xs12>                    
+                                <v-text-field type="text" v-model="defectConclusion.edit.conclusion_name" name="edit_defect_conclusion_name" label="Заключение" prepend-icon="list"                 
+                                    v-validate="'required'" 
+                                    data-vv-name="edit_defect_conclusion" data-vv-as='"Заключение"' required
+                                    :error-messages="errors.collect('edit_defect_conclusion')"
+                                ></v-text-field>
+
+                                <v-select autocomplete :items="defects.selectItems" v-model="defectConclusion.edit.defect_id" label="Выберите деталь" prepend-icon="list"
+                                    name="edit_defect_id"
+                                    v-validate="'required'" 
+                                    :error-messages="errors.collect('edit_defect_id')"
+                                    data-vv-name="edit_defect_id" data-vv-as='"Деталь"'
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-card-text>
+                    
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="defectConclusion.edit.dialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="defectConclusion.loading.button" flat="flat" type="submit">Изменить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
@@ -352,7 +454,7 @@ export default {
                 items: [],
                 selectItems: [],
                 headers: [
-                    { text: 'Тип дефекта', value: 'defect_type_name' }, 
+                    { text: 'Чек лист', value: 'defect_type_name' }, 
                     { text: 'Действия', value: 'action' },
                 ],
 
@@ -366,7 +468,7 @@ export default {
                 items: [],
                 selectItems: [],
                 headers: [
-                    { text: 'Дефект', value: 'defect_name' }, 
+                    { text: 'Деталь', value: 'defect_name' }, 
                     { text: 'Действия', value: 'action' },     
                 ],
 
@@ -380,7 +482,20 @@ export default {
                 items: [],
                 selectItems: [],
                 headers: [
-                    { text: 'Вид дефекта', value: 'defect_option_name' },
+                    { text: 'Состояние', value: 'defect_option_name' },
+                    { text: 'Действия', value: 'action' },     
+                ],
+
+                search: '',
+                loading: {
+                    table: false
+                }
+            },
+            conclusions: {
+                items: [],
+                selectItems: [],
+                headers: [
+                    { text: 'Заключение', value: 'conclusion_name' },
                     { text: 'Действия', value: 'action' },     
                 ],
 
@@ -432,11 +547,26 @@ export default {
                     index: ''
                 }
             },
+            defectConclusion: {
+                conclusion_name: '',
+                dialog: false,
+                loading: {
+                    button: false
+                },
+                edit: {
+                    dialog: false,
+                    id: '',
+                    conclusion_name: '',
+                    defect_id: '',
+                    index: ''
+                }
+            },
             createEngineType: false,
             createTransmission: false,
 
             showDefectsTrigger: false,
-            showDefectOptionsTrigger: false
+            showDefectOptionsTrigger: false,
+            showDefectConclusionsTrigger: false,
         }
     },
     methods: {
@@ -450,7 +580,9 @@ export default {
 
         showDefectOptions(defect) {
             this.options.items = [...defect.defect_options];
+            this.conclusions.items = [...defect.defect_conclusions];
             this.showDefectOptionsTrigger = true;
+            this.showDefectConclusionsTrigger = true;
             this.defects.active = defect.id;
         },
 
@@ -615,6 +747,63 @@ export default {
                     }
                 });
         },
+        addConclusion() {
+            this.$validator.validateAll('create-defect-conclusion-form')
+                .then(success => {
+                    if(success) {
+                        this.defectConclusion.loading.button = true;
+                        axios.post(`/sto/${this.$route.params.slug}/defects/conclusions`, {
+                            'conclusion_name': this.defectConclusion.conclusion_name,
+                            'defect_id': this.defectConclusion.defect_id
+                        })
+                        .then(response => {
+                            this.conclusions.items.push(response.data.conclusion);
+                            this.conclusions.selectItems.push({
+                                text: response.data.conclusion.conclusion_name,
+                                value: response.data.conclusion.id
+                            });
+                            this.defectConclusion.loading.button = false;
+                            this.snackbar.color = 'success';
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
+
+                        })
+                        .catch(error => console.log(error));
+                    } else {
+                        console.log('options validation...');
+                    }
+                });
+        },
+
+        showEditConclusionDialog(conclusion) {
+            this.defectConclusion.edit.id = conclusion.id;
+            this.defectConclusion.edit.conclusion_name = conclusion.conclusion_name;
+            this.defectConclusion.edit.defect_id = conclusion.defect_id;
+            this.defectConclusion.edit.index = this.conclusions.items.indexOf(conclusion);
+            this.defectConclusion.edit.dialog = true;
+        },
+
+        editConclusion() {
+            this.$validator.validateAll('edit-defect-conclusions-form')
+                .then(success => {
+                    if(success) {
+                        this.defectConclusion.loading.button = true;
+                        axios.put(`/sto/${this.$route.params.slug}/defects/conclusions/${this.defectConclusion.edit.id}`, {
+                            'conclusion_name': this.defectConclusion.edit.conclusion_name,
+                            'defect_id': this.defectConclusion.edit.defect_id
+                        })
+                        .then(response => {
+                            this.defectConclusion.loading.button = false;
+                            this.conclusions.items[this.defectConclusion.edit.index].conclusion_name = this.defectConclusion.edit.conclusion_name;
+                            this.conclusions.items[this.defectConclusion.edit.index].defect_id = this.defectConclusion.edit.defect_id;
+                            this.snackbar.color = 'success';
+                            this.snackbar.text = response.data.message;
+                            this.snackbar.active = true;
+                        })
+                        .catch(error => console.log(error));
+                    }
+                });
+        },
 
         getFullInfo() {
             this.types.loading.table = true;
@@ -626,6 +815,7 @@ export default {
                     this.types.items = response.data.allDefects;
                     this.defects.items = [];
                     this.options.items = [];
+                    this.conclusions.items = [];
 
                     response.data.allDefects.map(type => {
                         this.types.selectItems.push({
@@ -645,6 +835,13 @@ export default {
                                 this.options.selectItems.push({
                                     text: option.defect_option_name,
                                     value: option.id
+                                });
+                            });
+
+                            defect.defect_conclusions.map(conclusion => {
+                                this.conclusions.selectItems.push({
+                                    text: conclusion.conclusion_name,
+                                    value: conclusion.id
                                 });
                             });
                         });

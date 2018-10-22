@@ -16,6 +16,14 @@ class DefectAct extends Model
     ];
 
     /**
+     * Get all defect act's defects.
+     */
+    public function defects()
+    {
+        return $this->belongsToMany('App\Defect')->withPivot('to_report');
+    }
+
+    /**
      * Get all defect act's defect options.
      */
     public function defect_options()
@@ -37,5 +45,13 @@ class DefectAct extends Model
     public function equipment()
     {
         return $this->belongsToMany('App\EquipmentType');
+    }
+
+    /**
+     * Get all of the post's comments.
+     */
+    public function attachments()
+    {
+        return $this->morphMany('App\Attachment', 'attachable');
     }
 }

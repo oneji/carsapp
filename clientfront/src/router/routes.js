@@ -41,6 +41,8 @@ import StoRTActIndex            from '@/pages/sto/rt_act/index'
 import StoRTAct                 from '@/pages/sto/rt_act/crud'
 import StoCreateRTAct           from '@/pages/sto/rt_act/create'
 import StoEditRTAct             from '@/pages/sto/rt_act/edit'
+import StoCreateDefectAct       from '@/pages/sto/defect_act/create'
+import StoDefectAct             from '@/pages/sto/defect_act/index'
 // Error pages
 import NotFound                 from '@/pages/errors/404'
 import NoAccess                 from '@/pages/errors/403'
@@ -119,7 +121,6 @@ const routes = [
             { path: 'companies/:company/cars/create', name: 'StoCarCreate', component: StoCarCreate, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/edit', name: 'StoCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true } },
             
-
             { path: 'pricelist', name: 'StoPricelist', component: StoPricelist, meta: { requiresAuth: true } },
             { path: 'services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true } },
             { path: 'defects', name: 'StoDefects', component: StoDefects, meta: { requiresAuth: true } },
@@ -127,6 +128,8 @@ const routes = [
             { path: 'rt-act/:act', name: 'StoRTActIndex', component: StoRTActIndex, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card/rt-act/create', name: 'StoCreateRTAct', component: StoCreateRTAct, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card/rt-act/:act/edit', name: 'StoEditRTAct', component: StoEditRTAct, meta: { requiresAuth: true } },
+            { path: 'companies/:company/cars/:car/card/defect-act/create', name: 'StoCreateDefectAct', component: StoCreateDefectAct, meta: { requiresAuth: true } },
+            { path: 'defect-act/:act', name: 'StoDefectAct', component: StoDefectAct, meta: { requiresAuth: true } },
         ]
     }
 ]

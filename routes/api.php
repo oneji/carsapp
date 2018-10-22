@@ -176,20 +176,25 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
         // Defect act 
         Route::get('/{slug}/cards/{card}/defects/acts', 'DefectActController@get');
+        Route::get('/{slug}/defect-acts/{act}', 'DefectActController@getById');
+
         Route::post('/{slug}/cards/{card}/defects/acts', 'DefectActController@store');
         // Defect routes
         Route::get('/{slug}/defects/all', 'DefectController@getAll');
         Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
         Route::get('/{slug}/defects/types', 'DefectController@getTypes');
+        Route::get('/{slug}/defects/conclusions', 'DefectController@getConclusions');
         Route::get('/{slug}/defects/info', 'DefectController@getFullInfo'); 
 
         Route::post('/{slug}/defects', 'DefectController@storeDefect');   
         Route::post('/{slug}/defects/types', 'DefectController@storeType');   
         Route::post('/{slug}/defects/options', 'DefectController@storeOption');   
+        Route::post('/{slug}/defects/conclusions', 'DefectController@storeConclusion');   
         
         Route::put('/{slug}/defects/{defect}', 'DefectController@updateDefect');
         Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
         Route::put('/{slug}/defects/options/{option}', 'DefectController@updateOption');
+        Route::put('/{slug}/defects/conclusions/{conclusion}', 'DefectController@updateConclusion');
         // Engine routes
         Route::get('/{slug}/engine/types', 'EngineTypeController@get');
         Route::get('/{slug}/engine/transmissions', 'TransmissionController@get');

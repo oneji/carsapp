@@ -14,6 +14,14 @@ class Defect extends Model
     public $timestamps = false;
 
     /**
+     * Get a defect act for a defect.
+     */
+    public function defect_acts()
+    {
+        return $this->belongsToMany('App\DefectAct')->withPivot('to_report');
+    }
+
+    /**
      * Get a defect type for a defect.
      */
     public function defect_type()
@@ -27,5 +35,21 @@ class Defect extends Model
     public function defect_options() 
     {
         return $this->hasMany('App\DefectOption');
+    }
+    
+    /**
+     * Get all defect conclusions for a defect.
+     */
+    public function defect_conclusions() 
+    {
+        return $this->hasMany('App\DefectConclusion');
+    }
+
+    /**
+     * Get all of the post's comments.
+     */
+    public function comments()
+    {
+        return $this->morphMany('App\Comment', 'commentable');
     }
 }

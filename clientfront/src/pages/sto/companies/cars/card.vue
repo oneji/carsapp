@@ -3,7 +3,8 @@
         <v-layout>
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn>           
-                <v-btn color="primary" append @click.native="createDefectActModal = true">Создать дефектный акт</v-btn>           
+                <!-- <v-btn color="primary" append @click.native="createDefectActModal = true">Создать дефектный акт</v-btn>            -->
+                <v-btn color="primary" append :to="{ name: 'StoCreateDefectAct' }">Создать дефектный акт</v-btn>           
                 <v-btn color="success" append :to="{ name: 'StoCreateRTAct' }">Создать акт приёма передачи</v-btn>           
             </v-flex>
         </v-layout>
@@ -230,13 +231,13 @@ export default {
                             });
                             
                             let options = [];
-                            defect.defect_options.map(option => {
-                                options.push({
-                                    text: option.defect_option_name,
-                                    value: option.id
-                                });                                                                       
-                            });
-                            this.selects.defectOptions[defect.id] = options;
+                            // defect.defect_options.map(option => {
+                            //     options.push({
+                            //         text: option.defect_option_name,
+                            //         value: option.id
+                            //     });                                                                       
+                            // });
+                            // this.selects.defectOptions[defect.id] = options;
                         });
                         this.selects.defects.push(defects);                      
                     });

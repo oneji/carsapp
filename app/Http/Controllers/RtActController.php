@@ -28,8 +28,8 @@ class RtActController extends Controller
     public function getById($id)
     {
         $act = RtAct::select('rt_acts.*', 'drivers.fullname as driver_name', 'users.fullname as created_by_name')
-            ->join('drivers', 'rt_acts.driver_id', '=', 'drivers.id')
-            ->join('users', 'rt_acts.created_by', '=', 'users.id')
+            ->leftJoin('drivers', 'rt_acts.driver_id', '=', 'drivers.id')
+            ->leftJoin('users', 'rt_acts.created_by', '=', 'users.id')
             ->where('rt_acts.id', $id)->with('checklist_items.rt_act_checklist')->first();
         $card = CarCard::where('id', $act->car_card_id)->with(['car' => function($query) {
             $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'engine_type_name', 'transmission_name')

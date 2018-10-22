@@ -30,7 +30,7 @@
                                     </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn v-if="showDefect" icon ripple @click="showDefectAct(item.id)">
+                                <v-btn v-if="showDefect" icon ripple :to="{ name: 'StoDefectAct', params: { act: item.id } }">
                                     <v-icon color="grey lighten-1">remove_red_eye</v-icon>
                                 </v-btn>
                             </v-list-tile-action>

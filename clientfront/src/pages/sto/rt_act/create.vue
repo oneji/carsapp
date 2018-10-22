@@ -12,7 +12,7 @@
 
         <v-layout v-if="!loading.page" row wrap>
             <v-flex xs12 sm12 md12 lg12>
-                <form @submit.prevent="createRT" data-vv-scope="create-rt-act-form" :style="{ fontSize: '14px' }">                
+                <form @submit.prevent="createRT" data-vv-scope="create-rt-act-form" :style="{ fontSize: '14px' }">
                     <table class="rt-act" :style="{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid #e6e6e6' }">
                         <thead>
                             <tr class="rt-act-title">

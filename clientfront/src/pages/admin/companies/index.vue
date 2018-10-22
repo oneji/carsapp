@@ -78,11 +78,6 @@
             </v-card>
           </form>
         </v-dialog>
-
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-          {{ snackbar.text }}
-          <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
       </v-flex>
     </v-layout>
 
@@ -97,8 +92,8 @@
           <v-card-media height="150px">
             <v-layout row justify-center align-center>
               <v-flex xs6 sm6 md6 lg6>
-                <img v-if="item.logo" :src="`${assetURL}/${item.logo}`" :alt="`Логотип ${item.company_name}`">
-                <img v-else src="/static/images/no-logo.png" alt="Нет логотипа">
+                <img v-if="item.logo" :src="`${assetsURL}/${item.logo}`" :alt="`Логотип ${item.company_name}`">
+                <img v-else src="/static/images/no-photo.png" alt="Нет логотипа">
               </v-flex>
             </v-layout>
           </v-card-media> 
@@ -130,20 +125,16 @@
 
 <script>
 import axios from '@/axios'
-import config from '@/config'
 import Loading from '@/components/Loading'
+import assetsURL from '@/components/mixins/assets-url'
 
 export default {
     $_veeValidate: {
       validator: 'new'
     },
+    mixins: [assetsURL],
     components: {
       Loading
-    },
-    computed: {
-      assetURL() {
-        return config.assetsURL;
-      },
     },
     data() {
       return {
@@ -159,12 +150,6 @@ export default {
         },    
         alert: {
           noCompanies: false
-        },
-        snackbar: {
-          active: false,
-          text: '',
-          timeout: 5000,
-          color: ''
         },
         bindUser: {
           user_id: null,
@@ -248,16 +233,20 @@ export default {
 
               axios.post('/admin/companies', formData)
                 .then(response => {
-                  this.loading.button = false;
-                  this.items.push(response.data.company);
+                  this.items.companies.push(response.data.company);
                   this.companies.push({
                     text: response.data.company.company_name,
                     value: response.data.company.id
-                  });                  
+                  });              
+                      
+                  this.loading.button = false;
                   this.alert.noCompanies = false;
-                  this.snackbar.color = 'success';
-                  this.snackbar.text = response.data.message;
-                  this.snackbar.active = true;
+                  
+                  this.$store.dispatch('showSnackbar', {
+                    color: 'success',
+                    text: response.data.message,
+                    active: true
+                  });
                 })
                 .catch(error => console.log(error));
             } else {
@@ -274,14 +263,14 @@ export default {
               axios.post(`/admin/companies/bind/${this.bindUser.user_id}`, {
                 'companies': this.bindUser.companies,
                 'stos': this.bindUser.stos
-              }).then(response => {
-                console.log(response.data);
-                
+              }).then(response => {                
                 if(response.status === 200) {
                   this.loading.button = false;
-                  this.snackbar.color = 'success';  
-                  this.snackbar.text = response.data.message;
-                  this.snackbar.active = true;
+                  this.$store.dispatch('showSnackbar', {
+                    color: 'success',
+                    text: response.data.message,
+                    active: true
+                  });
                   this.bindUser.companies = [];
                 }
               }).catch(error => console.log(error));
