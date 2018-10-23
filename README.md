@@ -1,16 +1,15 @@
 ### Installation
-
-Clone an application. Install the dependencies and devDependencies and start the development server. From the root of a project:
-
+For server side of the project do the following:
 ```sh
-$ cd vuefront
-$ npm install
-$ npm run dev
+$ composer install
 ```
 
-For Laravel project copy `vendor` folder into the root of the project.
+For client side install the dependencies and devDependencies and start the development server. From the root of a project:
+
 ```sh
-$ composer update
+$ cd clientfront
+$ npm install
+$ npm run dev
 ```
 
 Then you have to create `.env` file add these information in there:
