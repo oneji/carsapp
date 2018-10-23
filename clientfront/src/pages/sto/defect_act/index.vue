@@ -3,7 +3,9 @@
         <!-- Back button -->
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" append @click="$router.back()">Назад</v-btn>                   
+                <v-btn color="success" append @click="$router.back()">Назад</v-btn>
+                <v-btn color="success" v-if="act.partial_file !== null" append @click="downloadFile('partial')">Скачать PDF клиента</v-btn>
+                <v-btn color="success" v-if="act.full_file !== null" append @click="downloadFile('full')">Скачать PDF</v-btn>
             </v-flex>
         </v-layout>
         <!-- Page loading spinner -->
@@ -11,17 +13,48 @@
             <Loading :loading="loading.page" />
         </v-layout>
         <!-- Content -->
-        <v-layout v-if="!loading.page">
+        <v-layout row wrap v-if="!loading.page">
             <v-flex xs12 sm12 md12 lg12>
                 <form @submit.prevent="createDefectAct" data-vv-scope="create-defect-act-form" :style="{ fontSize: '14px' }">
+                    <table class="defect-act-table" :style="{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid #e6e6e6' }">
+                        <thead>
+                            <tr class="defect-act-table-title">
+                                <th colspan="2"><h2>Дефектный акт</h2></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Номер акта</strong></td>
+                                <td>#{{ act.id | generateActNum }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Дата создания</strong></td>
+                                <td>{{ act.defect_act_date | moment("MMMM D, YYYY") }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Комментарий</strong></td>
+                                <td>{{ act.comment !== null ? act.comment : 'Комментария нет.' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <table class="defect-act-table">
                         <tbody>
-                            <template v-for="item in defectsData">
+                            <template v-for="(item, index) in defectsData">  
+                                <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                                    <th>Деталь</th>
+                                    <th>Статус</th>
+                                    <th>Состояние</th>
+                                    <th>Заключение</th>
+                                    <th>Комментарий</th>
+                                </tr>
                                 <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
                                     <th colspan="5">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-else :key="item.uuid">
                                     <td>{{ item.defect_name }}</td>
+                                    <td>
+                                        {{ detailsInfo[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}
+                                    </td>
                                     <td>
                                         <p v-for="condition in item.defect_options" :key="condition.id">
                                             {{ 
@@ -32,7 +65,6 @@
                                         </p>
                                         <p>{{ selectedDetailConditions[item.id].length === 0 ? 'Ничего не было выбрано.' : '' }}</p>
                                     </td>
-                                    <td>{{ comments[item.id] !== undefined ? comments[item.id].body : 'Комментария нет.' }}</td>
                                     <td>
                                         <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
                                             {{ 
@@ -41,11 +73,8 @@
                                                 : ''
                                             }}
                                         </p>
-                                        <!-- <p>{{ selectedDetailConditions[item.id].length === 0 ? 'Ничего не было выбрано.' : '' }}</p> -->
                                     </td>
-                                    <td>
-                                        {{ detailsInfo[item.id].toReport === 1 ? 'Выводится в отчет' : 'Не выводится в отчет' }}
-                                    </td>
+                                    <td>{{ comments[item.id] !== undefined ? comments[item.id].body : 'Комментария нет.' }}</td>                                    
                                 </tr>
                             </template>
                         </tbody>
@@ -60,10 +89,7 @@
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th colspan="5">Файлы и комментарий</th>                                
-                            </tr>
-                            <tr>
-                                <td colspan="5">{{ act.comment !== null ? act.comment : 'Комментария нет.' }}</td>
+                                <th colspan="5">Файлы</th>                                
                             </tr>
                             <tr>
                                 <td colspan="5">
@@ -77,14 +103,7 @@
                                     <span v-else>Файлов нет.</span>                                    
                                 </td>
                             </tr>
-                        </tbody>                       
-                        <tfoot>
-                            <tr>
-                                <td colspan="5">
-                                    <v-btn block color="success" :loading="loading.saveBtn" type="submit">Создать дефектный акт</v-btn>
-                                </td>
-                            </tr>
-                        </tfoot>
+                        </tbody>
                     </table>
                 </form>
             </v-flex>
@@ -108,6 +127,11 @@ export default {
         Loading,
         FileUpload,
         Lightbox
+    },
+    filters: {
+        generateActNum(value) {
+            return (value / 10000).toString().replace('.', '');
+        }
     },
     data() {
         return {
@@ -230,6 +254,20 @@ export default {
                     });
                 })
                 .catch(error => console.log(error));
+        },
+        downloadFile(type) {
+            axios({
+                url: `defect-acts/files/download?id=${this.$route.params.act}&type=${type}`,
+                method: 'GET',
+                responseType: 'blob'
+            }).then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = `${this.assetsURL}/defect-acts/files/download?id=${this.$route.params.act}&type=${type}`;
+                link.setAttribute('download', 'download');
+                document.body.appendChild(link);
+                link.click();
+            }).catch(error => console.log(error))
         },
         onFileChanged(file) {
             this.attachments = file;

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Sto;
 
-use App\CardCard;
+use App\Car;
+use App\CarCard;
 use App\DefectAct;
 use App\Defect;
 use App\DefectType;
@@ -14,9 +15,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Image;
+use Mail;
 
 class DefectActController extends Controller
 {
+    private $partialReport;
+    private $fullReport;
     /**
      * Get all defect acts.
      */
@@ -43,11 +47,16 @@ class DefectActController extends Controller
         $detailInfo = json_decode($request->detail_info);
         $detailConclusions = json_decode($request->detail_conclusions);
         $equipment = json_decode($request->equipment);
+        // Name and HTML file for .pdf
+        $partialReportFilename = $this->generateActFile($request->partialReport);
+        $fullReportFilename = $this->generateActFile($request->fullReport);
         // Create a new defect act
         $defectAct = new DefectAct();
         $defectAct->car_card_id = $card_id;
         $defectAct->defect_act_date = Carbon::now();
         $defectAct->comment = $comment;
+        $defectAct->partial_file = $partialReportFilename;
+        $defectAct->full_file = $fullReportFilename;
         $defectAct->save();
 
         // Loop through all defect details' conditions
@@ -142,14 +151,95 @@ class DefectActController extends Controller
             $defectAct->attachments()->saveMany($defectAttachments);
 
         return response()->json([
-            'comment' => $comment,
-            'conditions' => $conditions,
-            'detail_info' => $detailInfo,
-            'detail_conclusions' => $detailConclusions,
-            'equipment' => $equipment,
             'success' => true,
-            'message' => 'Дефектный акт успешно создан.'
+            'message' => 'Дефектный акт успешно создан.',
+            'act' => $defectAct 
         ]);
+    }
+
+    /**
+     * Generate RT act .pdf file and save on the server.
+     * 
+     * @return  string $fileName
+     */
+    public function generateActFile($html)
+    {   
+        /* Mpdf */
+        $fileName = uniqid().'.pdf';
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output(public_path('uploads/defect_acts/'.$fileName), \Mpdf\Output\Destination::FILE);
+        
+        /* Dompdf */
+        // $dompdf = new Dompdf();
+        // $dompdf->loadHtml($this->html);
+        // $dompdf->render();
+        // file_put_contents(public_path('/uploads/defect_acts/'.$fileName), $dompdf->output());
+
+        return $fileName;
+    }
+
+    /**
+     * Send defect act .pdf file to email.
+     */
+    public function sendActFile($sto_slug, $actId)
+    {
+        $act = DefectAct::find($actId);
+        $card = CarCard::where('id', $act->car_card_id)->first();
+        $car = Car::where('id', $card->car_id)->with('drivers')->first();
+        $fileName = $act->partial_file;
+
+        $driver = [];
+        foreach($car->drivers as $dr) {
+            if($dr->pivot->active === 1) {
+                $driver = $dr;
+            }
+        }
+
+        if($driver !== null) {
+            if($driver->email !== null) {
+                Mail::send('welcome', [], function($message) use ($driver, $fileName) {
+                    $message->subject('Дефектный акт');
+                    $message->from('sto@the55group.com');
+                    $message->to($driver->email);
+                    $message->attach(public_path('/uploads/defect_acts/'.$fileName), [
+                        'as' => 'Дефектный акт',
+                        'mime' => 'application/pdf'
+                    ]);
+                });
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Дефектный акт успешно отправлен на почту.',
+        ]);
+    }
+
+    /**
+     * Download defect act .pdf file.
+     * 
+     * @param   \Illuminate\Http\Request $request
+     * 
+     * @return  \Illuminate\Http\Response
+     */
+    public function downloadFile(Request $request) 
+    {
+        $act = DefectAct::find($request->id);
+        $file = '';
+        $filename = '';
+        $headers = [
+            'Content-Type' => 'application/pdf',
+        ];
+        if($request->type === 'partial') {
+            $file = public_path('/uploads/defect_acts/'.$act->partial_file);
+            $filename = $act->partial_file;
+        } else {
+            $file = public_path('/uploads/defect_acts/'.$act->full_file);
+            $filename = $act->full_file;
+        }
+        
+        return response()->download($file, $filename, $headers);
     }
 
     /**

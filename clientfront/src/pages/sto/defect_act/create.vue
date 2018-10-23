@@ -16,12 +16,33 @@
                 <form @submit.prevent="createDefectAct" data-vv-scope="create-defect-act-form" :style="{ fontSize: '14px' }">
                     <table class="defect-act-table">
                         <tbody>
-                            <template v-for="item in defectsData">
+                            <template v-for="(item, index) in defectsData">
+                                <tr class="defect-act-table-title" :style="{ fontSize: '20px' }" v-if="index === 0" :key="index">
+                                    <th colspan="5">Новый дефектный акт</th>
+                                </tr>
+                                <tr class="defect-act-table-title" v-if="index === 0" :key="index + 1">
+                                    <th>Деталь</th>
+                                    <th>Статус</th>
+                                    <th>Состояние</th>
+                                    <th>Заключение</th>
+                                    <th>Комментарий</th>
+                                </tr>
                                 <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
                                     <th colspan="5">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-else :key="item.uuid">
                                     <td>{{ item.defect_name }}</td>
+                                    <td>
+                                        <v-radio-group 
+                                            v-model="detailsInfo[item.id].toReport"
+                                            :error-messages="errors.collect(`radio_${item.id}`)"
+                                            hide-details
+                                            :style="{ padding: '0' }"
+                                        >
+                                            <v-radio label="Пройден" :value="1"></v-radio>
+                                            <v-radio label="Не пройден" :value="0"></v-radio>
+                                        </v-radio-group>
+                                    </td>
                                     <td>
                                         <v-checkbox
                                             :error-messages="errors.collect(`condition_${item.id}`)"
@@ -31,18 +52,7 @@
                                             :label="condition.defect_option_name" 
                                             :value="condition.id"
                                             hide-details></v-checkbox>
-                                    </td>
-                                    <td>
-                                        <v-text-field
-                                            v-model="detailsInfo[item.id].comment"
-                                            label="Введите комментарий"
-                                            multi-line
-                                            clearable
-                                            no-resize
-                                            rows="3"
-                                            hide-details
-                                        ></v-text-field>
-                                    </td>
+                                    </td>                                    
                                     <td>
                                         <v-checkbox
                                             :error-messages="errors.collect(`conclusion_${item.id}`)"
@@ -53,16 +63,17 @@
                                             :value="conclusion.id"
                                             hide-details></v-checkbox>
                                     </td>
+                                    
                                     <td>
-                                        <v-radio-group 
-                                            v-model="detailsInfo[item.id].toReport"
-                                            :error-messages="errors.collect(`radio_${item.id}`)"
+                                        <v-text-field
+                                            v-model="detailsInfo[item.id].comment"
+                                            label="Введите комментарий"
+                                            multi-line
+                                            clearable
+                                            no-resize
+                                            rows="3"
                                             hide-details
-                                            :style="{ padding: '0' }"
-                                        >
-                                            <v-radio label="Выводить в отчет" :value="1"></v-radio>
-                                            <v-radio label="Не выводить в отчет" :value="0"></v-radio>
-                                        </v-radio-group>
+                                        ></v-text-field>
                                     </td>
                                 </tr>
                             </template>
@@ -117,6 +128,96 @@
                     </table>
                 </form>
             </v-flex>
+        </v-layout>        
+
+        <v-layout row wrap v-show="false">
+            <v-flex ref="partialReport">
+                <table class="defect-act-table" style="font-size: 11px !important">
+                    <tbody>
+                        <template v-for="item in defectsData">
+                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="item.uuid">
+                                <th colspan="4">{{ item.defect_type_name }}</th>
+                            </tr>
+                            <tr v-if="!item.heading && forPDF.partialReport[item.id].toReport === 0" :key="item.uuid">
+                                <td>{{ item.defect_name }}</td>
+                                <td>
+                                    <p v-for="condition in item.defect_options" :key="condition.id">
+                                        {{ 
+                                            selectedDetailConditions[item.id].includes(condition.id) 
+                                            ? condition.defect_option_name
+                                            : ''
+                                        }}
+                                    </p>
+                                </td>
+                                <td>{{ forPDF.partialReport[item.id].comment }}</td>
+                                <td>
+                                    <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
+                                        {{ 
+                                            selectedDetailConclusions[item.id].includes(conclusion.id) 
+                                            ? conclusion.conclusion_name
+                                            : ''
+                                        }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                    <tbody>
+                        <tr class="defect-act-table-title">
+                            <th colspan="4">Наличие</th>
+                        </tr>
+                        <tr v-for="eq in equipment" :key="eq.id">
+                            <td colspan="2">{{ eq.equipment_type_name }}</td>
+                            <td colspan="2">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </v-flex>
+        </v-layout>
+
+        <v-layout row wrap v-show="false">
+            <v-flex ref="fullReport">
+                <table class="defect-act-table" style="font-size: 11px !important">
+                    <tbody>
+                        <template v-for="item in defectsData">
+                            <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
+                                <th colspan="4">{{ item.defect_type_name }}</th>
+                            </tr>
+                            <tr v-if="!item.heading" :key="item.uuid">
+                                <td>{{ item.defect_name }}</td>
+                                <td>
+                                    <p v-for="condition in item.defect_options" :key="condition.id">
+                                        {{ 
+                                            selectedDetailConditions[item.id].includes(condition.id) 
+                                            ? condition.defect_option_name
+                                            : ''
+                                        }}
+                                    </p>
+                                </td>
+                                <td>{{ forPDF.partialReport[item.id].comment }}</td>
+                                <td>
+                                    <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
+                                        {{ 
+                                            selectedDetailConclusions[item.id].includes(conclusion.id) 
+                                            ? conclusion.conclusion_name
+                                            : ''
+                                        }}
+                                    </p>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                    <tbody>
+                        <tr class="defect-act-table-title">
+                            <th colspan="4">Наличие</th>
+                        </tr>
+                        <tr v-for="eq in equipment" :key="eq.id">
+                            <td colspan="2">{{ eq.equipment_type_name }}</td>
+                            <td colspan="2">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </v-flex>
         </v-layout>
     </div>
 </template>
@@ -151,6 +252,13 @@ export default {
             loading: {
                 page: true,
                 saveBtn: false,
+            },
+
+            forPDF: {
+                fullReport: [],
+                partialReport: [],
+                fullReportChecklistsHeaders: [],
+                partialReportChecklistsHeaders: [],
             }
         }
     },
@@ -165,11 +273,21 @@ export default {
                     // Create an array with fake data to be filled later
                     for(let i = 0; i < defects_info.length; i++) {
                         let checklist = defects_info[i];
+                        this.forPDF.partialReportChecklistsHeaders[checklist.id] = false;
                         for(let j = 0; j < checklist.defects.length; j++) {
                             let detail = checklist.defects[j];
                             this.selectedDetailConditions[detail.id] = [];
                             this.selectedDetailConclusions[detail.id] = [];
                             this.detailsInfo[detail.id] = {
+                                comment: '',
+                                toReport: null
+                            };
+                            // Data for PDF files
+                            this.forPDF.fullReport[detail.id] = {
+                                comment: '',
+                                toReport: null
+                            };
+                            this.forPDF.partialReport[detail.id] = {
                                 comment: '',
                                 toReport: null
                             };
@@ -232,9 +350,26 @@ export default {
                             }
                         }
                     }
+                    
                     // If validation succeed ...
-                    if(success && allCheckboxesValidated) {
+                    if(allCheckboxesValidated) {
                         console.log('[Validation] OK!');
+                        // Collecting data for PDF files
+                        this.forPDF.partialReport = [...this.detailsInfo];
+                        // console.log(this)
+                        for(let i = 0; i < this.defectsData.length; i++) {
+                            let item = this.defectsData[i];
+                            if(item.heading) {
+                                let flag = false;
+                                for(let j = 0; j < item.defects.length; j++) {
+                                    let defect = item.defects[j];
+                                    if(this.forPDF.partialReport[defect.id].toReport === 0) {
+                                        flag = true;
+                                    }
+                                }
+                                this.forPDF.partialReportChecklistsHeaders[item.id] = flag;
+                            }
+                        }
                         let formData = new FormData();
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);
@@ -246,19 +381,97 @@ export default {
                         for(let i = 0; i < this.attachments.length; i++) {
                             formData.append('attachments[]', this.attachments[i].file);
                         }
-                        // Send all the data to the server
-                        axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/defects/acts`, formData)
-                            .then(response => {
-                                console.log(response)
-                                this.loading.saveBtn = false;
-                                // Notification
-                                this.$store.dispatch('showSnackbar', {
-                                    color: 'success',
-                                    text: response.data.message,
-                                    active: true
-                                });
-                            })
-                            .catch(error => console.log(error));
+                        this.$nextTick(() => {
+                            formData.append('partialReport', 
+                                `<html>
+                                    <head>
+                                        <style>
+                                            body { font-family: DejaVu Sans }
+                                            .defect-act-table {
+                                                width: 100%;
+                                            }
+                                            .defect-act-table td, .defect-act-table th {
+                                               padding: 10px;
+                                                vertical-align: middle;
+                                                border: 1px solid #dee2e6;
+                                                font-size: 11px !important;
+                                                margin: 0; 
+                                                width: 10%;
+                                            }
+                                            .defect-act-table td p {
+                                                margin: 0;
+                                            }
+                                            .defect-act-table-title {
+                                                background-color: rgba(0, 0, 0, .05);
+                                                text-align: center;
+                                            }
+                                            .defect-act-table-checklist-title {
+                                                text-transform: uppercase;
+                                                font-weight: bold;
+                                                text-align: center;
+                                            }
+                                        </style>
+                                        <body>${this.$refs.partialReport.innerHTML}</body>
+                                    </head>
+                                </html>`);
+                            formData.append('fullReport', 
+                                `<html>
+                                    <head>
+                                        <style>
+                                            body { font-family: DejaVu Sans }
+                                            .defect-act-table {
+                                                width: 100%;
+                                            }
+                                            .defect-act-table td, .defect-act-table th {
+                                               padding: 10px;
+                                                vertical-align: middle;
+                                                border: 1px solid #dee2e6;
+                                                font-size: 11px !important;
+                                                margin: 0; 
+                                                width: 10%;
+                                            }
+                                            .defect-act-table td p {
+                                                margin: 0;
+                                            }
+                                            .defect-act-table-title {
+                                                background-color: rgba(0, 0, 0, .05);
+                                                text-align: center;
+                                            }
+                                            .defect-act-table-checklist-title {
+                                                text-transform: uppercase;
+                                                font-weight: bold;
+                                                text-align: center;
+                                            }
+                                        </style>
+                                        <body>${this.$refs.fullReport.innerHTML}</body>
+                                    </head>
+                                </html>`);
+
+                            // Send all the data to the server
+                            axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/defects/acts`, formData)
+                                .then(response => {
+                                    console.log(response)
+                                    this.loading.saveBtn = false;
+                                    // Notification
+                                    this.$store.dispatch('showSnackbar', {
+                                        color: 'success',
+                                        text: response.data.message,
+                                        active: true
+                                    });
+
+                                    axios.get(`/sto/${this.$route.params.slug}/defect-acts/${response.data.act.id}/sendActFile`)
+                                        .then(response => {
+                                            this.$store.dispatch('showSnackbar', {
+                                                color: 'success',
+                                                text: response.data.message,
+                                                active: true
+                                            });
+                                        })
+                                        .catch(error => console.log(error));
+                                })
+                                .catch(error => console.log(error));
+                        });
+                        
                     } else {
                         this.loading.saveBtn = false;
                         this.$store.dispatch('showSnackbar', {

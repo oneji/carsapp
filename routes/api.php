@@ -26,6 +26,7 @@ Route::post('auth/register', 'AuthController@register');
 Route::get('/token/refresh', 'AuthController@refreshToken');
 Route::get('/token/check', 'AuthController@checkToken');
 Route::get('rt-act/files/download', 'RtActController@downloadFile');
+Route::get('defect-acts/files/download', 'Sto\DefectActController@downloadFile');
 
 
 Route::group(['middleware' => ['jwt.auth']], function() {
@@ -177,6 +178,7 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         // Defect act 
         Route::get('/{slug}/cards/{card}/defects/acts', 'DefectActController@get');
         Route::get('/{slug}/defect-acts/{act}', 'DefectActController@getById');
+        Route::get('/{slug}/defect-acts/{act}/sendActFile', 'DefectActController@sendActFile');    
 
         Route::post('/{slug}/cards/{card}/defects/acts', 'DefectActController@store');
         // Defect routes
