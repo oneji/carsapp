@@ -89,7 +89,9 @@ class DefectActController extends Controller
                         'defect_act_id' => $defectAct->id
                     ]));
                     $defect->comments()->saveMany($detailComments);
-                    // Attach defect detail to the defect act
+                    // Attach defect detail to the defect act 
+                }
+                if($infoItem->toReport !== null) {
                     $defectAct->defects()->attach($key, [
                         'to_report' => $infoItem->toReport
                     ]);
@@ -153,7 +155,8 @@ class DefectActController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Дефектный акт успешно создан.',
-            'act' => $defectAct 
+            'act' => $defectAct,
+            'detailInfo' => $detailInfo
         ]);
     }
 

@@ -282,7 +282,6 @@ export default {
         fetchDefectsInfo() {
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response);
                     let { car, defects_info, equipment } = response.data;
                     this.equipment = equipment;
                     this.cardId = car.card.id;
@@ -373,16 +372,13 @@ export default {
                         // Collecting data for PDF files
                         this.forPDF.partialReport = [...this.detailsInfo];
                         this.forPDF.fullReport = [...this.detailsInfo];
-                        // console.log(this)
                         for(let i = 0; i < this.defectsData.length; i++) {
                             let item = this.defectsData[i];
                             if(item.heading) {
                                 let flag = false;
                                 let flag2 = false;
-                                // console.log(item);
                                 for(let j = 0; j < item.defects.length; j++) {
                                     let defect = item.defects[j];
-                                    console.log(this.forPDF.fullReport[defect.id]);
                                     if(this.forPDF.partialReport[defect.id].toReport === 0) {
                                         flag = true;
                                     }
@@ -395,7 +391,6 @@ export default {
                                 this.forPDF.fullReportChecklistsHeaders[item.id] = flag2;
                             }
                         }
-                        console.log(this.forPDF.fullReportChecklistsHeaders);
                         let formData = new FormData();
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);
@@ -476,7 +471,7 @@ export default {
                             // Send all the data to the server
                             axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/defects/acts`, formData)
                                 .then(response => {
-                                    console.log(response)
+                                    console.log(response.data);
                                     this.loading.saveBtn = false;
                                     // Notification
                                     this.$store.dispatch('showSnackbar', {

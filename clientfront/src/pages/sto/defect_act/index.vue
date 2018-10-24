@@ -47,11 +47,11 @@
                                     <th>Заключение</th>
                                     <th>Комментарий</th>
                                 </tr>
-                                <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
+                                <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
                                     <th colspan="5">{{ item.defect_type_name }}</th>
                                 </tr>
-                                <tr v-else :key="item.uuid">
-                                    <td>{{ item.defect_name }}</td>
+                                <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
+                                    <td>{{ item.defect_name }} | {{ item.id }}</td>
                                     <td>
                                         {{ detailsInfo[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}
                                     </td>
@@ -63,7 +63,6 @@
                                                 : ''
                                             }}
                                         </p>
-                                        <p>{{ selectedDetailConditions[item.id].length === 0 ? 'Ничего не было выбрано.' : '' }}</p>
                                     </td>
                                     <td>
                                         <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
@@ -151,14 +150,15 @@ export default {
             loading: {
                 page: true,
                 saveBtn: false,
-            }
+            },
+            headersCheck: []
         }
     },
     methods: {
         fetchDefectsInfo() {
             axios.get(`/sto/${this.$route.params.slug}/defect-acts/${this.$route.params.act}`)
                 .then(response => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     let { act, equipment, defectsInfo, actDefectConditions, actDefectConclusions } = response.data;
                     this.act = act;
                     this.equipment = equipment;
@@ -188,7 +188,7 @@ export default {
                             this.selectedDetailConclusions[detail.id] = [];
                             this.detailsInfo[detail.id] = {
                                 comment: '',
-                                toReport: 1
+                                toReport: null
                             };
                         }
                     }
@@ -213,6 +213,20 @@ export default {
                         tempComments.push(...detail.comments);
                         this.comments[detail.id] = tempComments.filter(comment => comment.commentable_id === detail.id)[0]
                         this.detailsInfo[detail.id].toReport = detail.pivot.to_report;
+                    }
+
+                    for(let i = 0; i < this.defectsData.length; i++) {
+                        let item = this.defectsData[i];
+                        if(item.heading) {
+                            let flag = false;
+                            for(let j = 0; j < item.defects.length; j++) {
+                                let defect = item.defects[j];
+                                if(this.detailsInfo[defect.id].toReport !== null) {
+                                    flag = true;
+                                }
+                            }
+                            this.headersCheck[item.id] = flag;
+                        }
                     }
                     
                     // Get defect act's attachments
@@ -244,8 +258,6 @@ export default {
             // Send all the data to the server
             axios.post(`/sto/${this.$route.params.slug}/cards/${this.cardId}/defects/acts`, formData)
                 .then(response => {
-                    console.log(response)
-
                     // Notification
                     this.$store.dispatch('showSnackbar', {
                         color: 'success',
