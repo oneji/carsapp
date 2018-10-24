@@ -812,6 +812,7 @@ export default {
 
             axios.get(`/sto/${this.$route.params.slug}/defects/all`)
                 .then(response => {
+                    console.log(response.data);
                     this.types.items = response.data.allDefects;
                     this.defects.items = [];
                     this.options.items = [];

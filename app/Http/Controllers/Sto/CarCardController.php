@@ -10,6 +10,7 @@ use App\Sto;
 use JWTAuth;
 use App\EquipmentType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class CarCardController extends Controller
@@ -76,6 +77,20 @@ class CarCardController extends Controller
                         }])->first(); 
                         
         $defect_info = DefectType::with('defects.defect_options', 'defects.defect_conclusions')->get();
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();        
+        // Put default defect options into every defect
+        foreach($defect_info as $defectType) {
+            foreach($defectType->defects as $defect) {
+                foreach($defaultDefectConditions as $defectOption) {
+                    $defect->defect_options->push($defectOption);
+                }
+
+                foreach($defaultDefectConclusion as $defectConslusion) {
+                    $defect->defect_conclusions->push($defectConslusion);
+                }
+            }
+        }
         $equipment = EquipmentType::all();
 
         return response()->json([

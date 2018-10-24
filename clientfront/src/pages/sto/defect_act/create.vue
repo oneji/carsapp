@@ -134,12 +134,20 @@
             <v-flex ref="partialReport">
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
-                        <template v-for="item in defectsData">
+                        <template v-for="(item, index) in defectsData">
+                            <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                                <th>Деталь</th>
+                                <th>Cтатус</th>
+                                <th>Состояние</th>
+                                <th>Заключение</th>
+                                <th>Комментарий</th>
+                            </tr>
                             <tr class="defect-act-table-title" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="item.uuid">
-                                <th colspan="4">{{ item.defect_type_name }}</th>
+                                <th colspan="5">{{ item.defect_type_name }}</th>
                             </tr>
                             <tr v-if="!item.heading && forPDF.partialReport[item.id].toReport === 0" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
+                                <td>{{ forPDF.partialReport[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}</td>                               
                                 <td>
                                     <p v-for="condition in item.defect_options" :key="condition.id">
                                         {{ 
@@ -149,7 +157,6 @@
                                         }}
                                     </p>
                                 </td>
-                                <td>{{ forPDF.partialReport[item.id].comment }}</td>
                                 <td>
                                     <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
                                         {{ 
@@ -159,16 +166,17 @@
                                         }}
                                     </p>
                                 </td>
+                                <td>{{ forPDF.partialReport[item.id].comment }}</td>
                             </tr>
                         </template>
                     </tbody>
                     <tbody>
                         <tr class="defect-act-table-title">
-                            <th colspan="4">Наличие</th>
+                            <th colspan="5">Наличие</th>
                         </tr>
                         <tr v-for="eq in equipment" :key="eq.id">
                             <td colspan="2">{{ eq.equipment_type_name }}</td>
-                            <td colspan="2">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
+                            <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -179,12 +187,20 @@
             <v-flex ref="fullReport">
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
-                        <template v-for="item in defectsData">
-                            <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
-                                <th colspan="4">{{ item.defect_type_name }}</th>
+                        <template v-for="(item, index) in defectsData">
+                            <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                                <th>Деталь</th>
+                                <th>Cтатус</th>                                
+                                <th>Состояние</th>
+                                <th>Заключение</th>
+                                <th>Комментарий</th>
                             </tr>
-                            <tr v-if="!item.heading" :key="item.uuid">
+                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.fullReportChecklistsHeaders[item.id]" :key="item.uuid">
+                                <th colspan="5">{{ item.defect_type_name }}</th>
+                            </tr>
+                            <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
+                                <td>{{ forPDF.fullReport[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}</td>
                                 <td>
                                     <p v-for="condition in item.defect_options" :key="condition.id">
                                         {{ 
@@ -194,7 +210,6 @@
                                         }}
                                     </p>
                                 </td>
-                                <td>{{ forPDF.partialReport[item.id].comment }}</td>
                                 <td>
                                     <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
                                         {{ 
@@ -204,16 +219,17 @@
                                         }}
                                     </p>
                                 </td>
+                                <td>{{ forPDF.fullReport[item.id].comment }}</td>
                             </tr>
                         </template>
                     </tbody>
                     <tbody>
                         <tr class="defect-act-table-title">
-                            <th colspan="4">Наличие</th>
+                            <th colspan="5">Наличие</th>
                         </tr>
                         <tr v-for="eq in equipment" :key="eq.id">
                             <td colspan="2">{{ eq.equipment_type_name }}</td>
-                            <td colspan="2">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
+                            <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -323,7 +339,7 @@ export default {
                     for(let i = 0; i < this.selectedDetailConditions.length; i++) {
                         let condition = this.selectedDetailConditions[i];
                         if(condition !== undefined) {
-                            if(condition.length === 0) {
+                            if(condition.length === 0 && this.detailsInfo[i].toReport === 0) {
                                 this.$validator.errors.add(`condition_${i}`, 'Поле "Состояние" обязательно для заполнения.');
                                 allCheckboxesValidated = false;
                             }
@@ -333,7 +349,7 @@ export default {
                     for(let i = 0; i < this.selectedDetailConclusions.length; i++) {
                         let conclusion = this.selectedDetailConclusions[i];
                         if(conclusion !== undefined) {
-                            if(conclusion.length === 0) {
+                            if(conclusion.length === 0 && this.detailsInfo[i].toReport === 0) {
                                 this.$validator.errors.add(`conclusion_${i}`, 'Поле "Заключение" обязательно для заполнения.');
                                 allCheckboxesValidated = false;
                             }
@@ -341,35 +357,45 @@ export default {
                         
                     }
                     // Validate to report status
-                    for(let i = 0; i < this.detailsInfo.length; i++) {
-                        let infoItem = this.detailsInfo[i];
-                        if(infoItem !== undefined) {
-                            if(infoItem.toReport === null) {
-                                this.$validator.errors.add(`radio_${i}`, 'Поле "В отчет" обязательно для заполнения.');
-                                allCheckboxesValidated = false;
-                            }
-                        }
-                    }
+                    // for(let i = 0; i < this.detailsInfo.length; i++) {
+                    //     let infoItem = this.detailsInfo[i];
+                    //     if(infoItem !== undefined) {
+                    //         if(infoItem.toReport === 0) {
+                    //             this.$validator.errors.add(`radio_${i}`, 'Поле "В отчет" обязательно для заполнения.');
+                    //             allCheckboxesValidated = false;
+                    //         }
+                    //     }
+                    // }
                     
                     // If validation succeed ...
                     if(allCheckboxesValidated) {
                         console.log('[Validation] OK!');
                         // Collecting data for PDF files
                         this.forPDF.partialReport = [...this.detailsInfo];
+                        this.forPDF.fullReport = [...this.detailsInfo];
                         // console.log(this)
                         for(let i = 0; i < this.defectsData.length; i++) {
                             let item = this.defectsData[i];
                             if(item.heading) {
                                 let flag = false;
+                                let flag2 = false;
+                                // console.log(item);
                                 for(let j = 0; j < item.defects.length; j++) {
                                     let defect = item.defects[j];
+                                    console.log(this.forPDF.fullReport[defect.id]);
                                     if(this.forPDF.partialReport[defect.id].toReport === 0) {
                                         flag = true;
                                     }
+
+                                    if(this.forPDF.fullReport[defect.id].toReport !== null) {
+                                        flag2 = true;
+                                    }
                                 }
                                 this.forPDF.partialReportChecklistsHeaders[item.id] = flag;
+                                this.forPDF.fullReportChecklistsHeaders[item.id] = flag2;
                             }
                         }
+                        console.log(this.forPDF.fullReportChecklistsHeaders);
                         let formData = new FormData();
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);

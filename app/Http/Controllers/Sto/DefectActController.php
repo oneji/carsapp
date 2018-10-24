@@ -258,6 +258,20 @@ class DefectActController extends Controller
         ])->first();
         
         $defectInfo = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();        
+        // Put default defect options into every defect
+        foreach($defectInfo as $defectType) {
+            foreach($defectType->defects as $defect) {
+                foreach($defaultDefectConditions as $defectOption) {
+                    $defect->defect_options->push($defectOption);
+                }
+
+                foreach($defaultDefectConclusion as $defectConslusion) {
+                    $defect->defect_conclusions->push($defectConslusion);
+                }
+            }
+        }
         $equipment = EquipmentType::all();
         $chosenDefectConditions = DB::table('defect_defect_option')
             ->select('defects.defect_name', 'defects.id as defect_id', 'defect_options.id as id', 'defect_options.defect_option_name')
@@ -266,11 +280,11 @@ class DefectActController extends Controller
             ->where('defect_defect_option.defect_act_id', $id)
             ->get();
         $chosenDefectConclusions = DB::table('defect_defect_conclusion')
-        ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name')
-        ->join('defects', 'defect_id', '=', 'defects.id')
-        ->join('defect_conclusions', 'defect_conclusion_id', '=', 'defect_conclusions.id')
-        ->where('defect_defect_conclusion.defect_act_id', $id)
-        ->get();
+            ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name')
+            ->join('defects', 'defect_id', '=', 'defects.id')
+            ->join('defect_conclusions', 'defect_conclusion_id', '=', 'defect_conclusions.id')
+            ->where('defect_defect_conclusion.defect_act_id', $id)
+            ->get();
         
         return response()->json([
             'success' => true,

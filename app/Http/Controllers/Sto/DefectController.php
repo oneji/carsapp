@@ -8,6 +8,7 @@ use App\DefectType;
 use App\DefectConclusion;
 use App\Defect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class DefectController extends Controller
@@ -49,8 +50,21 @@ class DefectController extends Controller
      */
     public function getFullInfo($sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $defect_info = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
+        // Put default defect options/conslusions into every defect
+        foreach($defect_info as $defectType) {
+            foreach($defectType->defects as $defect) {
+                foreach($defaultDefectConditions as $defectOption) {
+                    $defect->defect_options->push($defectOption);
+                }
+
+                foreach($defaultDefectConclusion as $defectConslusion) {
+                    $defect->defect_conclusions->push($defectConslusion);
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -104,10 +118,24 @@ class DefectController extends Controller
     public function getAll($sto_slug)
     {
         $allDefects = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();        
+        // Put default defect options into every defect
+        foreach($allDefects as $defectType) {
+            foreach($defectType->defects as $defect) {
+                foreach($defaultDefectConditions as $defectOption) {
+                    $defect->defect_options->push($defectOption);
+                }
+
+                foreach($defaultDefectConclusion as $defectConslusion) {
+                    $defect->defect_conclusions->push($defectConslusion);
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,
-            'allDefects' => $allDefects,
+            'allDefects' => $allDefects
         ]);
     }
 
@@ -188,7 +216,7 @@ class DefectController extends Controller
     {
         $defectOption = DefectOption::find($id);
         $defectOption->defect_option_name = $request->defect_option_name;
-        $defectOption->defect_id = $request->defect_id;
+        $defectOption->defect_id = $defectOption->defect_id !== null ? $request->defect_id : null;
         $defectOption->save();
 
         return response()->json([
@@ -233,7 +261,7 @@ class DefectController extends Controller
     {
         $conclusion = DefectConclusion::find($id);
         $conclusion->conclusion_name = $request->conclusion_name;
-        $conclusion->defect_id = $request->defect_id;
+        $conclusion->defect_id = $conclusion->defect_id !== null ? $request->defect_id : null;
         $conclusion->save();
 
         return response()->json([
