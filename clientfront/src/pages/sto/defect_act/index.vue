@@ -118,6 +118,7 @@ import Loading from '@/components/Loading'
 import FileUpload from '@/components/FileUpload'
 import Lightbox from 'vue-simple-lightbox'
 import assetsURL from '@/components/mixins/assets-url'
+import config from '@/config'
 
 export default {
     mixins: [assetsURL],
@@ -275,7 +276,7 @@ export default {
             }).then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
-                link.href = `${this.assetsURL}/defect-acts/files/download?id=${this.$route.params.act}&type=${type}`;
+                link.href = `${config.apiURL}/defect-acts/files/download?id=${this.$route.params.act}&type=${type}`;
                 link.setAttribute('download', 'download');
                 document.body.appendChild(link);
                 link.click();
