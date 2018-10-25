@@ -63,14 +63,12 @@ class DefectActController extends Controller
         foreach($conditions as $detailId => $detailArray) {
             if($detailArray !== null) {
                 $arrayOfValues = [];
-                foreach($detailArray as $key => $conditionId) {
-                    // Generate an array to bulk insert to the db
-                    array_push($arrayOfValues, [
-                        'defect_id' => $detailId,
-                        'defect_option_id' => $conditionId,
-                        'defect_act_id' => $defectAct->id
-                    ]);
-                }
+                // Generate an array to bulk insert to the db
+                array_push($arrayOfValues, [
+                    'defect_id' => $detailId,
+                    'defect_option_id' => $detailArray,
+                    'defect_act_id' => $defectAct->id
+                ]);
                 // Save to the db
                 DB::table('defect_defect_option')->insert($arrayOfValues);
             }
@@ -103,14 +101,12 @@ class DefectActController extends Controller
         foreach($detailConclusions as $detailId => $detailArray) {
             if($detailArray !== null) {
                 $arrayOfValues = [];
-                foreach($detailArray as $key => $conclusionId) {
-                    // Generate an array to bulk insert to the db
-                    array_push($arrayOfValues, [
-                        'defect_id' => $detailId,
-                        'defect_conclusion_id' => $conclusionId,
-                        'defect_act_id' => $defectAct->id
-                    ]);
-                }
+                // Generate an array to bulk insert to the db
+                array_push($arrayOfValues, [
+                    'defect_id' => $detailId,
+                    'defect_conclusion_id' => $detailArray,
+                    'defect_act_id' => $defectAct->id
+                ]);
                 // Save to the db
                 DB::table('defect_defect_conclusion')->insert($arrayOfValues);
             }

@@ -51,7 +51,7 @@
                                     <th colspan="5">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
-                                    <td>{{ item.defect_name }} | {{ item.id }}</td>
+                                    <td>{{ item.defect_name }}</td>
                                     <td>
                                         {{ detailsInfo[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}
                                     </td>
@@ -77,7 +77,7 @@
                                 </tr>
                             </template>
                         </tbody>
-                        <tbody>
+                        <!-- <tbody>
                             <tr class="defect-act-table-title">
                                 <th colspan="5">Наличие</th>
                             </tr>
@@ -85,7 +85,7 @@
                                 <td colspan="2">{{ eq.equipment_type_name }}</td>
                                 <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
                             </tr>
-                        </tbody>
+                        </tbody> -->
                         <tbody>
                             <tr class="defect-act-table-title">
                                 <th colspan="5">Файлы</th>                                

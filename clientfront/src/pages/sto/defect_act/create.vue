@@ -44,24 +44,50 @@
                                         </v-radio-group>
                                     </td>
                                     <td>
-                                        <v-checkbox
+                                        <!-- <v-checkbox
                                             :error-messages="errors.collect(`condition_${item.id}`)"
                                             v-model="selectedDetailConditions[item.id]" 
                                             v-for="condition in item.defect_options"
                                             :key="condition.id"
                                             :label="condition.defect_option_name" 
                                             :value="condition.id"
-                                            hide-details></v-checkbox>
+                                            hide-details></v-checkbox> -->
+                                            <v-radio-group 
+                                                v-model="selectedDetailConditions[item.id]"
+                                                :error-messages="errors.collect(`condition_${item.id}`)"
+                                                hide-details
+                                                :style="{ padding: '0' }"
+                                            >
+                                                <v-radio
+                                                    v-for="condition in item.defect_options"
+                                                    :key="condition.id"
+                                                    :label="condition.defect_option_name" 
+                                                    :value="condition.id"
+                                                ></v-radio>
+                                            </v-radio-group>
                                     </td>                                    
                                     <td>
-                                        <v-checkbox
+                                        <!-- <v-checkbox
                                             :error-messages="errors.collect(`conclusion_${item.id}`)"
                                             v-model="selectedDetailConclusions[item.id]" 
                                             v-for="conclusion in item.defect_conclusions"
                                             :key="conclusion.id"
                                             :label="conclusion.conclusion_name" 
                                             :value="conclusion.id"
-                                            hide-details></v-checkbox>
+                                            hide-details></v-checkbox> -->
+                                            <v-radio-group 
+                                                v-model="selectedDetailConclusions[item.id]"
+                                                :error-messages="errors.collect(`conclusion_${item.id}`)"
+                                                hide-details
+                                                :style="{ padding: '0' }"
+                                            >
+                                                <v-radio
+                                                    v-for="conclusion in item.defect_conclusions"
+                                                    :key="conclusion.id"
+                                                    :label="conclusion.conclusion_name" 
+                                                    :value="conclusion.id"
+                                                ></v-radio>
+                                            </v-radio-group>
                                     </td>
                                     
                                     <td>
@@ -78,7 +104,7 @@
                                 </tr>
                             </template>
                         </tbody>
-                        <tbody>
+                        <!-- <tbody>
                             <tr class="defect-act-table-title">
                                 <th colspan="5">Наличие</th>
                             </tr>
@@ -92,7 +118,7 @@
                                         hide-details></v-checkbox>
                                 </td>
                             </tr>
-                        </tbody>
+                        </tbody> -->
                         <tbody>
                             <tr class="defect-act-table-title">
                                 <th colspan="5">Файлы и комментарий</th>                                
@@ -151,7 +177,7 @@
                                 <td>
                                     <p v-for="condition in item.defect_options" :key="condition.id">
                                         {{ 
-                                            selectedDetailConditions[item.id].includes(condition.id) 
+                                            selectedDetailConditions[item.id] === condition.id 
                                             ? condition.defect_option_name
                                             : ''
                                         }}
@@ -160,7 +186,7 @@
                                 <td>
                                     <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
                                         {{ 
-                                            selectedDetailConclusions[item.id].includes(conclusion.id) 
+                                            selectedDetailConclusions[item.id] === conclusion.id
                                             ? conclusion.conclusion_name
                                             : ''
                                         }}
@@ -170,7 +196,7 @@
                             </tr>
                         </template>
                     </tbody>
-                    <tbody>
+                    <!-- <tbody>
                         <tr class="defect-act-table-title">
                             <th colspan="5">Наличие</th>
                         </tr>
@@ -178,7 +204,7 @@
                             <td colspan="2">{{ eq.equipment_type_name }}</td>
                             <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
                         </tr>
-                    </tbody>
+                    </tbody> -->
                 </table>
             </v-flex>
         </v-layout>
@@ -204,7 +230,7 @@
                                 <td>
                                     <p v-for="condition in item.defect_options" :key="condition.id">
                                         {{ 
-                                            selectedDetailConditions[item.id].includes(condition.id) 
+                                            selectedDetailConditions[item.id] === condition.id
                                             ? condition.defect_option_name
                                             : ''
                                         }}
@@ -213,7 +239,7 @@
                                 <td>
                                     <p v-for="conclusion in item.defect_conclusions" :key="conclusion.id">
                                         {{ 
-                                            selectedDetailConclusions[item.id].includes(conclusion.id) 
+                                            selectedDetailConclusions[item.id] === conclusion.id 
                                             ? conclusion.conclusion_name
                                             : ''
                                         }}
@@ -223,7 +249,7 @@
                             </tr>
                         </template>
                     </tbody>
-                    <tbody>
+                    <!-- <tbody>
                         <tr class="defect-act-table-title">
                             <th colspan="5">Наличие</th>
                         </tr>
@@ -231,7 +257,7 @@
                             <td colspan="2">{{ eq.equipment_type_name }}</td>
                             <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
                         </tr>
-                    </tbody>
+                    </tbody> -->
                 </table>
             </v-flex>
         </v-layout>
@@ -291,8 +317,8 @@ export default {
                         this.forPDF.partialReportChecklistsHeaders[checklist.id] = false;
                         for(let j = 0; j < checklist.defects.length; j++) {
                             let detail = checklist.defects[j];
-                            this.selectedDetailConditions[detail.id] = [];
-                            this.selectedDetailConclusions[detail.id] = [];
+                            this.selectedDetailConditions[detail.id] = null;
+                            this.selectedDetailConclusions[detail.id] = null;
                             this.detailsInfo[detail.id] = {
                                 comment: '',
                                 toReport: null
@@ -338,7 +364,7 @@ export default {
                     for(let i = 0; i < this.selectedDetailConditions.length; i++) {
                         let condition = this.selectedDetailConditions[i];
                         if(condition !== undefined) {
-                            if(condition.length === 0 && this.detailsInfo[i].toReport === 0) {
+                            if(condition === null && this.detailsInfo[i].toReport === 0) {
                                 this.$validator.errors.add(`condition_${i}`, 'Поле "Состояние" обязательно для заполнения.');
                                 allCheckboxesValidated = false;
                             }
@@ -348,7 +374,7 @@ export default {
                     for(let i = 0; i < this.selectedDetailConclusions.length; i++) {
                         let conclusion = this.selectedDetailConclusions[i];
                         if(conclusion !== undefined) {
-                            if(conclusion.length === 0 && this.detailsInfo[i].toReport === 0) {
+                            if(conclusion === null && this.detailsInfo[i].toReport === 0) {
                                 this.$validator.errors.add(`conclusion_${i}`, 'Поле "Заключение" обязательно для заполнения.');
                                 allCheckboxesValidated = false;
                             }
