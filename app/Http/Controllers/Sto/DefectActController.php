@@ -55,6 +55,7 @@ class DefectActController extends Controller
         $defectAct->car_card_id = $card_id;
         $defectAct->defect_act_date = Carbon::now();
         $defectAct->comment = $comment;
+        $defectAct->user_id = $request->user_id;
         $defectAct->partial_file = $partialReportFilename;
         $defectAct->full_file = $fullReportFilename;
         $defectAct->save();
@@ -246,15 +247,30 @@ class DefectActController extends Controller
      */
     public function getById($sto_slug, $id)
     {
-        $defectAct = DefectAct::where('id', $id)->with([
-            'defects.defect_options',
-            'equipment', 
-            'defects.defect_conclusions',
-            'attachments',
-            'defects.comments' => function($query) use ($id) {
-                $query->where('defect_act_id', $id)->get();
-            }
-        ])->first();
+        $defectAct = DefectAct::select('defect_acts.*', 'users.fullname as username')
+            ->leftJoin('users', 'users.id', '=', 'defect_acts.user_id')
+            ->where('defect_acts.id', $id)->with([
+                'defects.defect_options',
+                'equipment', 
+                'defects.defect_conclusions',
+                'attachments',
+                'defects.comments' => function($query) use ($id) {
+                    $query->where('defect_act_id', $id)->get();
+                }
+            ])->first();
+
+        $card = CarCard::find($defectAct->car_card_id);
+        $car = Car::select('cars.*', 'shape_name', 'brand_name', 'model_name', 'engine_type_name', 'transmission_name')
+            ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+            ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+            ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+            ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+            ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
+            ->with('companies')
+            ->where('sold', 0)
+            ->where('cars.id', $card->car_id)->with([ 'drivers' => function($q) {
+                $q->where('active', 1)->get();
+            }])->first();
         
         $defectInfo = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
         $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
@@ -288,6 +304,7 @@ class DefectActController extends Controller
         return response()->json([
             'success' => true,
             'act' => $defectAct,
+            'car' => $car,
             'equipment' => $equipment,
             'defectsInfo' => $defectInfo,
             'actDefectConditions' => $chosenDefectConditions,

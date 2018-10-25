@@ -24,16 +24,35 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Номер акта</strong></td>
-                                <td>#{{ act.id | generateActNum }}</td>
+                                <td colspan="1"><strong>Компания</strong></td>
+                                <td colspan="1">{{ company.company_name }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Дата создания</strong></td>
-                                <td>{{ act.defect_act_date | moment("MMMM D, YYYY") }}</td>
+                                <td colspan="1"><strong>Марка автомобиля</strong></td>
+                                <td colspan="1">{{ car.brand_name + ' ' + car.model_name }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Комментарий</strong></td>
-                                <td>{{ act.comment !== null ? act.comment : 'Комментария нет.' }}</td>
+                                <td colspan="1"><strong>Номер автомобиля</strong></td>
+                                <td colspan="1">{{ car.number }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Водитель</strong></td>
+                                <td colspan="1">
+                                    <p v-if="car.drivers.length > 0">
+                                        <span v-for="driver in car.drivers" :key="driver.id">                                    
+                                            {{ driver.pivot.active === 1 ? driver.fullname : null }}
+                                        </span>
+                                    </p>
+                                    <p v-else>Водителя нет</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Акт составил</strong></td>
+                                <td colspan="1">{{ act.username }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Комментарий</strong></td>
+                                <td colspan="1">{{ act.comment !== null ? act.comment : 'Комментария нет.' }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -136,6 +155,10 @@ export default {
     data() {
         return {
             act: {},
+            car: {
+                drivers: []
+            },
+            company: {},
             comment: '',
             attachments: [],
             cardId: null,
@@ -159,9 +182,18 @@ export default {
         fetchDefectsInfo() {
             axios.get(`/sto/${this.$route.params.slug}/defect-acts/${this.$route.params.act}`)
                 .then(response => {
-                    // console.log(response.data);
-                    let { act, equipment, defectsInfo, actDefectConditions, actDefectConclusions } = response.data;
+                    console.log(response.data);
+                    let { 
+                        act, 
+                        equipment, 
+                        defectsInfo, 
+                        actDefectConditions, 
+                        actDefectConclusions,
+                        car 
+                    } = response.data;
                     this.act = act;
+                    this.car = car;
+                    this.company = car.companies[0];
                     this.equipment = equipment;
                     // Get defect act's equipement ids
                     this.selectedEquipment = act.equipment.map(eq => eq.id);

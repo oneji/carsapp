@@ -14,12 +14,45 @@
         <v-layout v-if="!loading.page">
             <v-flex xs12 sm12 md12 lg12>
                 <form @submit.prevent="createDefectAct" data-vv-scope="create-defect-act-form" :style="{ fontSize: '14px' }">
+                    <table class="defect-act-table" :style="{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid #e6e6e6' }">
+                        <thead>
+                            <tr class="defect-act-table-title">
+                                <th colspan="2"><h2>Дефектный акт</h2></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="1"><strong>Компания</strong></td>
+                                <td colspan="1">{{ company.company_name }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Марка автомобиля</strong></td>
+                                <td colspan="1">{{ car.brand_name + ' ' + car.model_name }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Номер автомобиля</strong></td>
+                                <td colspan="1">{{ car.number }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Водитель</strong></td>
+                                <td colspan="2">
+                                    <p v-if="car.drivers.length > 0">
+                                        <span v-for="driver in car.drivers" :key="driver.id">                                    
+                                            {{ driver.pivot.active === 1 ? driver.fullname : null }}
+                                        </span>
+                                    </p>
+                                    <p v-else>Водителя нет</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"><strong>Акт составил</strong></td>
+                                <td colspan="1">{{ user.fullname }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <table class="defect-act-table">
                         <tbody>
                             <template v-for="(item, index) in defectsData">
-                                <tr class="defect-act-table-title" :style="{ fontSize: '20px' }" v-if="index === 0" :key="index">
-                                    <th colspan="5">Новый дефектный акт</th>
-                                </tr>
                                 <tr class="defect-act-table-title" v-if="index === 0" :key="index + 1">
                                     <th>Деталь</th>
                                     <th>Статус</th>
@@ -158,6 +191,42 @@
 
         <v-layout row wrap v-show="false">
             <v-flex ref="partialReport">
+                <table class="defect-act-table" style="padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #e6e6e6; font-size: 11px !important">
+                    <thead>
+                        <tr class="defect-act-table-title">
+                            <th colspan="2"><h2>Дефектный акт</h2></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="1"><strong>Компания</strong></td>
+                            <td colspan="1">{{ company.company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Марка автомобиля</strong></td>
+                            <td colspan="1">{{ car.brand_name + ' ' + car.model_name }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Номер автомобиля</strong></td>
+                            <td colspan="1">{{ car.number }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Водитель</strong></td>
+                            <td colspan="2">
+                                <p v-if="car.drivers.length > 0">
+                                    <span v-for="driver in car.drivers" :key="driver.id">                                    
+                                        {{ driver.pivot.active === 1 ? driver.fullname : null }}
+                                    </span>
+                                </p>
+                                <p v-else>Водителя нет</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Акт составил</strong></td>
+                            <td colspan="1">{{ user.fullname }}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
                         <template v-for="(item, index) in defectsData">
@@ -211,6 +280,42 @@
 
         <v-layout row wrap v-show="false">
             <v-flex ref="fullReport">
+                <table class="defect-act-table" style="padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #e6e6e6; font-size: 11px !important">
+                    <thead>
+                        <tr class="defect-act-table-title">
+                            <th colspan="2"><h2>Дефектный акт</h2></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="1"><strong>Компания</strong></td>
+                            <td colspan="1">{{ company.company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Марка автомобиля</strong></td>
+                            <td colspan="1">{{ car.brand_name + ' ' + car.model_name }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Номер автомобиля</strong></td>
+                            <td colspan="1">{{ car.number }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Водитель</strong></td>
+                            <td colspan="2">
+                                <p v-if="car.drivers.length > 0">
+                                    <span v-for="driver in car.drivers" :key="driver.id">                                    
+                                        {{ driver.pivot.active === 1 ? driver.fullname : null }}
+                                    </span>
+                                </p>
+                                <p v-else>Водителя нет</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Акт составил</strong></td>
+                            <td colspan="1">{{ user.fullname }}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
                         <template v-for="(item, index) in defectsData">
@@ -280,8 +385,17 @@ export default {
         Loading,
         FileUpload
     },
+    computed: {
+        user() {
+            return JSON.parse(localStorage.getItem('user'));
+        }
+    },
     data() {
         return {
+            car: {
+                drivers: []
+            },
+            company: {},
             comment: '',
             attachments: [],
             cardId: null,
@@ -306,9 +420,11 @@ export default {
     },
     methods: {
         fetchDefectsInfo() {
-            axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
+            axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card?company=${this.$route.params.company}`)
                 .then(response => {
-                    let { car, defects_info, equipment } = response.data;
+                    let { car, defects_info, equipment, company } = response.data;
+                    this.car = car;
+                    this.company = company;
                     this.equipment = equipment;
                     this.cardId = car.card.id;
                     // Create an array with fake data to be filled later
@@ -420,6 +536,7 @@ export default {
                         let formData = new FormData();
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);
+                        formData.append('user_id', this.user.id);
                         formData.append('detail_conditions', JSON.stringify(this.selectedDetailConditions));
                         formData.append('detail_info', JSON.stringify(this.detailsInfo));
                         formData.append('detail_conclusions', JSON.stringify(this.selectedDetailConclusions));

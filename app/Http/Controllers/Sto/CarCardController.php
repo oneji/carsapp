@@ -6,6 +6,7 @@ use App\Car;
 use App\CarCard;
 use App\CarCardComment;
 use App\DefectType;
+use App\Company;
 use App\Sto;
 use JWTAuth;
 use App\EquipmentType;
@@ -61,9 +62,9 @@ class CarCardController extends Controller
      * 
      * @return  \Illuminate\Http\Response
      */
-    public function getInfo($sto_slug, $car_id)
+    public function getInfo($sto_slug, $car_id, Request $request)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
+        $company = Company::find($request->company);
         $car = Car::select('cars.*', 'shape_name', 'brand_name', 'model_name', 'engine_type_name', 'transmission_name')
                         ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
                         ->join('car_models', 'car_models.id', '=', 'cars.model_id')
@@ -96,7 +97,8 @@ class CarCardController extends Controller
         return response()->json([
             'car' => $car,
             'defects_info' => $defect_info,
-            'equipment' => $equipment
+            'equipment' => $equipment,
+            'company' => $company
         ]);
     }
 
