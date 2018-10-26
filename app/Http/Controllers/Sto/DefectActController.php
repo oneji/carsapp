@@ -245,6 +245,53 @@ class DefectActController extends Controller
     /**
      * 
      */
+    public function addMoreFiles($sto_slug, $id, Request $request)
+    {
+        $defectAct = DefectAct::find($id);
+        $defectAttachments = [];
+        // Loop through all defect act attachments
+        if($request->hasFile('attachments')) {
+            foreach($request->attachments as $file) {
+                $fileFullName = $file->getClientOriginalName();
+                $fileExtension = $file->getClientOriginalExtension();
+                $fileDetails = getimagesize($file);
+                // Compressing image
+                $compressedImage = Image::make($file->getRealPath());
+
+                if($fileDetails[0] > 1290) {
+                    $compressedImage->resize(1290, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
+                
+                $fileNameToStore = uniqid().'.'.$fileExtension;
+                $compressedImage->save(public_path('uploads/attachments/defect_acts/'.$fileNameToStore));
+                
+                array_push($defectAttachments, new Attachment([
+                    'attachment' => $fileNameToStore,
+                    'attachment_name' => $fileFullName,
+                    'attachment_ext' => strtolower($fileExtension)
+                ]));
+            }
+        } else {
+            $fileNameToStore = null;
+        }
+
+        if($fileNameToStore !== null)
+            $defectAct->attachments()->saveMany($defectAttachments);
+
+        $defectAct->load('attachments');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Файлы успешно добавлены.',
+            'attachments' => $defectAct->attachments
+        ]);
+    }
+
+    /**
+     * 
+     */
     public function getById($sto_slug, $id)
     {
         $defectAct = DefectAct::select('defect_acts.*', 'users.fullname as username')

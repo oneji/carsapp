@@ -122,6 +122,19 @@
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="5" class="defect-act-table-checklist-title">Добавить файлы</th>
+                            </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <FileUpload 
+                                        @files-changed="onFileChanged" 
+                                        types="image/jpeg, image/png, image/svg+xml" />
+                                    <v-btn color="success" block :loading="loading.addMoreFiles" @click="addMoreFiles">Добавить файлы</v-btn>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </form>
             </v-flex>
@@ -161,6 +174,7 @@ export default {
             company: {},
             comment: '',
             attachments: [],
+            moreAttachments: [],
             cardId: null,
             defectsData: [],
             equipment: [],
@@ -174,6 +188,7 @@ export default {
             loading: {
                 page: true,
                 saveBtn: false,
+                addMoreFiles: false,
             },
             headersCheck: []
         }
@@ -182,7 +197,6 @@ export default {
         fetchDefectsInfo() {
             axios.get(`/sto/${this.$route.params.slug}/defect-acts/${this.$route.params.act}`)
                 .then(response => {
-                    console.log(response.data);
                     let { 
                         act, 
                         equipment, 
@@ -315,7 +329,44 @@ export default {
             }).catch(error => console.log(error))
         },
         onFileChanged(file) {
-            this.attachments = file;
+            this.moreAttachments = file;
+        },
+        addMoreFiles() {
+            if(this.moreAttachments.length > 0) {
+
+                this.loading.addMoreFiles = true;
+                let formData = new FormData();
+                // Add files to a FormData
+                for(let i = 0; i < this.moreAttachments.length; i++) {
+                    formData.append('attachments[]', this.moreAttachments[i].file);
+                }
+                // Send files to the server
+                axios.post(`/sto/${this.$route.params.slug}/defect-acts/${this.$route.params.act}/files/add`, formData)
+                    .then(response => {
+                        let { attachments } = response.data;
+                        // Update defect act's attachments
+                        this.attachments = [];                    
+                        for(let i = 0; i < attachments.length; i++) {
+                            this.attachments.push({
+                                src: this.assetsURL + '/uploads/attachments/defect_acts/' + attachments[i].attachment,
+                                title: attachments[i].attachment_name
+                            });
+                        }                        
+                        this.loading.addMoreFiles = false;
+                        this.$store.dispatch('showSnackbar', {
+                            color: 'success',
+                            active: true,
+                            text: response.data.message
+                        });
+                    })
+                    .catch(error => console.log(error));
+            } else {
+                this.$store.dispatch('showSnackbar', {
+                    color: 'warning',
+                    active: true,
+                    text: 'Выберите хотя бы один файл.'
+                });
+            }
         }
     },
     created() {

@@ -180,7 +180,9 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/defect-acts/{act}', 'DefectActController@getById');
         Route::get('/{slug}/defect-acts/{act}/sendActFile', 'DefectActController@sendActFile');    
 
+        Route::post('/{slug}/defect-acts/{act}/files/add', 'DefectActController@addMoreFiles');
         Route::post('/{slug}/cards/{card}/defects/acts', 'DefectActController@store');
+
         // Defect routes
         Route::get('/{slug}/defects/all', 'DefectController@getAll');
         Route::get('/{slug}/defects/categories', 'DefectController@getOptions');
