@@ -22,9 +22,7 @@ class DefectController extends Controller
      */
     public function getOptions($sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
-        $options = DefectOption::all();
-
+        $options = DefectOption::where('deleted', 0)->get();
         return response()->json($options);
     }
 
@@ -37,7 +35,7 @@ class DefectController extends Controller
      */
     public function getTypes($sto_slug)
     {
-        $types = DefectType::all();
+        $types = DefectType::where('deleted', 0)->get();
         return response()->json($types);
     }
 
@@ -50,9 +48,22 @@ class DefectController extends Controller
      */
     public function getFullInfo($sto_slug)
     {
-        $defect_info = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
-        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
-        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
+        $defect_info = DefectType::with([
+            'defects' => function($query) {
+                $query->with(['defect_conclusions', 'defect_options'])
+                    ->where('deleted', 0)
+                    ->get();
+            }
+        ])->where('deleted', 0)->get();
+
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where([
+            'defect_id' => null,
+            'deleted' => 0
+        ])->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where([
+            'defect_id' => null,
+            'deleted' => 0
+        ])->get();
         // Put default defect options/conslusions into every defect
         foreach($defect_info as $defectType) {
             foreach($defectType->defects as $defect) {
@@ -117,9 +128,16 @@ class DefectController extends Controller
     
     public function getAll($sto_slug)
     {
-        $allDefects = DefectType::with('defects.defect_conclusions', 'defects.defect_options')->get();
-        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
-        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();        
+        $allDefects = DefectType::with([
+            'defects' => function($query) {
+                $query->with(['defect_conclusions', 'defect_options'])
+                    ->where('deleted', 0)
+                    ->get();
+            }
+        ])->where('deleted', 0)->get();
+
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->where('deleted', 0)->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->where('deleted', 0)->get();
         // Put default defect options into every defect
         foreach($allDefects as $defectType) {
             foreach($defectType->defects as $defect) {
@@ -232,6 +250,7 @@ class DefectController extends Controller
     {
         $conclusions = DefectConclusion::select('defect_conclusions.id as id', 'conclusion_name', 'defect_name')
             ->join('defects', 'defect_conclusions.defect_id', '=', 'defects.id')
+            ->where('deleted', 0)
             ->get();
 
         return response()->json($conclusions);
@@ -267,6 +286,54 @@ class DefectController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Заключение успешно изменено.'
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function deleteType($sto_slug, $id)
+    {
+        $defectType = DefectType::where('id', $id)->update([ 'deleted' => 1 ]);        
+        return response()->json([
+           'success' => true,
+           'message' => 'Чек лист успешно удален.' 
+        ]);
+    }
+    
+    /**
+     * 
+     */
+    public function deleteDefect($sto_slug, $id)
+    {
+        $defect = Defect::where('id', $id)->update([ 'deleted' => 1 ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Деталь успешно удалена.' 
+        ]);
+    }
+    
+    /**
+     * 
+     */
+    public function deleteOption($sto_slug, $id)
+    {
+        $option = DefectOption::where('id', $id)->update([ 'deleted' => 1 ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Состояние успешно удалено.' 
+        ]);
+    }
+    
+    /**
+     * 
+     */
+    public function deleteConclusion($sto_slug, $id)
+    {
+        $conclusion = DefectConclusion::where('id', $id)->update([ 'deleted' => 1 ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Заключение успешно удалено.' 
         ]);
     }
 }

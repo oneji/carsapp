@@ -34,6 +34,9 @@
                                 <v-btn icon class="mx-0" @click="showDefects(props.item)">
                                     <v-icon color="grey">info</v-icon>
                                 </v-btn>
+                                <v-btn icon class="mx-0" :loading="defectType.loading.delete === props.item.id" @click="deleteType(props.item)">
+                                    <v-icon color="red">delete</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -73,6 +76,9 @@
                                 <v-btn icon class="mx-0" @click="showDefectOptions(props.item)">
                                     <v-icon color="grey">info</v-icon>
                                 </v-btn>
+                                <v-btn icon class="mx-0" :loading="defect.loading.delete === props.item.id" @click="deleteDefect(props.item)">
+                                    <v-icon color="red">delete</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -109,6 +115,9 @@
                                 <v-btn icon class="mx-0" @click="showEditOptionDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
                                 </v-btn>
+                                <v-btn icon class="mx-0" :loading="defectOption.loading.delete === props.item.id" @click="deleteOption(props.item)">
+                                    <v-icon color="red">delete</v-icon>
+                                </v-btn>
                             </td>
                         </template>
                         <!-- No data slot -->
@@ -144,6 +153,9 @@
                             <td class="justify-center">
                                 <v-btn icon class="mx-0" @click="showEditConclusionDialog(props.item)">
                                     <v-icon color="teal">edit</v-icon>
+                                </v-btn>
+                                <v-btn icon class="mx-0" :loading="defectConclusion.loading.delete === props.item.id" @click="deleteConclusion(props.item)">
+                                    <v-icon color="red">delete</v-icon>
                                 </v-btn>
                             </td>
                         </template>
@@ -509,7 +521,8 @@ export default {
                 defect_type_name: '',
                 dialog: false,
                 loading: {
-                    button: false
+                    button: false,
+                    delete: false
                 },
                 edit: {
                     dialog: false,
@@ -523,7 +536,8 @@ export default {
                 defect_type_id: '',
                 dialog: false,
                 loading: {
-                    button: false
+                    button: false,
+                    delete: false
                 },
                 edit: {
                     dialog: false,
@@ -537,7 +551,8 @@ export default {
                 defect_option_name: '',
                 dialog: false,
                 loading: {
-                    button: false
+                    button: false,
+                    delete: false
                 },
                 edit: {
                     dialog: false,
@@ -551,7 +566,8 @@ export default {
                 conclusion_name: '',
                 dialog: false,
                 loading: {
-                    button: false
+                    button: false,
+                    delete: null
                 },
                 edit: {
                     dialog: false,
@@ -747,6 +763,7 @@ export default {
                     }
                 });
         },
+
         addConclusion() {
             this.$validator.validateAll('create-defect-conclusion-form')
                 .then(success => {
@@ -851,6 +868,63 @@ export default {
                     this.types.loading.table = false;
                     this.defects.loading.table = false;
                     this.options.loading.table = false;
+                })
+                .catch(error => console.log(error));
+        },
+
+        // Delete methods
+        deleteType(defectType) {
+            this.defectType.loading.delete = defectType.id;
+            axios.delete(`/sto/${this.$route.params.slug}/defects/types/${defectType.id}`)
+                .then(response => {
+                    this.types.items = this.types.items.filter(def => def.id !== defectType.id);
+                    this.$store.dispatch('showSnackbar', {
+                        color: 'success',
+                        text: response.data.message,
+                        active: true
+                    });
+                })
+                .catch(error => console.log(error));
+        },
+
+        deleteDefect(defect) {
+            this.defect.loading.delete = defect.id;
+            axios.delete(`/sto/${this.$route.params.slug}/defects/${defect.id}`)
+                .then(response => {
+                    this.defects.items = this.defects.items.filter(def => def.id !== defect.id);
+                    this.$store.dispatch('showSnackbar', {
+                        color: 'success',
+                        text: response.data.message,
+                        active: true
+                    });
+                })
+                .catch(error => console.log(error));
+        },
+
+        deleteOption(option) {
+            this.defectOption.loading.delete = option.id;
+            axios.delete(`/sto/${this.$route.params.slug}/defects/options/${option.id}`)
+                .then(response => {
+                    this.options.items = this.options.items.filter(opt => opt.id !== option.id);
+                    this.$store.dispatch('showSnackbar', {
+                        color: 'success',
+                        text: response.data.message,
+                        active: true 
+                    });
+                })
+                .catch(error => console.log(error));
+        },
+
+        deleteConclusion(conclusion) {
+            this.defectConclusion.loading.delete = conclusion.id;
+            axios.delete(`/sto/${this.$route.params.slug}/defects/conclusions/${conclusion.id}`)
+                .then(response => {
+                    this.conclusions.items = this.conclusions.items.filter(conc => conc.id !== conclusion.id);
+                    this.$store.dispatch('showSnackbar', {
+                        color: 'success',
+                        text: response.data.message,
+                        active: true 
+                    });
                 })
                 .catch(error => console.log(error));
         }

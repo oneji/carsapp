@@ -35,7 +35,7 @@
                             </tr>
                             <tr>
                                 <td colspan="1"><strong>Водитель</strong></td>
-                                <td colspan="2">
+                                <td colspan="1">
                                     <p v-if="car.drivers.length > 0">
                                         <span v-for="driver in car.drivers" :key="driver.id">                                    
                                             {{ driver.pivot.active === 1 ? driver.fullname : null }}
@@ -61,11 +61,23 @@
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
-                                    <th colspan="5">{{ item.defect_type_name }}</th>
+                                    <th colspan="5" :style="{ position: 'relative' }">
+                                        {{ item.defect_type_name }}
+                                        <a 
+                                            class="grey--text" 
+                                            style="position: absolute !important; top: 10px; right: 10px;"
+                                            @click="hiddenDefectType = null"
+                                            v-if="hiddenDefectType === item.id">Скрыть</a>
+                                        <a 
+                                            class="grey--text" 
+                                            style="position: absolute !important; top: 10px; right: 10px;"
+                                            @click="hiddenDefectType = item.id"
+                                            v-if="hiddenDefectType !== item.id">Показать</a>
+                                    </th>
                                 </tr>
-                                <tr v-else :key="item.uuid">
-                                    <td>{{ item.defect_name }}</td>
-                                    <td>
+                                <tr v-if="!item.heading" v-show="hiddenDefectType === item.defect_type_id" :key="item.uuid">
+                                    <td colspan="1">{{ item.defect_name }}</td>
+                                    <td colspan="1">
                                         <v-radio-group 
                                             v-model="detailsInfo[item.id].toReport"
                                             :error-messages="errors.collect(`radio_${item.id}`)"
@@ -75,55 +87,39 @@
                                             <v-radio label="Пройден" :value="1"></v-radio>
                                             <v-radio label="Не пройден" :value="0"></v-radio>
                                         </v-radio-group>
+                                        <a @click="unCheckRadio(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
                                     </td>
-                                    <td>
-                                        <!-- <v-checkbox
+                                    <td colspan="1">
+                                        <v-radio-group 
+                                            v-model="selectedDetailConditions[item.id]"
                                             :error-messages="errors.collect(`condition_${item.id}`)"
-                                            v-model="selectedDetailConditions[item.id]" 
-                                            v-for="condition in item.defect_options"
-                                            :key="condition.id"
-                                            :label="condition.defect_option_name" 
-                                            :value="condition.id"
-                                            hide-details></v-checkbox> -->
-                                            <v-radio-group 
-                                                v-model="selectedDetailConditions[item.id]"
-                                                :error-messages="errors.collect(`condition_${item.id}`)"
-                                                hide-details
-                                                :style="{ padding: '0' }"
-                                            >
-                                                <v-radio
-                                                    v-for="condition in item.defect_options"
-                                                    :key="condition.id"
-                                                    :label="condition.defect_option_name" 
-                                                    :value="condition.id"
-                                                ></v-radio>
-                                            </v-radio-group>
+                                            hide-details
+                                            :style="{ padding: '0' }"
+                                        >
+                                            <v-radio
+                                                v-for="condition in item.defect_options"
+                                                :key="condition.id"
+                                                :label="condition.defect_option_name" 
+                                                :value="condition.id"
+                                            ></v-radio>
+                                        </v-radio-group>
                                     </td>                                    
-                                    <td>
-                                        <!-- <v-checkbox
+                                    <td colspan="1">
+                                        <v-radio-group 
+                                            v-model="selectedDetailConclusions[item.id]"
                                             :error-messages="errors.collect(`conclusion_${item.id}`)"
-                                            v-model="selectedDetailConclusions[item.id]" 
-                                            v-for="conclusion in item.defect_conclusions"
-                                            :key="conclusion.id"
-                                            :label="conclusion.conclusion_name" 
-                                            :value="conclusion.id"
-                                            hide-details></v-checkbox> -->
-                                            <v-radio-group 
-                                                v-model="selectedDetailConclusions[item.id]"
-                                                :error-messages="errors.collect(`conclusion_${item.id}`)"
-                                                hide-details
-                                                :style="{ padding: '0' }"
-                                            >
-                                                <v-radio
-                                                    v-for="conclusion in item.defect_conclusions"
-                                                    :key="conclusion.id"
-                                                    :label="conclusion.conclusion_name" 
-                                                    :value="conclusion.id"
-                                                ></v-radio>
-                                            </v-radio-group>
+                                            hide-details
+                                            :style="{ padding: '0' }"
+                                        >
+                                            <v-radio
+                                                v-for="conclusion in item.defect_conclusions"
+                                                :key="conclusion.id"
+                                                :label="conclusion.conclusion_name" 
+                                                :value="conclusion.id"
+                                            ></v-radio>
+                                        </v-radio-group>
                                     </td>
-                                    
-                                    <td>
+                                    <td colspan="1">
                                         <v-text-field
                                             v-model="detailsInfo[item.id].comment"
                                             label="Введите комментарий"
@@ -137,21 +133,6 @@
                                 </tr>
                             </template>
                         </tbody>
-                        <!-- <tbody>
-                            <tr class="defect-act-table-title">
-                                <th colspan="5">Наличие</th>
-                            </tr>
-                            <tr v-for="eq in equipment" :key="eq.id">
-                                <td colspan="2">{{ eq.equipment_type_name }}</td>
-                                <td colspan="3">
-                                    <v-checkbox 
-                                        v-model="selectedEquipment" 
-                                        :value="eq.id"
-                                        label="Есть"
-                                        hide-details></v-checkbox>
-                                </td>
-                            </tr>
-                        </tbody> -->
                         <tbody>
                             <tr class="defect-act-table-title">
                                 <th colspan="5">Файлы и комментарий</th>                                
@@ -212,7 +193,7 @@
                         </tr>
                         <tr>
                             <td colspan="1"><strong>Водитель</strong></td>
-                            <td colspan="2">
+                            <td colspan="1">
                                 <p v-if="car.drivers.length > 0">
                                     <span v-for="driver in car.drivers" :key="driver.id">                                    
                                         {{ driver.pivot.active === 1 ? driver.fullname : null }}
@@ -265,15 +246,6 @@
                             </tr>
                         </template>
                     </tbody>
-                    <!-- <tbody>
-                        <tr class="defect-act-table-title">
-                            <th colspan="5">Наличие</th>
-                        </tr>
-                        <tr v-for="eq in equipment" :key="eq.id">
-                            <td colspan="2">{{ eq.equipment_type_name }}</td>
-                            <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
-                        </tr>
-                    </tbody> -->
                 </table>
             </v-flex>
         </v-layout>
@@ -301,7 +273,7 @@
                         </tr>
                         <tr>
                             <td colspan="1"><strong>Водитель</strong></td>
-                            <td colspan="2">
+                            <td colspan="1">
                                 <p v-if="car.drivers.length > 0">
                                     <span v-for="driver in car.drivers" :key="driver.id">                                    
                                         {{ driver.pivot.active === 1 ? driver.fullname : null }}
@@ -354,15 +326,6 @@
                             </tr>
                         </template>
                     </tbody>
-                    <!-- <tbody>
-                        <tr class="defect-act-table-title">
-                            <th colspan="5">Наличие</th>
-                        </tr>
-                        <tr v-for="eq in equipment" :key="eq.id">
-                            <td colspan="2">{{ eq.equipment_type_name }}</td>
-                            <td colspan="3">{{ selectedEquipment.includes(eq.id) ? 'Есть' : 'Нет' }}</td>
-                        </tr>
-                    </tbody> -->
                 </table>
             </v-flex>
         </v-layout>
@@ -409,6 +372,7 @@ export default {
                 page: true,
                 saveBtn: false,
             },
+            hiddenDefectType: null,
 
             forPDF: {
                 fullReport: [],
@@ -422,6 +386,7 @@ export default {
         fetchDefectsInfo() {
             axios.get(`/sto/${this.$route.params.slug}/cars/${this.$route.params.car}/card?company=${this.$route.params.company}`)
                 .then(response => {
+                    console.log(response.data);
                     let { car, defects_info, equipment, company } = response.data;
                     this.car = car;
                     this.company = company;
@@ -435,10 +400,7 @@ export default {
                             let detail = checklist.defects[j];
                             this.selectedDetailConditions[detail.id] = null;
                             this.selectedDetailConclusions[detail.id] = null;
-                            this.detailsInfo[detail.id] = {
-                                comment: '',
-                                toReport: null
-                            };
+                            this.$set(this.detailsInfo, detail.id, { comment: '', toReport: null });
                             // Data for PDF files
                             this.forPDF.fullReport[detail.id] = {
                                 comment: '',
@@ -649,6 +611,9 @@ export default {
         },
         onFileChanged(file) {
             this.attachments = file;
+        },
+        unCheckRadio(itemId) {
+            this.$set(this.detailsInfo[itemId], 'toReport', null);
         }
     },
     created() {

@@ -199,6 +199,11 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::put('/{slug}/defects/types/{type}', 'DefectController@updateType');
         Route::put('/{slug}/defects/options/{option}', 'DefectController@updateOption');
         Route::put('/{slug}/defects/conclusions/{conclusion}', 'DefectController@updateConclusion');
+
+        Route::delete('/{slug}/defects/types/{type}', 'DefectController@deleteType');
+        Route::delete('/{slug}/defects/{defect}', 'DefectController@deleteDefect');
+        Route::delete('/{slug}/defects/options/{option}', 'DefectController@deleteOption');
+        Route::delete('/{slug}/defects/conclusions/{conclusion}', 'DefectController@deleteConclusion');
         // Engine routes
         Route::get('/{slug}/engine/types', 'EngineTypeController@get');
         Route::get('/{slug}/engine/transmissions', 'TransmissionController@get');

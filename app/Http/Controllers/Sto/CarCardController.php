@@ -77,9 +77,15 @@ class CarCardController extends Controller
                             $q->where('active', 1)->get();
                         }])->first(); 
                         
-        $defect_info = DefectType::with('defects.defect_options', 'defects.defect_conclusions')->get();
-        $defaultDefectConditions = DB::table('defect_options')->select('*')->where('defect_id', null)->get();
-        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();        
+        $defect_info = DefectType::with([
+            'defects' => function($query) {
+                $query->with(['defect_conclusions', 'defect_options'])->where('deleted', 0)->get();
+            }
+        ])->where('deleted', 0)->get();
+
+        $defaultDefectConditions = DB::table('defect_options')->select('*')->where([ 'defect_id' => null, 'deleted' => 0 ])->get();
+        $defaultDefectConclusion = DB::table('defect_conclusions')->select('*')->where([ 'defect_id' => null, 'deleted' => 0 ])->get();
+
         // Put default defect options into every defect
         foreach($defect_info as $defectType) {
             foreach($defectType->defects as $defect) {
