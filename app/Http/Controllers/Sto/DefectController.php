@@ -50,9 +50,14 @@ class DefectController extends Controller
     {
         $defect_info = DefectType::with([
             'defects' => function($query) {
-                $query->with(['defect_conclusions', 'defect_options'])
-                    ->where('deleted', 0)
-                    ->get();
+                $query->with([
+                    'defect_conclusions' => function($query) {
+                        $query->where('deleted', 0)->get();
+                    }, 
+                    'defect_options' => function($query) {
+                        $query->where('deleted', 0)->get();
+                    }
+                ])->where('deleted', 0)->get();
             }
         ])->where('deleted', 0)->get();
 
@@ -130,9 +135,14 @@ class DefectController extends Controller
     {
         $allDefects = DefectType::with([
             'defects' => function($query) {
-                $query->with(['defect_conclusions', 'defect_options'])
-                    ->where('deleted', 0)
-                    ->get();
+                $query->with([
+                    'defect_conclusions' => function($query) {
+                        $query->where('deleted', 0)->get();
+                    }, 
+                    'defect_options' => function($query) {
+                        $query->where('deleted', 0)->get();
+                    }
+                ])->where('deleted', 0)->get();
             }
         ])->where('deleted', 0)->get();
 
