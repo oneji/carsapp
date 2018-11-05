@@ -6,6 +6,14 @@
                     <v-layout fill-height>
                         <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
                             <MyLabel :text="item.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="item.type === 0 ? 'success' : 'primary'" />
+                            <!-- <skeleton-loading class="skeleton-loading">
+                                <row class="skeleton-row">
+                                    <square-skeleton 
+                                        :boxProperties="{ bottom: '10px', height: '100%'}"    
+                                    >
+                                    </square-skeleton>
+                                </row>
+                            </skeleton-loading> -->
                         </v-flex>
                     </v-layout>
                 </v-container>
@@ -324,5 +332,16 @@ export default {
     }
     .car-details-block strong {
         margin-right: 5px;
+    }
+    .vue-skeleton-loading, .skeleton-row {
+        height: 100%;
+    }
+    .skeleton-loading {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    .card__title {
+        min-height: 80px !important;
     }
 </style>

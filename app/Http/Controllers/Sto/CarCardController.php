@@ -77,15 +77,13 @@ class CarCardController extends Controller
                             $q->where('active', 1)->get();
                         }])->first(); 
                         
+        
         $defect_info = DefectType::with([
             'defects' => function($query) {
                 $query->with([
-                    'defect_conclusions' => function($query) {
-                        $query->where('deleted', 0)->get();
-                    }, 
-                    'defect_options' => function($query) {
-                        $query->where('deleted', 0)->get();
-                    }
+                    'defect_conclusions' => function($query) { $query->where('deleted', 0)->get(); }, 
+                    'defect_options' => function($query) { $query->where('deleted', 0)->get(); },
+                    'service_prices'
                 ])->where('deleted', 0)->get();
             }
         ])->where('deleted', 0)->get();

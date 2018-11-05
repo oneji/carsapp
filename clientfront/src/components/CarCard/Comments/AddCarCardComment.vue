@@ -13,8 +13,6 @@
                         rows="3"
                         hide-details
                     ></v-text-field>                                
-                </v-flex>
-                <v-flex xs12 sm12 md12 lg12>
                     <v-btn color="success" block flat @click="storeComment" :loading="loading" class="py-0">Сохранить</v-btn>
                 </v-flex>
             </v-layout>

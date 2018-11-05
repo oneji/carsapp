@@ -58,10 +58,11 @@
                                     <th>Статус</th>
                                     <th>Состояние</th>
                                     <th>Заключение</th>
+                                    <th>Цена за ремонт</th>
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
-                                    <th colspan="5" :style="{ position: 'relative' }">
+                                    <th colspan="6" :style="{ position: 'relative' }">
                                         {{ item.defect_type_name }}
                                         <a 
                                             class="grey--text" 
@@ -76,7 +77,9 @@
                                     </th>
                                 </tr>
                                 <tr v-if="!item.heading" v-show="hiddenDefectType === item.defect_type_id" :key="item.uuid">
+                                    <!-- Detail -->
                                     <td colspan="1">{{ item.defect_name }}</td>
+                                    <!-- Status -->
                                     <td colspan="1">
                                         <v-radio-group 
                                             v-model="detailsInfo[item.id].toReport"
@@ -87,8 +90,9 @@
                                             <v-radio label="Пройден" :value="1"></v-radio>
                                             <v-radio label="Не пройден" :value="0"></v-radio>
                                         </v-radio-group>
-                                        <a @click="unCheckRadio(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
+                                        <a @click="unCheckStatus(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
                                     </td>
+                                    <!-- Condition -->
                                     <td colspan="1">
                                         <v-radio-group 
                                             v-model="selectedDetailConditions[item.id]"
@@ -103,13 +107,16 @@
                                                 :value="condition.id"
                                             ></v-radio>
                                         </v-radio-group>
-                                    </td>                                    
+                                        <a @click="unCheckCondition(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
+                                    </td>    
+                                    <!-- Conclusion -->
                                     <td colspan="1">
                                         <v-radio-group 
                                             v-model="selectedDetailConclusions[item.id]"
                                             :error-messages="errors.collect(`conclusion_${item.id}`)"
                                             hide-details
                                             :style="{ padding: '0' }"
+                                            @change="setPrice(item.id)"
                                         >
                                             <v-radio
                                                 v-for="conclusion in item.defect_conclusions"
@@ -118,7 +125,25 @@
                                                 :value="conclusion.id"
                                             ></v-radio>
                                         </v-radio-group>
+                                        <a @click="unCheckConclusion(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
                                     </td>
+                                    <td>
+                                        <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
+                                        <v-text-field
+                                            v-model="humanHours"
+                                            label="Кол-во человеко часов"
+                                            hide-details
+                                            v-if="setHumanHours.includes(item.id)"
+                                        ></v-text-field>
+                                        <v-btn small block color="success" v-if="setHumanHours.includes(item.id)" @click="saveHumanHours(item.id)">Сохранить</v-btn>
+                                        <v-checkbox
+                                            label="Расчитать по ч/ч"
+                                            v-model="setHumanHours"
+                                            :value="item.id"
+                                            v-if="!setHumanHours.includes(item.id)"
+                                            hide-details></v-checkbox>
+                                    </td>
+                                    <!-- Comment -->
                                     <td colspan="1">
                                         <v-text-field
                                             v-model="detailsInfo[item.id].comment"
@@ -135,10 +160,10 @@
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th colspan="5">Файлы и комментарий</th>                                
+                                <th colspan="6">Файлы и комментарий</th>                                
                             </tr>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <v-text-field
                                         name="defect_act_comment"
                                         label="Введите комментарий"
@@ -151,7 +176,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <FileUpload
                                         @files-changed="onFileChanged"
                                         types="image/jpeg, image/png, image/svg+xml" />
@@ -160,7 +185,7 @@
                         </tbody>                       
                         <tfoot>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <v-btn block color="success" :loading="loading.saveBtn" type="submit">Создать дефектный акт</v-btn>
                                 </td>
                             </tr>
@@ -169,7 +194,7 @@
                 </form>
             </v-flex>
         </v-layout>        
-
+        <!-- Partial info for pdf -->
         <v-layout row wrap v-show="false">
             <v-flex ref="partialReport">
                 <table class="defect-act-table" style="padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #e6e6e6; font-size: 11px !important">
@@ -216,10 +241,11 @@
                                 <th>Cтатус</th>
                                 <th>Состояние</th>
                                 <th>Заключение</th>
+                                <th>Цена за ремонт</th>
                                 <th>Комментарий</th>
                             </tr>
                             <tr class="defect-act-table-title" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="item.uuid">
-                                <th colspan="5">{{ item.defect_type_name }}</th>
+                                <th colspan="6">{{ item.defect_type_name }}</th>
                             </tr>
                             <tr v-if="!item.heading && forPDF.partialReport[item.id].toReport === 0" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
@@ -242,6 +268,9 @@
                                         }}
                                     </p>
                                 </td>
+                                <td>
+                                    <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
+                                </td>
                                 <td>{{ forPDF.partialReport[item.id].comment }}</td>
                             </tr>
                         </template>
@@ -249,7 +278,7 @@
                 </table>
             </v-flex>
         </v-layout>
-
+        <!-- Full info for pdf -->
         <v-layout row wrap v-show="false">
             <v-flex ref="fullReport">
                 <table class="defect-act-table" style="padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #e6e6e6; font-size: 11px !important">
@@ -296,10 +325,11 @@
                                 <th>Cтатус</th>                                
                                 <th>Состояние</th>
                                 <th>Заключение</th>
+                                <th>Цена за ремонт</th>
                                 <th>Комментарий</th>
                             </tr>
                             <tr class="defect-act-table-title" v-if="item.heading && forPDF.fullReportChecklistsHeaders[item.id]" :key="item.uuid">
-                                <th colspan="5">{{ item.defect_type_name }}</th>
+                                <th colspan="6">{{ item.defect_type_name }}</th>
                             </tr>
                             <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
@@ -321,6 +351,9 @@
                                             : ''
                                         }}
                                     </p>
+                                </td>
+                                <td>
+                                    <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
                                 </td>
                                 <td>{{ forPDF.fullReport[item.id].comment }}</td>
                             </tr>
@@ -366,6 +399,9 @@ export default {
             equipment: [],
             selectedDetailConditions: [],
             selectedDetailConclusions: [],
+            servicePrices: [],
+            setHumanHours: [],
+            humanHours: 1,
             selectedEquipment: [],
             detailsInfo: [],
             loading: {
@@ -398,18 +434,13 @@ export default {
                         this.forPDF.partialReportChecklistsHeaders[checklist.id] = false;
                         for(let j = 0; j < checklist.defects.length; j++) {
                             let detail = checklist.defects[j];
-                            this.selectedDetailConditions[detail.id] = null;
-                            this.selectedDetailConclusions[detail.id] = null;
+                            this.$set(this.selectedDetailConditions, detail.id, null);
+                            this.$set(this.selectedDetailConclusions, detail.id, null);
                             this.$set(this.detailsInfo, detail.id, { comment: '', toReport: null });
+                            this.$set(this.servicePrices, detail.id, null);
                             // Data for PDF files
-                            this.forPDF.fullReport[detail.id] = {
-                                comment: '',
-                                toReport: null
-                            };
-                            this.forPDF.partialReport[detail.id] = {
-                                comment: '',
-                                toReport: null
-                            };
+                            this.forPDF.fullReport[detail.id] = { comment: '', toReport: null };
+                            this.forPDF.partialReport[detail.id] = { comment: '', toReport: null };
                         }
                     }
                     // Parse defect checklists and merge all into one array
@@ -495,6 +526,7 @@ export default {
                                 this.forPDF.fullReportChecklistsHeaders[item.id] = flag2;
                             }
                         }
+
                         let formData = new FormData();
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);
@@ -502,6 +534,7 @@ export default {
                         formData.append('detail_conditions', JSON.stringify(this.selectedDetailConditions));
                         formData.append('detail_info', JSON.stringify(this.detailsInfo));
                         formData.append('detail_conclusions', JSON.stringify(this.selectedDetailConclusions));
+                        formData.append('service_prices', JSON.stringify(this.servicePrices));
                         formData.append('equipment', JSON.stringify(this.selectedEquipment));
                         // Collect files
                         for(let i = 0; i < this.attachments.length; i++) {
@@ -585,6 +618,7 @@ export default {
                                         active: true
                                     });
 
+                                    // Sending an email to the driver
                                     axios.get(`/sto/${this.$route.params.slug}/defect-acts/${response.data.act.id}/sendActFile`)
                                         .then(response => {
                                             this.$store.dispatch('showSnackbar', {
@@ -612,8 +646,37 @@ export default {
         onFileChanged(file) {
             this.attachments = file;
         },
-        unCheckRadio(itemId) {
+        unCheckStatus(itemId) {
             this.$set(this.detailsInfo[itemId], 'toReport', null);
+            this.$set(this.selectedDetailConditions, itemId, null);
+            this.$set(this.selectedDetailConclusions, itemId, null);
+            this.$set(this.servicePrices, itemId, null);            
+        },
+        unCheckCondition(itemId) {
+            this.$set(this.selectedDetailConditions, itemId, null);
+        },
+        unCheckConclusion(itemId) {
+            this.$set(this.selectedDetailConclusions, itemId, null);
+            this.$set(this.servicePrices, itemId, null);
+        },
+        setPrice(itemId) {
+            let item = this.defectsData.filter(it => it.id === itemId)[0];
+            this.$set(this.servicePrices, itemId, item.service_prices.filter(price => price.defect_conclusion_id === this.selectedDetailConclusions[item.id])[0].price);
+        },
+        saveHumanHours(itemId) {
+            this.setHumanHours = this.setHumanHours.filter(id => id !== itemId);
+            // Set price according to human hours
+            let item = this.defectsData.filter(it => it.id === itemId)[0];
+            let price = Number(item.service_prices.filter(price => price.defect_conclusion_id === this.selectedDetailConclusions[item.id])[0].human_hour_price);
+            if(price === 0) {
+                this.$store.dispatch('showSnackbar', {
+                    color: 'warning',
+                    text: 'Не уставновлена цена за ч/ч в справочнике "Услуги".',
+                    active: true
+                });
+            } else {
+                this.$set(this.servicePrices, itemId, Number(price * this.humanHours));
+            }
         }
     },
     created() {

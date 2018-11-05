@@ -39,13 +39,14 @@ class DefectActController extends Controller
      * 
      * @return  \Illuminate\Http\Response
      */
-    public function store(Request $request, $sto_slug, $card_id) 
+    public function store(Request $request, $sto_slug, $card_id)
     {
         // Parse string data back to JSON
         $comment = $request->comment;
         $conditions = json_decode($request->detail_conditions);
         $detailInfo = json_decode($request->detail_info);
         $detailConclusions = json_decode($request->detail_conclusions);
+        $servicePrices = json_decode($request->service_prices);
         $equipment = json_decode($request->equipment);
         // Name and HTML file for .pdf
         $partialReportFilename = $this->generateActFile($request->partialReport);
@@ -88,9 +89,10 @@ class DefectActController extends Controller
                         'defect_act_id' => $defectAct->id
                     ]));
                     $defect->comments()->saveMany($detailComments);
-                    // Attach defect detail to the defect act 
                 }
+                
                 if($infoItem->toReport !== null) {
+                    // Attach defect detail to the defect act 
                     $defectAct->defects()->attach($key, [
                         'to_report' => $infoItem->toReport
                     ]);
@@ -106,7 +108,8 @@ class DefectActController extends Controller
                 array_push($arrayOfValues, [
                     'defect_id' => $detailId,
                     'defect_conclusion_id' => $detailArray,
-                    'defect_act_id' => $defectAct->id
+                    'defect_act_id' => $defectAct->id,
+                    'service_price' => $servicePrices[$detailId]
                 ]);
                 // Save to the db
                 DB::table('defect_defect_conclusion')->insert($arrayOfValues);
@@ -329,8 +332,16 @@ class DefectActController extends Controller
                     $defect->defect_options->push($defectOption);
                 }
 
-                foreach($defaultDefectConclusion as $defectConslusion) {
-                    $defect->defect_conclusions->push($defectConslusion);
+                foreach($defaultDefectConclusion as $defectConclusion) {
+                    $collection = collect([
+                        'defect_id' => $defect->id,
+                        'id' => $defectConclusion->id,
+                        'conclusion_name' => $defectConclusion->conclusion_name,
+                        'deleted' => $defectConclusion->deleted,
+                        'price' => []
+                    ]);
+    
+                    $defect->defect_conclusions->push($collection);
                 }
             }
         }
@@ -342,7 +353,7 @@ class DefectActController extends Controller
             ->where('defect_defect_option.defect_act_id', $id)
             ->get();
         $chosenDefectConclusions = DB::table('defect_defect_conclusion')
-            ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name')
+            ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name', 'service_price')
             ->join('defects', 'defect_id', '=', 'defects.id')
             ->join('defect_conclusions', 'defect_conclusion_id', '=', 'defect_conclusions.id')
             ->where('defect_defect_conclusion.defect_act_id', $id)

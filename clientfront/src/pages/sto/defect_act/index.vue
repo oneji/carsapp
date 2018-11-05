@@ -64,10 +64,11 @@
                                     <th>Статус</th>
                                     <th>Состояние</th>
                                     <th>Заключение</th>
+                                    <th>Цена за ремонт</th>
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
-                                    <th colspan="5">{{ item.defect_type_name }}</th>
+                                    <th colspan="6">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
                                     <td>{{ item.defect_name }}</td>
@@ -92,6 +93,7 @@
                                             }}
                                         </p>
                                     </td>
+                                    <td>{{ actDefectConclusions.filter(conc => conc.defect_id === item.id)[0].service_price }} сом.</td>
                                     <td>{{ comments[item.id] !== undefined ? comments[item.id].body : 'Комментария нет.' }}</td>                                    
                                 </tr>
                             </template>
@@ -107,10 +109,10 @@
                         </tbody> -->
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th colspan="5">Файлы</th>                                
+                                <th colspan="6">Файлы</th>                                
                             </tr>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <Lightbox
                                         id="defect_act_files"
                                         :images="attachments"
@@ -124,10 +126,10 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="5" class="defect-act-table-checklist-title">Добавить файлы</th>
+                                <th colspan="6" class="defect-act-table-checklist-title">Добавить файлы</th>
                             </tr>
                             <tr>
-                                <td colspan="5">
+                                <td colspan="6">
                                     <FileUpload 
                                         @files-changed="onFileChanged" 
                                         types="image/jpeg, image/png, image/svg+xml" />
@@ -167,6 +169,7 @@ export default {
     },
     data() {
         return {
+            actDefectConclusions: [],
             act: {},
             car: {
                 drivers: []
@@ -206,6 +209,7 @@ export default {
                         car 
                     } = response.data;
                     this.act = act;
+                    this.actDefectConclusions = actDefectConclusions;
                     this.car = car;
                     this.company = car.companies[0];
                     this.equipment = equipment;

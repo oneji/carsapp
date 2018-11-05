@@ -20,4 +20,12 @@ class DefectConclusion extends Model
     {
         return $this->belongsTo('App\Defect');
     }
+
+    /**
+     * Get service prices for defect conclusion.
+     */
+    public function service_prices()
+    {
+        return $this->hasMany('App\ServicePrice');
+    }
 }

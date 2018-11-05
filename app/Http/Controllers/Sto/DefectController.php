@@ -6,6 +6,7 @@ use App\Sto;
 use App\DefectOption;
 use App\DefectType;
 use App\DefectConclusion;
+use App\ServicePrice;
 use App\Defect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -183,6 +184,19 @@ class DefectController extends Controller
         $defect->defect_type_id = $request->defect_type_id;
         $defect->save();
 
+        // Get all default defect conclusions
+        $defaultDefectConclusions = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
+        // Save default price for each defect conclusion
+        $defaultPrices = [];
+        foreach($defaultDefectConclusions as $conclusion) {
+            array_push($defaultPrices, new ServicePrice([
+                'defect_id' => $defect->id,
+                'defect_conclusion_id' => $conclusion->id,
+            ]));
+        }
+        // Save prices
+        $defect->service_prices()->saveMany($defaultPrices);
+
         return response()->json([
             'success' => true,
             'message' => 'Дефект успешно создан.',
@@ -345,5 +359,35 @@ class DefectController extends Controller
             'success' => true,
             'message' => 'Заключение успешно удалено.' 
         ]);
+    }
+
+    /**
+     * 
+     */
+    public function fillServicePrices()
+    {
+        $defects = Defect::all();
+        $defaultDefectConclusions = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
+
+        foreach($defects as $defect) {
+            $defaultPrices = [];
+            foreach($defaultDefectConclusions as $conclusion) {
+                array_push($defaultPrices, new ServicePrice([
+                    'defect_id' => $defect->id,
+                    'defect_conclusion_id' => $conclusion->id
+                ]));
+            }
+
+            foreach($defect->defect_conclusions as $conclusion) {
+                array_push($defaultPrices, new ServicePrice([
+                    'defect_id' => $defect->id,
+                    'defect_conclusion_id' => $conclusion->id
+                ]));
+            }
+
+            $defect->service_prices()->saveMany($defaultPrices);
+        }
+
+        return response()->json([ 'success' => true ]);
     }
 }

@@ -1,171 +1,84 @@
 <template>
     <div>
-        <v-layout row wrap>
-            <v-flex>
-                <v-btn color="success" @click.native="serviceCategory.dialog = true" append>Добавить категорию услуги</v-btn>
-                <v-btn color="info" @click.native="serviceType.dialog = true" append>Добавить услугу</v-btn>
+        <!-- Page loading spinner -->
+        <v-layout style="position: relative">
+            <Loading :loading="loading.page" />
+        </v-layout>
+        <!-- Content -->
+        <v-layout v-if="!loading.page">
+            <v-flex xs12 sm12 md12 lg12>
+                <table class="prices-table">
+                    <thead>
+                        <tr class="prices-table-title">
+                            <th class="py-1">Общий ч/ч</th>
+                            <th class="py-1">
+                                <v-layout row>
+                                    <v-flex xs6>
+                                        <v-btn block outline small color="primary">
+                                            {{  prices.filter(price => price.human_hour_price !== null).length === 0 
+                                                ? 'Текущая не установлена.' 
+                                                : 'Текущая: ' + prices.filter(price => price.human_hour_price !== null)[0].human_hour_price + 'с.' }}
+                                        </v-btn>
+                                    </v-flex>
+                                    <v-flex xs6>
+                                        <v-btn block small color="success" @click="setHumanHourPriceDialog = true">Установить</v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr class="prices-table-title">
+                            <th>Деталь</th>
+                            <th>Заключение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-for="defect in defects" >
+                            <tr :key="defect.id">
+                                <td>{{ defect.defect_name }}</td>
+                                <td>
+                                    <v-layout row wrap v-for="conclusion in defect.defect_conclusions" :key="conclusion.id">
+                                        <v-flex xs6 class="py-0 px-1">
+                                            <v-btn block flat small>{{ conclusion.conclusion_name }}</v-btn>
+                                        </v-flex>
+                                        <v-flex xs6 class="py-0 px-1" v-if="conclusion.price.price === 0">
+                                            <v-btn block small color="success" @click="showSetupPriceDialog(conclusion.price.price_id, 'set')">Установить</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 class="py-0 px-1" v-if="conclusion.price.price > 0">
+                                            <v-btn block outline small color="primary">{{ conclusion.price.price + 'с.' }}</v-btn>
+                                        </v-flex>
+                                        <v-flex xs3 class="py-0 px-1" v-if="conclusion.price.price > 0">
+                                            <v-btn block small color="success" @click="showSetupPriceDialog(conclusion.price.price_id, 'edit')">Изменить</v-btn>                                            
+                                        </v-flex>
+                                    </v-layout>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
             </v-flex>
         </v-layout>
 
-        <v-layout row wrap>
-            <v-flex xs12 sm6 md8 lg8>
+        <v-dialog v-model="setupPriceDialog" max-width="500">
+            <form @submit.prevent="setupPrice" data-vv-scope="setup-price-form">
                 <v-card>
-                    <v-card-title class="py-1">
-                        Услуги
-                        <v-spacer></v-spacer>
-                        <v-text-field
-                            v-model="types.search"
-                            append-icon="search"
-                            label="Поиск"
-                            single-line
-                            hide-details
-                        ></v-text-field>
+                    <v-card-title class="headline">
+                        {{ setupType === 'set' ? 'Установить цену ремонта' : 'Изменить цену ремонта' }}
                     </v-card-title>
-                    <v-data-table :loading="types.loading.table" :headers="types.headers" :items="types.items" :search="types.search">
-                        <template slot="items" slot-scope="props">
-                            <td>{{ props.item.service_type_name }}</td>
-                            <td>{{ props.item.service_category_name }}</td>
-                            <td>{{ props.item.service_price }} сом.</td>
-                            <td class="justify-center">
-                                <v-btn icon class="mx-0" @click="showEditDialog(props.item, 'service-type')">
-                                    <v-icon color="green">edit</v-icon>
-                                </v-btn>
-                            </td>
-                        </template>
-                        <!-- No data slot -->
-                        <template slot="no-data">
-                            <v-alert :value="true" outline color="info" icon="warning">
-                                Нет данных для отображения.
-                            </v-alert>
-                        </template>
-                        <!-- No results slot -->
-                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
-                            Нет результатов для "{{ types.search }}".
-                        </v-alert>
-                    </v-data-table>
-                </v-card>
-            </v-flex>
-
-            <v-flex xs12 sm6 md4 lg4>
-                <v-card>
-                    <v-card-title class="py-1">
-                        Категории услуг
-                        <v-spacer></v-spacer>
-                        <v-text-field
-                            v-model="categories.search"
-                            append-icon="search"
-                            label="Поиск"
-                            single-line
-                            hide-details
-                        ></v-text-field>
-                    </v-card-title>
-                    <v-data-table :loading="categories.loading.table" :headers="categories.headers" :items="categories.items" :search="categories.search">
-                        <template slot="items" slot-scope="props">
-                            <td>{{ props.item.service_category_name }}</td>
-                            <td class="justify-center">
-                                <v-btn icon class="mx-0" @click="showEditDialog(props.item, 'service-category')">
-                                    <v-icon color="green">edit</v-icon>
-                                </v-btn>
-                            </td>
-                        </template>
-                        <!-- No data slot -->
-                        <template slot="no-data">
-                            <v-alert :value="true" outline color="info" icon="warning">
-                                Нет данных для отображения.
-                            </v-alert>
-                        </template>
-                        <!-- No results slot -->
-                        <v-alert slot="no-results" :value="true" color="error" icon="warning">
-                            Нет результатов для "{{ categories.search }}".
-                        </v-alert>
-                    </v-data-table>
-                </v-card>
-            </v-flex>
-        </v-layout>
-
-        <!-- Service category modal -->
-        <v-dialog v-model="serviceCategory.dialog" max-width="500">
-            <form @submit.prevent="addCategory" data-vv-scope="create-service-category-form">
-                <v-card>
-                    <v-card-title class="headline">Добавить категорию услуги</v-card-title>
                     <v-card-text>
                         <v-layout>
-                            <v-flex xs12>                    
-                                <v-text-field type="text" v-model="serviceCategory.name" name="service_category_name" label="Название категории" prepend-icon="directions_car"                 
-                                    v-validate="'required'" 
-                                    data-vv-name="service_category_name" data-vv-as='"Название категории"' required
-                                    :error-messages="errors.collect('service_category_name')"
-                                ></v-text-field>
-                            </v-flex>
-                        </v-layout>
-                    </v-card-text>
-                    
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="serviceCategory.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="serviceCategory.loading.button" flat="flat" type="submit">Создать</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </form>
-        </v-dialog>
-        <!-- Service type modal -->
-        <v-dialog v-model="serviceType.dialog" max-width="500">
-            <form @submit.prevent="addService" data-vv-scope="create-service-type-form">
-                <v-card>
-                    <v-card-title class="headline">Добавить услугу</v-card-title>
-                    <v-card-text>
-                        <v-layout>
-                            <v-flex xs12>                    
-                                <v-text-field type="text" v-model="serviceType.name" name="service_type_name" label="Название услуги" prepend-icon="directions_car"                 
-                                    v-validate="'required'" 
-                                    data-vv-name="service_type_name" data-vv-as='"Название услуги"' required
-                                    :error-messages="errors.collect('service_type_name')"
-                                ></v-text-field>
-
-                                <v-text-field type="text" v-model="serviceType.price" name="service_price" label="Цена за услугу" 
-                                    prepend-icon="attach_money"                                
+                            <v-flex xs12>
+                                <v-text-field type="number" 
+                                    v-model="price" 
+                                    name="service_price" 
+                                    label="Цена ремонта" 
+                                    prepend-icon="attach_money"
                                     suffix="сом."
-                                ></v-text-field>
-
-                                <v-switch label="Приблизительная цена:" ripple v-model="serviceType.approximatePrice"></v-switch>
-
-                                <v-select autocomplete :items="serviceCategory.selectItems" v-model="serviceType.categoryID" label="Выберите категорию" prepend-icon="build"
-                                    name="service_type_id"
                                     v-validate="'required'" 
-                                    :error-messages="errors.collect('service_type_id')"
-                                    data-vv-name="service_type_id" data-vv-as='"Категория"'
-                                ></v-select>
-
-                                <v-select autocomplete :items="defectOptions.selectItems" v-model="serviceType.defectOptionID" label="Выберите дефект" prepend-icon="build"
-                                    name="defect_option_id"
-                                    v-validate="'required'" 
-                                    :error-messages="errors.collect('defect_option_id')"
-                                    data-vv-name="defect_option_id" data-vv-as='"Дефект"'
-                                ></v-select>
-                            </v-flex>
-                        </v-layout>
-                    </v-card-text>
-                    
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="serviceType.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="serviceType.loading.button" flat="flat" type="submit">Создать</v-btn>
-                    </v-card-actions>
-                </v-card>
-            </form>
-        </v-dialog>
-        <!-- Edit service category modal -->
-        <v-dialog v-model="editServiceCategory.dialog" max-width="500">
-            <form @submit.prevent="editCategory" data-vv-scope="edit-service-category-form">
-                <v-card>
-                    <v-card-title class="headline">Изменить категорию услуги</v-card-title>
-                    <v-card-text>
-                        <v-layout>
-                            <v-flex xs12>                    
-                                <v-text-field type="text" v-model="editServiceCategory.name" name="service_category_name" label="Название категории" prepend-icon="directions_car"                 
-                                    v-validate="'required'" 
-                                    data-vv-name="service_category_name" data-vv-as='"Название категории"' required
-                                    :error-messages="errors.collect('service_category_name')"
+                                    data-vv-name="service_price" 
+                                    data-vv-as='"Цена ремонта"'
+                                    :error-messages="errors.collect('service_price')"
                                 ></v-text-field>
                             </v-flex>
                         </v-layout>
@@ -173,307 +86,181 @@
                     
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="editServiceCategory.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="editServiceCategory.loading.button" flat="flat" type="submit">Изменить</v-btn>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="setupPriceDialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="setupPriceLoading" flat="flat" type="submit">{{ setupType === 'set' ? 'Создать' : 'Изменить' }}</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
         </v-dialog>
-        <!-- Edit service type modal -->
-        <v-dialog v-model="editServiceType.dialog" max-width="500">
-            <form @submit.prevent="editService" data-vv-scope="edit-service-type-form">
+
+        <v-dialog v-model="setHumanHourPriceDialog" max-width="500">
+            <form @submit.prevent="setHumanHourPriceForAll" data-vv-scope="setup-hh-price-form">
                 <v-card>
-                    <v-card-title class="headline">Изменить услугу</v-card-title>
+                    <v-card-title class="headline">Установить цену за ч/ч</v-card-title>
                     <v-card-text>
                         <v-layout>
-                            <v-flex xs12>                    
-                                <v-text-field type="text" v-model="editServiceType.name" name="service_type_name" label="Название услуги" prepend-icon="directions_car"                 
-                                    v-validate="'required'" 
-                                    data-vv-name="service_type_name" data-vv-as='"Название услуги"' required
-                                    :error-messages="errors.collect('service_type_name')"
-                                ></v-text-field>
-
-                                <v-text-field type="text" v-model="editServiceType.price" name="service_price" label="Цена за услугу" 
-                                    prepend-icon="attach_money"                                
+                            <v-flex xs12>
+                                <v-text-field type="number" 
+                                    v-model="human_hour_price" 
+                                    name="service_hh_price" 
+                                    label="Цена за ч/ч" 
+                                    prepend-icon="attach_money"
                                     suffix="сом."
+                                    v-validate="'required'" 
+                                    data-vv-name="service_hh_price" 
+                                    data-vv-as='"Цена за ч/ч"'
+                                    :error-messages="errors.collect('service_hh_price')"
                                 ></v-text-field>
-
-                                <v-switch label="Приблизительная цена:" ripple v-model="editServiceType.approximatePrice"></v-switch>
-
-                                <v-select autocomplete :items="serviceCategory.selectItems" v-model="editServiceType.categoryID" label="Выберите категорию" prepend-icon="build"
-                                    name="service_type_id"
-                                    v-validate="'required'" 
-                                    :error-messages="errors.collect('service_type_id')"
-                                    data-vv-name="service_type_id" data-vv-as='"Категория"'
-                                ></v-select>
-
-                                <v-select autocomplete :items="defectOptions.selectItems" v-model="editServiceType.defectOptionID" label="Выберите дефект" prepend-icon="build"
-                                    name="defect_option_id"
-                                    v-validate="'required'" 
-                                    :error-messages="errors.collect('defect_option_id')"
-                                    data-vv-name="defect_option_id" data-vv-as='"Дефект"'
-                                ></v-select>
                             </v-flex>
                         </v-layout>
                     </v-card-text>
                     
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat="flat" @click.native="editServiceType.dialog = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="editServiceType.loading.button" flat="flat" type="submit">Изменить</v-btn>
+                        <v-btn color="blue darken-1" flat="flat" @click.native="setHumanHourPriceDialog = false">Закрыть</v-btn>
+                        <v-btn color="green darken-1" :loading="setHumanHourPriceLoading" flat="flat" type="submit">Установить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>
         </v-dialog>
-
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
-import snackbar from '@/components/mixins/snackbar'
+import Loading from '@/components/Loading'
 
 export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar ],
+    components: {
+        Loading
+    },
     data() {
         return {
-            categories: {
-                items: [],
-                headers: [
-                    { text: 'Категория услуги', value: 'service_category_name' },
-                    { text: 'Действия', value: 'actions' },
-                ],
-
-                search: '',
-                loading: {
-                    table: false
-                },
-            },
-            types: {
-                items: [],
-                headers: [
-                    { text: 'Услуга', value: 'service_type_name' }, 
-                    { text: 'Категория', value: 'service_category_name' }, 
-                    { text: 'Цена', value: 'service_price' }, 
-                    { text: 'Действия', value: 'actions' }, 
-                ],
-
-                search: '',
-                loading: {
-                    table: false
-                }
-            },
-            editServiceCategory: {
-                name: '',
-                dialog: false,
-                loading: {
-                    button: false
-                },
-            },
-            serviceCategory: {
-                id: null,
-                name: '',
-                dialog: false,
-                loading: {
-                    button: false
-                },
-                selectItems: []
-            },
-            editServiceType: {
-                dialog: false,
-                id: null,
-                name: '',
-                price: '',
-                categoryID: '',
-                defectOptionID: '',
-                approximatePrice: '',
-                loading: {
-                    button: false
-                }
-            },
-            serviceType: {
-                name: '',
-                price: null,
-                categoryID: '',
-                defectOptionID: '',
-                approximatePrice: '',
-                dialog: false,                
-                loading: {
-                    button: false
-                }
-            },
-            defectTypes: [],
             defects: [],
-            defectOptions: {
-                items: [],
-                selectItems: []
-            },
+            setupPriceDialog: false,
+            setupPriceLoading: false,
+            setHumanHourPriceDialog: false,
+            setHumanHourPriceLoading: false,
+            defectId: null,
+            conclusionId: null,
+            priceId: null,
+            setupType: '',
+            price: '',
+            human_hour_price: '',
+            loading: {
+                page: false
+            }
         }
     },
     methods: {
-        addCategory() {
-            this.serviceCategory.loading.button = true;
-            this.$validator.validateAll('create-service-category-form')
-                .then(result => {
-                    if(result) {
-                        axios.post(`/sto/${this.$route.params.slug}/services/categories`, { 'service_category_name': this.serviceCategory.name })
-                        .then(response => {
-                            this.categories.items.push(response.data.category);
-                            this.serviceCategory.loading.button = false;
-                            this.serviceCategory.selectItems.push({
-                                text: response.data.category.service_category_name,
-                                value: response.data.category.id
-                            });
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
-                        })
-                        .catch(error => console.log(error));
-                    }
-                });
-        },
-
-        getCategories() {
-            this.categories.loading.table = true;
-            axios.get(`/sto/${this.$route.params.slug}/services/categories`)
+        getPrices() {
+            this.loading.page = true;
+            axios.get(`/sto/${this.$route.params.slug}/prices`)
                 .then(response => {
-                    this.categories.items = response.data;
-                    response.data.map(category => {
-                        this.serviceCategory.selectItems.push({
-                            text: category.service_category_name,
-                            value: category.id
-                        });
-                    });
-                    this.categories.loading.table = false;
+                    console.log(response.data);
+                    this.defects = response.data.defects;
+                    this.prices = response.data.prices;
+                    this.loading.page = false;
                 })
                 .catch(error => console.log(error));
         },
-
-        editCategory() {
-            this.editServiceCategory.loading.button = true;
-            axios.put(`/sto/${this.$route.params.slug}/services/categories/${this.editServiceCategory.id}`, { service_category_name: this.editServiceCategory.name })
-                .then(response => {
-                    this.getServices();
-                    this.getCategories();
-                    this.editServiceCategory.loading.button = false;
-                    this.snackbar.color = 'success';
-                    this.snackbar.text = response.data.message;
-                    this.snackbar.active = true;
-                    this.editServiceCategory.dialog = false;
-                })
-                .catch(error => console.log(error));
-        },
-
-        addService() {
-            this.serviceType.loading.button = true;
-            this.$validator.validateAll('create-service-types-form')
-                .then(result => {
-                    if(result) {
-                        axios.post(`/sto/${this.$route.params.slug}/services/types`, {
-                            'service_type_name': this.serviceType.name,
-                            'service_price': this.serviceType.price,
-                            'service_category_id': this.serviceType.categoryID,
-                            'defect_option_id': this.serviceType.defectOptionID,
-                            'approximate': this.serviceType.approximatePrice    
-                        })
-                        .then(response => {
-                            this.getServices();
-                            this.serviceType.loading.button = false;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
-                        })
-                        .catch(error => console.log(error));
-                    }
-                });
-        },
-
-        showEditDialog(serviceItem, editDialog) {
-            if(editDialog === 'service-type') {
-                let item = this.types.items.filter(it => it.id === serviceItem.id)[0];
-                this.editServiceType.id = item.id;
-                this.editServiceType.name = item.service_type_name;
-                this.editServiceType.price = item.service_price;
-                this.editServiceType.approximatePrice = item.service_price === null ? true : false;
-                this.editServiceType.categoryID = item.service_category_id;
-                this.editServiceType.defectOptionID = item.defect_option_id;
-                this.editServiceType.dialog = true;
-            } else if(editDialog === 'service-category') {
-                this.editServiceCategory.dialog = true;
-                this.editServiceCategory.id = serviceItem.id;
-                this.editServiceCategory.name = serviceItem.service_category_name;
-                console.log(serviceItem);
+        showSetupPriceDialog(priceId, setupType) {
+            this.priceId = priceId;
+            this.setupPriceDialog = true;
+            this.setupType = setupType;
+            if(setupType === 'edit') {
+                this.price = this.prices.filter(price => price.price_id === priceId)[0].price;
             }
         },
+        setupPrice() {
+            this.$validator.validateAll('setup-price-form')
+                .then(success => {
+                    if(success) {
+                        this.setupPriceLoading = true;
+                        axios.post(`/sto/${this.$route.params.slug}/prices`, {
+                            'price': this.price,
+                            'priceId': this.priceId
+                        })
+                        .then(response => {
+                            console.log(response.data);
+                            
+                            for(let i = 0; i < this.defects.length; i++) {
+                                let defect = this.defects[i];
+                                for(let j = 0; j < defect.defect_conclusions.length; j++) {
+                                    let conclusion = defect.defect_conclusions[j];
+                                    if(conclusion.price.price_id === this.priceId) {
+                                        conclusion.price.price = this.price;
+                                    }
+                                }
+                            }
 
-        editService(serviceId) {
-            this.editServiceType.loading.button = true;
-            axios.put(`/sto/${this.$route.params.slug}/services/types/${this.editServiceType.id}`, {
-                'service_type_name': this.editServiceType.name,
-                'service_price': this.editServiceType.price,
-                'service_category_id': this.editServiceType.categoryID,
-                'defect_option_id': this.editServiceType.defectOptionID,
-                'approximate': this.editServiceType.approximatePrice    
-            })
-            .then(response => {
-                this.getServices();
-                this.editServiceType.loading.button = false;
-                this.snackbar.color = 'success';
-                this.snackbar.text = response.data.message;
-                this.snackbar.active = true;
-                this.editServiceType.dialog = false;
-            })
-            .catch(error => console.log(error));
-        },
-
-        getServices() {
-            this.types.loading.table = true;
-            axios.get(`/sto/${this.$route.params.slug}/services/types`)
-                .then(response => {
-                    this.types.items = response.data;
-                    this.types.loading.table = false;   
-                })
-                .catch(error => console.log(error));
-        },
-
-        getFullDefectInfo() {
-            axios.get(`/sto/${this.$route.params.slug}/defects/info`)
-                .then(response => {
-                    let defectInfo = response.data.defect_info;
-
-                    defectInfo.map(type => {                        
-                        this.defectTypes.push(type);
-
-                        type.defects.map(defect => {
-                            this.defects.push(defect);
-
-                            defect.defect_options.map(option => {
-                                this.defectOptions.selectItems.push({
-                                    text: defect.defect_name + ': ' + option.defect_option_name,
-                                    value: option.id
-                                });
+                            this.setupPriceLoading = false;
+                            this.setupPriceDialog = false;
+                            this.price = null;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
                             });
-                        });
-                    });
+                        })
+                        .catch(error => console.log(error));
+                    }
+                });
+        },
+        setHumanHourPriceForAll() {
+            
+            this.$validator.validateAll('setup-hh-price-form')
+                .then(success => {
+                    if(success) {
+                        this.setHumanHourPriceLoading = true;
+                        axios.post(`/sto/${this.$route.params.slug}/hhprice`, { 'human_hour_price': this.human_hour_price })
+                            .then(response => {
+                                for(let i = 0; i < this.prices.length; i++) {
+                                    this.prices[i].human_hour_price = this.human_hour_price;
+                                }
+
+                                this.setHumanHourPriceLoading = false;
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'success',
+                                    text: response.data.message,
+                                    active: true
+                                });
+                            })
+                            .catch(error => console.log(error));
+                    }
                 })
-                .catch(error => console.log(error));
         }
     },
     created() {
-        this.getCategories();
-        this.getServices();
-        this.getFullDefectInfo();
+        this.getPrices();
     }
 }
 </script>
 
 <style>
-
+    .prices-table {
+        width: 100%;
+    }
+    .prices-table td, .prices-table th {
+        padding: 10px;
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+        margin: 0; 
+        width: 10%;
+    }
+    .prices-table td p {
+        margin: 0;
+    }
+    .prices-table-title {
+        background-color: rgba(0, 0, 0, .05);
+        text-align: center;
+    }
+    .prices-table-checklist-title {
+        text-transform: uppercase;
+        font-weight: bold;
+        text-align: center;
+    }
 </style>

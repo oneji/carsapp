@@ -2,16 +2,16 @@
     <div>
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="primary" @click.native="defectType.dialog = true" append>Добавить чек лист</v-btn>
-                <v-btn color="primary" @click.native="defect.dialog = true" append>Добавить деталь</v-btn>
-                <v-btn color="primary" @click.native="defectOption.dialog = true" append>Добавить состояние</v-btn>
-                <v-btn color="primary" @click.native="defectConclusion.dialog = true" append>Добавить заключение</v-btn>
+                <v-btn small color="primary" @click.native="defectType.dialog = true" append>Добавить чек лист</v-btn>
+                <v-btn small color="primary" @click.native="defect.dialog = true" append>Добавить деталь</v-btn>
+                <v-btn small color="primary" @click.native="defectOption.dialog = true" append>Добавить состояние</v-btn>
+                <v-btn small color="primary" @click.native="defectConclusion.dialog = true" append>Добавить заключение</v-btn>
             </v-flex>
         </v-layout>
 
         <v-layout row wrap>
             <!-- Defect types -->
-            <v-flex xs12 sm6 md4 lg4>
+            <v-flex xs12 sm6 md6 lg6>
                 <v-card>
                     <v-card-title class="py-1">
                         Чек листы
@@ -53,7 +53,7 @@
                 </v-card>
             </v-flex>
             <!-- Defects -->
-            <v-flex xs12 sm6 md4 lg4 v-if="showDefectsTrigger">
+            <v-flex xs12 sm6 md6 lg6 v-if="showDefectsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
                         Детали
@@ -95,7 +95,7 @@
                 </v-card>
             </v-flex>
             <!-- Defect options -->
-            <v-flex xs12 sm6 md4 lg4 v-if="showDefectOptionsTrigger">
+            <v-flex xs12 sm6 md6 lg6 v-if="showDefectOptionsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
                         Состояния
@@ -134,7 +134,7 @@
                 </v-card>
             </v-flex>            
             <!-- Defect conclusions -->
-            <v-flex xs12 sm6 md4 lg4 v-if="showDefectConclusionsTrigger">
+            <v-flex xs12 sm6 md6 lg6 v-if="showDefectConclusionsTrigger">
                 <v-card>
                     <v-card-title class="py-1">
                         Заключения
@@ -176,18 +176,18 @@
 
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" @click.native="createEngineType = true" append>Добавить ДВС</v-btn>
-                <v-btn color="primary" @click.native="createTransmission = true" append>Добавить трансмиссию</v-btn>
+                <v-btn small color="success" @click.native="createEngineType = true" append>Добавить ДВС</v-btn>
+                <v-btn small color="primary" @click.native="createTransmission = true" append>Добавить трансмиссию</v-btn>
             </v-flex>
         </v-layout>
 
-        <v-layout>
-            <v-flex xs12 sm6 md4 lg4>
-                <engine-type :create="createEngineType" @close-create-modal="createEngineType = false" />
+        <v-layout row wrap>
+            <v-flex xs12 sm6 md6 lg6>
+                <EngineType :create="createEngineType" @close-create-modal="createEngineType = false" />
             </v-flex>
 
-            <v-flex xs12 sm6 md4 lg4>
-                <engine-transmission :create="createTransmission" @close-create-modal="createTransmission = false" />
+            <v-flex xs12 sm6 md6 lg6>
+                <EngineTransmission :create="createTransmission" @close-create-modal="createTransmission = false" />
             </v-flex>
         </v-layout>
 
@@ -436,17 +436,11 @@
                 </v-card>
             </form>
         </v-dialog>
-
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
-import snackbar from '@/components/mixins/snackbar'
 
 import EngineType from '@/components/Engine/EngineType'
 import EngineTransmission from '@/components/Engine/EngineTransmission'
@@ -455,10 +449,9 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar ],
     components: {
-        'engine-type': EngineType,
-        'engine-transmission': EngineTransmission
+        EngineType,
+        EngineTransmission
     },
     data() {
         return {
@@ -615,7 +608,11 @@ export default {
                                 value: response.data.type.id
                             });
                             this.defectType.loading.button = false;
-                            this.successSnackbar(response.data.message);
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     }
@@ -640,9 +637,11 @@ export default {
                         .then(response => {
                             this.defectType.loading.button = false;
                             this.types.items[this.defectType.edit.index].defect_type_name = this.defectType.edit.defect_type_name;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     }
@@ -653,7 +652,7 @@ export default {
             this.$validator.validateAll('create-defect-form')
                 .then(success => {
                     if(success) {
-                        this.defects.loading.button = true;
+                        this.defect.loading.button = true;
                         axios.post(`/sto/${this.$route.params.slug}/defects`, {
                             'defect_name': this.defect.defect_name,
                             'defect_type_id': this.defect.defect_type_id
@@ -665,9 +664,11 @@ export default {
                                 value: response.data.defect.id
                             });
                             this.defect.loading.button = false; 
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     } else {
@@ -697,9 +698,11 @@ export default {
                             this.defect.loading.button = false;
                             this.defects.items[this.defect.edit.index].defect_name = this.defect.edit.defect_name;
                             this.defects.items[this.defect.edit.index].defect_type_id = this.defect.edit.defect_type_id;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     }
@@ -722,10 +725,11 @@ export default {
                                 value: response.data.option.id
                             });
                             this.defectOption.loading.button = false;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
-
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     } else {
@@ -755,9 +759,11 @@ export default {
                             this.defectOption.loading.button = false;
                             this.options.items[this.defectOption.edit.index].defect_option_name = this.defectOption.edit.defect_option_name;
                             this.options.items[this.defectOption.edit.index].defect_id = this.defectOption.edit.defect_id;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     }
@@ -780,10 +786,11 @@ export default {
                                 value: response.data.conclusion.id
                             });
                             this.defectConclusion.loading.button = false;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
-
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     } else {
@@ -813,9 +820,11 @@ export default {
                             this.defectConclusion.loading.button = false;
                             this.conclusions.items[this.defectConclusion.edit.index].conclusion_name = this.defectConclusion.edit.conclusion_name;
                             this.conclusions.items[this.defectConclusion.edit.index].defect_id = this.defectConclusion.edit.defect_id;
-                            this.snackbar.color = 'success';
-                            this.snackbar.text = response.data.message;
-                            this.snackbar.active = true;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true
+                            });
                         })
                         .catch(error => console.log(error));
                     }

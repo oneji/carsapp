@@ -1,5 +1,5 @@
+
 import Vue from 'vue'
-import Vuex from 'vuex'
 import App from './App'
 import router from './router'
 import store from './store'
@@ -10,7 +10,7 @@ import VueMoment from 'vue-moment'
 import { Can } from '@/directives'
 
 Vue.use(Vuetify)
-Validator.localize('ru', ru);
+Validator.localize('ru', ru)
 Vue.use(VeeValidate)
 Vue.use(VueMoment)
 

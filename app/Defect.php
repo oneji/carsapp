@@ -46,10 +46,18 @@ class Defect extends Model
     }
 
     /**
-     * Get all of the post's comments.
+     * Get all of the defect's comments.
      */
     public function comments()
     {
         return $this->morphMany('App\Comment', 'commentable');
+    }
+
+    /**
+     * Get all of the service prices defect's.
+     */
+    public function service_prices()
+    {
+        return $this->hasMany('App\ServicePrice');
     }
 }

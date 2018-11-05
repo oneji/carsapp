@@ -20,6 +20,8 @@ Route::get('/check', function() {
     ]);
 });
 
+Route::get('/fill-prices', 'Sto\DefectController@fillServicePrices');
+
 // General routes
 Route::post('auth/login', 'AuthController@login');    
 Route::post('auth/register', 'AuthController@register');
@@ -157,15 +159,10 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::get('/{slug}/companies', 'CompanyController@get');
         Route::get('/{slug}/companies/{company}/cars', 'CompanyController@getCars');
         // Services routes
-        Route::get('/{slug}/services/categories', 'ServiceController@getCategories');
-        Route::get('/{slug}/services/types', 'ServiceController@getTypes');        
+        Route::get('/{slug}/prices', 'ServiceController@getPrices');
+        Route::post('/{slug}/prices', 'ServiceController@setPrice');
+        Route::post('/{slug}/hhprice', 'ServiceController@setHumanHourPriceForAll');
         
-        Route::post('/{slug}/services/categories', 'ServiceController@storeCategory');
-        Route::post('/{slug}/services/types', 'ServiceController@storeService');
-        Route::post('/{slug}/services/invoice', 'ServiceController@invoice');
-
-        Route::put('/{slug}/services/types/{type}', 'ServiceController@updateServiceType');
-        Route::put('/{slug}/services/categories/{category}', 'ServiceController@updateServiceCategory');
         // Car routes
         Route::post('/{slug}/cars', 'CarController@store');
         Route::post('/{slug}/cars/{car}/card', 'CarCardController@createCard');
