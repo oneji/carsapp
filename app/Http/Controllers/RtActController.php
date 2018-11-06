@@ -328,7 +328,9 @@ class RtActController extends Controller
     {
         $act = RtAct::find($id);
         $currentFiles = []; 
-        $currentFiles = json_decode($act->files, true);
+        if($act->files !== null && $act->files !== 'null') {
+            $currentFiles = json_decode($act->files, true);
+        }
         // RT act files
         $newFiles = [];
         if($request->hasFile('attachments')) {
