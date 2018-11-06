@@ -327,7 +327,8 @@ class RtActController extends Controller
     public function addMoreFiles(Request $request, $id)
     {
         $act = RtAct::find($id);
-        $currentFiles = json_decode($act->files);
+        $currentFiles = []; 
+        $currentFiles = json_decode($act->files, true);
         // RT act files
         $newFiles = [];
         if($request->hasFile('attachments')) {
