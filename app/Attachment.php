@@ -18,7 +18,7 @@ class Attachment extends Model
     ];
 
     /**
-     * Get all of the owning commentable models.
+     * Get all of the owning attachable models.
      */
     public function attachable()
     {

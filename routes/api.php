@@ -64,6 +64,13 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::get('rt-act/checklists/items', 'RtActChecklistItemController@get');
     Route::post('rt-act/checklists/items', 'RtActChecklistItemController@store');
     Route::put('rt-act/checklists/items/{item}', 'RtActChecklistItemController@update');
+
+    // Done act
+    Route::get('done-acts/{act}', 'DoneActController@getById');
+    Route::post('done-acts', 'DoneActController@store');
+    Route::post('done-acts/{act}', 'DoneActController@send');
+    Route::put('done-acts/defects/{defect}/markAsDone', 'DoneActController@markDetailAsDone');
+    Route::put('done-acts/{act}/confirmAndClose', 'DoneActController@confirmAndClose');
 }); 
 
 // Admin routes

@@ -46,7 +46,15 @@ class CarController extends Controller
                     ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
                     ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
                     ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')
-                    ->with('attachments', 'card.comments.user', 'card.defect_acts.defect_options.defect', 'card.defect_acts.equipment', 'card.fines.attachments', 'card.rt_acts.checklist_items')
+                    ->with([
+                            'attachments', 
+                            'card.comments.user', 
+                            'card.defect_acts.defect_options.defect', 
+                            'card.defect_acts.equipment', 
+                            'card.fines.attachments', 
+                            'card.rt_acts.checklist_items',
+                            'card.done_acts'
+                        ])
                     ->where('sold', 0)
                     ->where('cars.id', $car_id)->with([ 'drivers' => function($q) {
                         $q->where('active', 1)->get();

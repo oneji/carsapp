@@ -159,7 +159,7 @@
         <v-dialog v-model="dialog.repair" max-width="500" v-if="repair">
             <form @submit.prevent="repairDone" data-vv-scope="repair-form">
                 <v-card>
-                    <v-card-title class="headline">Завершить ремонт</v-card-title>
+                    <v-card-title class="headline">Ремонт будет завершен</v-card-title>
                     <v-card-text>
                         <v-layout>
                             <v-flex xs12 sm12 md12 lg12>     
@@ -236,7 +236,7 @@
                     <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" flat="flat" @click.native="dialog.repair = false">Закрыть</v-btn>
-                        <v-btn color="green darken-1" :loading="loading.repair" flat="flat" type="submit">Завершить</v-btn>
+                        <v-btn color="green darken-1" :loading="loading.repair" flat="flat" type="submit">Сохранить</v-btn>
                     </v-card-actions>
                 </v-card>
             </form>

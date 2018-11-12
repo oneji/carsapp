@@ -27,10 +27,16 @@
                                     Дата создания: {{ typeof item.defect_act_date === 'object' 
                                         ? item.defect_act_date.date 
                                         : item.defect_act_date | moment("MMMM D, YYYY") }}
-                                    </v-list-tile-sub-title>
+                                </v-list-tile-sub-title>
+                                <v-list-tile-sub-title v-if="item.confirmed === 0">
+                                    <MyLabel type="success" text="Ждет подтверждения" />
+                                </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn v-if="showDefect" icon ripple :to="{ name: 'StoDefectAct', params: { act: item.id } }">
+                                <v-btn v-if="showDefect && $route.name === 'CompanyCarsCard'" icon ripple :to="{ name: 'CompanyDefectAct', params: { act: item.id } }">
+                                    <v-icon color="grey lighten-1">remove_red_eye</v-icon>
+                                </v-btn>
+                                <v-btn v-if="showDefect && $route.name !== 'CompanyCarsCard'" icon ripple :to="{ name: 'StoDefectAct', params: { act: item.id } }">
                                     <v-icon color="grey lighten-1">remove_red_eye</v-icon>
                                 </v-btn>
                             </v-list-tile-action>
@@ -39,13 +45,12 @@
                 </v-list>
             </v-card-text>
         </v-card>
-
-        <DefectAct :open="defectActDialog" @close="defectActDialog = false" />
     </div>
 </template>
 
 <script>
-import DefectAct from './DefectAct';
+import DefectAct from './DefectAct'
+import MyLabel from '@/components/Label'
 
 export default {
     props: {
@@ -61,7 +66,8 @@ export default {
         }
     },
     components: {
-        DefectAct
+        DefectAct,
+        MyLabel
     },
     data() {
         return {

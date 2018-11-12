@@ -48,7 +48,7 @@ class DefectAct extends Model
     }
 
     /**
-     * Get all of the post's comments.
+     * Get all of the defect act's comments.
      */
     public function attachments()
     {

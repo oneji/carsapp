@@ -21,6 +21,7 @@ class DefectActController extends Controller
 {
     private $partialReport;
     private $fullReport;
+    
     /**
      * Get all defect acts.
      */

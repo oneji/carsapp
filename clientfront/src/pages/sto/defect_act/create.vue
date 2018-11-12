@@ -186,7 +186,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="6">
-                                    <v-btn block color="success" :loading="loading.saveBtn" type="submit">Создать дефектный акт</v-btn>
+                                    <v-btn block color="success" :loading="loading.saveBtn" type="submit">Сохранить и отравить на утверждение</v-btn>
                                 </td>
                             </tr>
                         </tfoot>

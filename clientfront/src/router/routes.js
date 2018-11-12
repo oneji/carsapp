@@ -26,6 +26,8 @@ import CompanyDriversEdit       from '@/pages/company/drivers/edit'
 import CompanyStoRequests       from '@/pages/company/requests/index'
 import CompanyRepairRequests    from '@/pages/company/requests/repair'
 import CompanyArchivedRequests  from '@/pages/company/requests/archived'
+import CompanyDefectAct         from '@/pages/company/defect_act/index'
+import CompanyDoneAct           from '@/pages/company/done_acts/index'
 // STO pages    
 import StoHome                  from '@/pages/sto/index'
 import StoRequests              from '@/pages/sto/requests/index'
@@ -43,6 +45,7 @@ import StoCreateRTAct           from '@/pages/sto/rt_act/create'
 import StoEditRTAct             from '@/pages/sto/rt_act/edit'
 import StoCreateDefectAct       from '@/pages/sto/defect_act/create'
 import StoDefectAct             from '@/pages/sto/defect_act/index'
+import StoDoneAct               from '@/pages/sto/done_acts/index'
 // Error pages
 import NotFound                 from '@/pages/errors/404'
 import NoAccess                 from '@/pages/errors/403'
@@ -108,6 +111,8 @@ const routes = [
             { path: 'sto-list', name: 'CompanyStoRequests', component: CompanyStoRequests, meta: { requiresAuth: true } },
             { path: 'requests/repair', name: 'CompanyRepairRequests', component: CompanyRepairRequests, meta: { requiresAuth: true } },
             { path: 'requests/archive', name: 'CompanyArchivedRequests', component: CompanyArchivedRequests, meta: { requiresAuth: true } },
+            { path: 'defect-acts/:act', name: 'CompanyDefectAct', component: CompanyDefectAct, meta: { requiresAuth: true } },            
+            { path: 'done-acts/:act', name: 'CompanyDoneAct', component: CompanyDoneAct, meta: { requiresAuth: true } },            
         ]
     },
     // Sto routes
@@ -130,6 +135,7 @@ const routes = [
             { path: 'companies/:company/cars/:car/card/rt-act/:act/edit', name: 'StoEditRTAct', component: StoEditRTAct, meta: { requiresAuth: true } },
             { path: 'companies/:company/cars/:car/card/defect-act/create', name: 'StoCreateDefectAct', component: StoCreateDefectAct, meta: { requiresAuth: true } },
             { path: 'defect-act/:act', name: 'StoDefectAct', component: StoDefectAct, meta: { requiresAuth: true } },
+            { path: 'done-act/:act', name: 'StoDoneAct', component: StoDoneAct, meta: { requiresAuth: true } },
         ]
     }
 ]

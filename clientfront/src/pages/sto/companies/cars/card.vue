@@ -37,6 +37,10 @@
                         v-if="!loading.pageLoad" 
                         :items="defectActs" 
                         :car="car" class="mt-3" />
+
+                    <DoneActList 
+                        :items="doneActs"
+                        :showAct="true" />
                 </v-flex>            
             </transition>
 
@@ -47,64 +51,14 @@
                     <RTActsList :items="car.card.rt_acts" />
                 </v-flex>
             </transition>
-        </v-layout>       
-
-
-        <!-- Services price -->
-        <!-- <v-layout row wrap v-if="!loading.pageLoad">
-            <v-flex xs12 sm12 md12 lg12>
-                <v-btn color="success" append @click="getInvoice">Расчитать примерную цену и услуги</v-btn>      
-            </v-flex>
         </v-layout>
-
-        <v-layout row wrap style="position: relative;" v-if="!loading.pageLoad">
-            <Loading :loading="loading.invoice" />
-
-            <v-flex v-if="!loading.pageLoad && totalSum === 0"> 
-                <v-alert outline transition="scale-transition" type="info" :value="true">
-                    Сумма и услуги расчитаны не были.
-                </v-alert>
-            </v-flex>
-            
-            <v-flex xs12 sm12 md12 lg12 v-if="invoice.length > 0">         
-                <v-card>
-                    <v-card-media>
-                        <v-container>
-                            <v-layout>
-                                <v-flex>
-                                    <p class="subheading my-0" style="float: left;">Примерная цена на услуги</p>
-                                    <p class="title my-0" style="float: right;"><strong>Итого:</strong> <span class="red--text">{{ totalSum }} сомони</span></p>   
-                                </v-flex>                                
-                            </v-layout>
-                        </v-container>
-                    </v-card-media>
-                    <v-divider></v-divider>
-                    <v-list two-line>
-                        <template v-for="(item, index) in invoice">
-                            <v-list-tile :key="item.title" avatar ripple @click="toggle(index)">
-                                <v-list-tile-content>
-                                    <v-list-tile-title>{{ item.service_type_name }}</v-list-tile-title>
-                                    <v-list-tile-sub-title>Категория: {{ item.service_category_name }}</v-list-tile-sub-title>
-                                </v-list-tile-content>
-                                <v-list-tile-action>
-                                    <v-list-tile-action-text class="body-2">{{ item.service_price }} сом.</v-list-tile-action-text>
-                                    <v-icon v-if="selectedServices.indexOf(index) < 0" color="grey lighten-1">star_border</v-icon>
-                                    <v-icon v-else color="yellow darken-2">star</v-icon>
-                                </v-list-tile-action>
-                            </v-list-tile>
-                            <v-divider v-if="index + 1 < invoice.length" :key="index"></v-divider>
-                        </template>
-                    </v-list>
-                </v-card>
-            </v-flex>
-        </v-layout> -->
 
         <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
             {{ snackbar.text }}
             <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
         </v-snackbar>
 
-        <defect-act />
+        <!-- <defect-act />
 
         <create-defect-act v-if="!loading.pageLoad"
             :open-defect-act-modal="createDefectActModal" 
@@ -113,7 +67,7 @@
             :defects="defects"  
             :card-id="car.card.id"
             :equipment="equipment"
-            @act-created="onDefectActCreated" />
+            @act-created="onDefectActCreated" /> -->
     </div>
 </template>
 
@@ -132,6 +86,7 @@ import Car from '@/components/Car'
 import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import ConsumablesList from '@/components/CarCard/Consumables/ConsumablesList'
 import RTActsList from '@/components/CarCard/ReceiveTransferAct/ReceiveTransferActList'
+import DoneActList from '@/components/DoneAct/DoneActList'
 
 export default {
     mixins: [ snackbar ],
@@ -151,7 +106,8 @@ export default {
         Car, 
         Attachments,
         ConsumablesList,
-        RTActsList
+        RTActsList,
+        DoneActList
     },
     data() {
         return {
@@ -174,6 +130,7 @@ export default {
             defects: [],
             comments: [],
             defectActs: [],
+            doneActs: [],
             attachments: [],
             equipment: [],
             consumables: [],
@@ -212,6 +169,7 @@ export default {
                     this.comments = this.car.card.comments;
                     this.attachments = this.car.attachments;
                     this.defectActs =  this.car.card.defect_acts;
+                    this.doneActs =  this.car.card.done_acts;
                     this.equipment = response.data.equipment;
 
                     this.attachments.map(file => {

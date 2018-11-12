@@ -39,6 +39,14 @@ class CarCard extends Model
     }
 
     /**
+     * Get all defect acts for car card.
+     */
+    public function done_acts() 
+    {
+        return $this->hasMany('App\DoneAct');
+    }
+
+    /**
      * Get all fines for car card.
      */
     public function fines()

@@ -60,6 +60,7 @@
                         <tbody>
                             <template v-for="(item, index) in defectsData">  
                                 <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                                    <th>#</th>
                                     <th>Деталь</th>
                                     <th>Статус</th>
                                     <th>Состояние</th>
@@ -71,6 +72,9 @@
                                     <th colspan="7">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
+                                    <td>
+                                        <v-checkbox v-model="toNewAct" :value="item.id" hide-details></v-checkbox>
+                                    </td>
                                     <td>{{ item.defect_name }}</td>
                                     <td>
                                         {{ detailsInfo[item.id].toReport === 1 ? 'Пройден' : 'Не пройден' }}
@@ -132,6 +136,11 @@
                                     <v-btn color="success" block :loading="loading.addMoreFiles" @click="addMoreFiles">Добавить файлы</v-btn>
                                 </td>
                             </tr>
+                            <tr>
+                                <td colspan="7">
+                                    <v-btn color="primary" block :loading="loading.newAct" @click="createNewAct">Сохранить акт выполненных работ</v-btn>
+                                </td>
+                            </tr>
                         </tfoot>
                     </table>
                 </form>
@@ -164,7 +173,9 @@ export default {
 
             for(let i = 0; i < this.actDefectConclusions.length; i++) {
                 let conclusion = this.actDefectConclusions[i];
-                totalPrice += Number(conclusion.service_price);
+                if(this.toNewAct.includes(conclusion.defect_id)) {
+                    totalPrice += Number(conclusion.service_price);
+                }
             }
 
             return totalPrice; 
@@ -394,6 +405,7 @@ export default {
             } else {
                 this.loading.newAct = true;
                 axios.post(`done-acts`, {
+                    'defect_act_id': this.$route.params.act,
                     'car_card_id': this.$store.getters.defectAct.car_card_id,
                     'user_id': JSON.parse(window.localStorage.user).id,
                     'defects': this.toNewAct

@@ -20,6 +20,14 @@ class Defect extends Model
     {
         return $this->belongsToMany('App\DefectAct')->withPivot('to_report');
     }
+    
+    /**
+     * Get a done act for a defect.
+     */
+    public function done_acts()
+    {
+        return $this->belongsToMany('App\DoneAct');
+    }
 
     /**
      * Get a defect type for a defect.

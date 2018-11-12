@@ -37,7 +37,11 @@
                     <DefectActList 
                         :items="defectActs"
                         class="mt-3" />
-                </v-flex>            
+
+                    <DoneActList 
+                        :items="doneActs"
+                        :showAct="true" />
+                </v-flex>
             </transition>
 
             <!-- Comments -->
@@ -108,6 +112,7 @@ import Attachments from '@/components/CarCard/Attachments/CarCardAttachments'
 import Fines from '@/components/CarCard/Fines/CarCardFine'
 import ConsumablesList from '@/components/CarCard/Consumables/ConsumablesList'
 import RTActsList from '@/components/CarCard/ReceiveTransferAct/ReceiveTransferActList'
+import DoneActList from '@/components/DoneAct/DoneActList'
 
 export default {
     $_veeValidate: {
@@ -125,7 +130,8 @@ export default {
         Attachments, 
         Fines,
         ConsumablesList,
-        RTActsList
+        RTActsList,
+        DoneActList
     },
     data() {
         return {
@@ -148,6 +154,7 @@ export default {
             defects: [],
             comments: [],
             defectActs: [],
+            doneActs: [],
             attachments: [],
             fines: [],
             equipment: [],
@@ -256,7 +263,6 @@ export default {
             this.loading.pageLoad = true;
             axios.get(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/card`)
                 .then(response => {
-                    console.log(response.data);
                     this.car = response.data.car;
                     // Vuex actions
                     this.$store.dispatch('setCar', response.data.car);
@@ -268,6 +274,7 @@ export default {
                     this.fines = this.car.card.fines;
                     this.equipment = response.data.equipment;
                     this.defectActs =  this.car.card.defect_acts;
+                    this.doneActs =  this.car.card.done_acts;
 
                     this.attachments.map(file => {
                         this.lightboxImages.push({
