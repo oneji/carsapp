@@ -18,6 +18,9 @@
                 <form @submit.prevent="createDefectAct" data-vv-scope="create-defect-act-form" :style="{ fontSize: '14px' }">
                     <table class="defect-act-table" :style="{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid #e6e6e6' }">
                         <thead>
+                            <tr v-if="act.confirmed === 1" class="defect-act-table-title">
+                                <th colspan="6"><h3>Акт подтвержден и закрыт.</h3></th>
+                            </tr>
                             <tr class="defect-act-table-title">
                                 <th colspan="2"><h2>Дефектный акт</h2></th>
                             </tr>
@@ -64,10 +67,10 @@
                         <tbody>
                             <template v-for="(item, index) in defectsData">
                                 <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
-                                    <th colspan="7">{{ item.defect_type_name }}</th>
+                                    <th :colspan="act.confirmed !== 1 ? 7 : 6">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr class="defect-act-table-section" v-if="item.heading && headersCheck[item.id]" :key="index">
-                                    <th>#</th>
+                                    <th v-if="act.confirmed !== 1">#</th>
                                     <th>Деталь</th>
                                     <th>Статус</th>
                                     <th>Состояние</th>
@@ -76,7 +79,7 @@
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
-                                    <td>
+                                    <td v-if="act.confirmed !== 1">
                                         <v-checkbox v-model="toNewAct" :value="item.id" hide-details></v-checkbox>
                                     </td>
                                     <td>{{ item.defect_name }}</td>
@@ -110,13 +113,13 @@
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th colspan="7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
+                                <th :colspan="act.confirmed !== 1 ? 7 : 6">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
                             </tr>
                             <tr class="defect-act-table-title">
-                                <th colspan="7">Файлы</th>                                
+                                <th :colspan="act.confirmed !== 1 ? 7 : 6">Файлы</th>
                             </tr>
                             <tr>
-                                <td colspan="7">
+                                <td :colspan="act.confirmed !== 1 ? 7 : 6">
                                     <Lightbox
                                         id="defect_act_files"
                                         :images="attachments"
@@ -140,7 +143,7 @@
                                     <v-btn color="success" block :loading="loading.addMoreFiles" @click="addMoreFiles">Добавить файлы</v-btn>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="act.confirmed !== 1">
                                 <td colspan="7">
                                     <v-btn color="primary" block :loading="loading.newAct" @click="createNewAct">Подтверждаю</v-btn>
                                 </td>

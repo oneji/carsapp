@@ -24,12 +24,15 @@
                             <v-list-tile-content>
                                 <v-list-tile-title>Номер акта: #{{ item.id | generateActNum }}</v-list-tile-title>
                                 <v-list-tile-sub-title>
-                                    Дата создания: {{ typeof item.defect_act_date === 'object' 
+                                    Дата составления: {{ typeof item.defect_act_date === 'object' 
                                         ? item.defect_act_date.date 
                                         : item.defect_act_date | moment("MMMM D, YYYY") }}
                                 </v-list-tile-sub-title>
                                 <v-list-tile-sub-title v-if="item.confirmed === 0">
                                     <MyLabel type="success" text="Ждет подтверждения" />
+                                </v-list-tile-sub-title>
+                                <v-list-tile-sub-title v-if="item.confirmed === 1">
+                                    <MyLabel type="success" text="Подтвержден и закрыт" />
                                 </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
@@ -49,7 +52,6 @@
 </template>
 
 <script>
-import DefectAct from './DefectAct'
 import MyLabel from '@/components/Label'
 
 export default {
@@ -66,20 +68,12 @@ export default {
         }
     },
     components: {
-        DefectAct,
         MyLabel
     },
     data() {
         return {
-            defectActDialog: false
+            
         }
-    },
-    methods: {
-        showDefectAct(actId) {
-            let act = this.items.filter(item => item.id === actId)[0];
-            this.$store.dispatch('setDefectAct', act);
-            this.defectActDialog = true;
-        },        
     }
 }
 </script>
