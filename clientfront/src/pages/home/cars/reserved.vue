@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="getTotalCarCount !== 0 && !loading">        
+        <div>        
             <v-layout row wrap>
                 <v-flex xs12 sm6 md3 lg3>      
                     <v-select
@@ -76,17 +76,11 @@
                 </v-card>
             </form>
         </v-dialog>
-        
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
-import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 import Car from '@/components/Car'
 
@@ -94,7 +88,6 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [snackbar],
     computed: {
         getCarsByCompany() {
             if(this.query.company === null)
@@ -186,6 +179,7 @@ export default {
             this.$validator.validateAll('reserve-form')
                 .then(success => {
                     if(success) {
+                        this.addToReserve.loading = true;
                         axios.put(`/company/${this.$route.params.slug}/cars/reserve/put`, {
                             car_id: this.addToReserve.carID
                         })
@@ -198,9 +192,13 @@ export default {
 
                             this.selectItems.cars = this.selectItems.cars.filter(car => car.value !== this.addToReserve.carID);
 
-                            this.addToReserve.dialog = true;
-                            this.card.loading = false;
-                            this.successSnackbar(response.data.message);
+                            this.addToReserve.dialog = false;
+                            this.addToReserve.loading = false;
+                            this.$store.dispatch('showSnackbar', {
+                                color: 'success',
+                                text: response.data.message,
+                                active: true 
+                            });
                         })
                         .catch(error => console.log(error));
                     }

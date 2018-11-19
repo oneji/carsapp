@@ -1,22 +1,18 @@
 <template>
     <div>
         <v-card>
-            <v-card-media :src="item.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + item.cover_image" height="180px">
-                <v-container fill-height fluid>
-                    <v-layout fill-height>
-                        <v-flex class="text-xs-right text-sm-right text-md-right text-lg-right" xs12 align-end flexbox justify-end>
-                            <MyLabel :text="item.type === 0 ? 'Служебная' : 'Служебно-Личная'" :type="item.type === 0 ? 'success' : 'primary'" />
-                            <!-- <skeleton-loading class="skeleton-loading">
-                                <row class="skeleton-row">
-                                    <square-skeleton 
-                                        :boxProperties="{ bottom: '10px', height: '100%'}"    
-                                    >
-                                    </square-skeleton>
-                                </row>
-                            </skeleton-loading> -->
-                        </v-flex>
-                    </v-layout>
-                </v-container>
+            <v-card-media height="180px">
+                <!-- <skeleton-loading class="skeleton-loading">
+                    <row class="skeleton-row">
+                        <square-skeleton 
+                            :boxProperties="{ bottom: '10px', height: '100%'}"    
+                        >
+                        </square-skeleton>
+                    </row>
+                </skeleton-loading> -->
+                <!-- item.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + item.cover_image -->
+                <ImageItem 
+                    :source="item.cover_image === null ? '/static/images/no-car-img.png' : assetsURL + '/' + item.cover_image" />
             </v-card-media> 
             <v-divider></v-divider>           
             <v-card-title primary-title class="pt-3 pb-0">
@@ -183,6 +179,8 @@ import axios from '@/axios'
 import config from '@/config'
 import MyLabel from '@/components/Label'
 import assetsURL from '@/components/mixins/assets-url'
+import Loading from '@/components/Loading'
+import ImageItem from '@/components/ImageItem'
 
 export default {
     mixins: [assetsURL],
@@ -222,7 +220,9 @@ export default {
         }
     },
     components: {
-        MyLabel
+        MyLabel,
+        Loading,
+        ImageItem
     },
     computed: {
         routeName() {
@@ -316,7 +316,7 @@ export default {
                     }
                 });           
         },
-    },
+    }
 }
 </script>
 

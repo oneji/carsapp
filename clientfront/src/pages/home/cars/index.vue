@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="getTotalCarCount !== 0 && !loading">        
+        <div>        
             <v-layout row wrap>  
                 <v-flex xs12 sm6 md3 lg3>     
                     <v-select
@@ -55,23 +55,16 @@
                         @reserve="onReserveCar" />
                 </v-flex>
             </v-layout> 
-        <!-- </transition-group> -->
-
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>        
+        <!-- </transition-group> -->  
     </div>
 </template>
 
 <script>
 import axios from '@/axios'
-import snackbar from '@/components/mixins/snackbar'
 import Loading from '@/components/Loading'
 import Car from '@/components/Car'
 
 export default {
-    mixins: [snackbar],
     computed: {
         filterCars() {
             if(this.query.company === '' && this.query.brand === '') {
@@ -82,7 +75,7 @@ export default {
                 return this.cars.filter(car => car.info.brand_id === this.query.brand && car.info.reserved === 0); 
             } else if(this.query.company !== '' && this.query.brand !== '') {
                 return this.cars.filter(car => car.company.id === this.query.company && car.info.brand_id === this.query.brand && car.info.reserved === 0); 
-            }  
+            }
         },
 
         getTotalCarCount() {
@@ -167,7 +160,11 @@ export default {
                     car.info.reserved = 1;                    
             });
 
-            this.successSnackbar(params.message);
+            this.$store.dispatch('showSnackbar', {
+                color: 'success',
+                text: params.message,
+                active: true
+            });
         }
     },
     created() {

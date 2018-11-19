@@ -90,9 +90,7 @@ export default {
     },
     computed: {  
         noProjects() {
-            let companies = this.companies;
-            let stos = this.stos;
-            if(Number(companies.length) + Number(stos.length) > 0)
+            if(Number(this.companies.length) + Number(this.stos.length) > 0)
                 return false;
             else             
                 return true;

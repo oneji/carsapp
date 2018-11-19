@@ -47,6 +47,10 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td colspan="1"><strong>Дата составления акта</strong></td>
+                                <td colspan="1">{{ act.created_at | moment('MMMM DD, YYYY') }}</td>
+                            </tr>
+                            <tr>
                                 <td colspan="1"><strong>Акт составил</strong></td>
                                 <td colspan="1">{{ act.username }}</td>
                             </tr>
@@ -58,8 +62,11 @@
                     </table>
                     <table class="defect-act-table">
                         <tbody>
-                            <template v-for="(item, index) in defectsData">  
-                                <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                            <template v-for="(item, index) in defectsData">
+                                <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
+                                    <th colspan="7">{{ item.defect_type_name }}</th>
+                                </tr>
+                                <tr class="defect-act-table-section" v-if="item.heading && headersCheck[item.id]" :key="index">
                                     <th>#</th>
                                     <th>Деталь</th>
                                     <th>Статус</th>
@@ -67,9 +74,6 @@
                                     <th>Заключение</th>
                                     <th>Цена за ремонт</th>
                                     <th>Комментарий</th>
-                                </tr>
-                                <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
-                                    <th colspan="7">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
                                     <td>
@@ -138,7 +142,7 @@
                             </tr>
                             <tr>
                                 <td colspan="7">
-                                    <v-btn color="primary" block :loading="loading.newAct" @click="createNewAct">Сохранить акт выполненных работ</v-btn>
+                                    <v-btn color="primary" block :loading="loading.newAct" @click="createNewAct">Подтверждаю</v-btn>
                                 </td>
                             </tr>
                         </tfoot>
@@ -444,9 +448,13 @@ export default {
     .defect-act-table td p {
         margin: 0;
     }
-    .defect-act-table-title {
+    .defect-act-table-title, .defect-act-table-section {
         background-color: rgba(0, 0, 0, .05);
         text-align: center;
+    }
+    .defect-act-table-section th {
+        padding: 3px 10px;
+        text-align: left;
     }
     .defect-act-table-checklist-title {
         text-transform: uppercase;

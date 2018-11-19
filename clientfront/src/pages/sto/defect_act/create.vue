@@ -53,28 +53,18 @@
                     <table class="defect-act-table">
                         <tbody>
                             <template v-for="(item, index) in defectsData">
-                                <tr class="defect-act-table-title" v-if="index === 0" :key="index + 1">
+                                <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
+                                    <th colspan="6" :style="{ position: 'relative' }">                                        
+                                        <a class="black--text" @click="toggleSection(item.id)">{{ item.defect_type_name }}</a>
+                                    </th>
+                                </tr>
+                                <tr class="defect-act-table-section" v-if="item.heading" :key="index" v-show="hiddenDefectType === item.id">
                                     <th>Деталь</th>
                                     <th>Статус</th>
                                     <th>Состояние</th>
                                     <th>Заключение</th>
                                     <th>Цена за ремонт</th>
                                     <th>Комментарий</th>
-                                </tr>
-                                <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
-                                    <th colspan="6" :style="{ position: 'relative' }">
-                                        {{ item.defect_type_name }}
-                                        <a 
-                                            class="grey--text" 
-                                            style="position: absolute !important; top: 10px; right: 10px;"
-                                            @click="hiddenDefectType = null"
-                                            v-if="hiddenDefectType === item.id">Скрыть</a>
-                                        <a 
-                                            class="grey--text" 
-                                            style="position: absolute !important; top: 10px; right: 10px;"
-                                            @click="hiddenDefectType = item.id"
-                                            v-if="hiddenDefectType !== item.id">Показать</a>
-                                    </th>
                                 </tr>
                                 <tr v-if="!item.heading" v-show="hiddenDefectType === item.defect_type_id" :key="item.uuid">
                                     <!-- Detail -->
@@ -159,6 +149,9 @@
                             </template>
                         </tbody>
                         <tbody>
+                            <tr class="defect-act-table-title">
+                                <th colspan="7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
+                            </tr>
                             <tr class="defect-act-table-title">
                                 <th colspan="6">Файлы и комментарий</th>                                
                             </tr>
@@ -384,6 +377,18 @@ export default {
     computed: {
         user() {
             return JSON.parse(localStorage.getItem('user'));
+        },
+        totalPrice() {
+            let totalPrice = 0;
+
+            for(let i = 0; i < this.servicePrices.length; i++) {
+                let price = this.servicePrices[i];
+                if(price !== null && price !== undefined) {
+                    totalPrice += Number(price);
+                }
+            }
+            
+            return totalPrice; 
         }
     },
     data() {
@@ -677,6 +682,13 @@ export default {
             } else {
                 this.$set(this.servicePrices, itemId, Number(price * this.humanHours));
             }
+        },
+        toggleSection(itemId) {
+            if(this.hiddenDefectType !== null && this.hiddenDefectType === itemId) {
+                this.hiddenDefectType = null;
+            } else {
+                this.hiddenDefectType = itemId;
+            }
         }
     },
     created() {
@@ -699,9 +711,13 @@ export default {
     .defect-act-table td p {
         margin: 0;
     }
-    .defect-act-table-title {
+    .defect-act-table-title, .defect-act-table-section {
         background-color: rgba(0, 0, 0, .05);
         text-align: center;
+    }
+    .defect-act-table-section th {
+        padding: 3px 10px;
+        text-align: left;
     }
     .defect-act-table-checklist-title {
         text-transform: uppercase;

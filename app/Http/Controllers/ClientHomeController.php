@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Car;
 use App\Company;
+use App\DriverQueue;
 use JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,5 +58,41 @@ class ClientHomeController extends Controller
         ]);
 
         return response()->json($user);
+    }
+
+    public function getStatistics()
+    {
+        $user = JWTAuth::parseToken()->authenticate()->load(['companies.cars', 'companies.drivers']);
+        $carsCount = 0;
+        $driversCount = 0;
+        $reservedCarsCount = 0;
+        $companiesCount = count($user->companies);
+        $queuedDriversCount = count(DriverQueue::all());
+        
+        foreach($user->companies as $company) {
+            foreach($company->cars as $car) {
+                if($car->sold === 0) {
+                    if($car->reserved === 0) {
+                        $carsCount++;
+                    } else {
+                        $reservedCarsCount++;
+                    }
+                } 
+            }
+
+            foreach($company->drivers as $driver) {
+                $driversCount++;
+            }
+        }
+
+
+        return response()->json([
+            'companiesCount' => $companiesCount,
+            'carsCount' => $carsCount,
+            'reservedCarsCount' => $reservedCarsCount,
+            'driversCount' => $driversCount,
+            'queuedDriversCount' => $queuedDriversCount,
+            'user' => $user
+        ]);
     }
 }

@@ -35,6 +35,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::post('auth/logout', 'AuthController@logout');
     Route::get('/me', 'AuthController@user');    
     Route::get('/user/acl', 'AuthController@acl');
+    Route::get('/statistics', 'ClientHomeController@getStatistics');
     Route::get('/projects', 'ClientHomeController@fetchUserProjects');
     Route::get('/all-cars', 'ClientHomeController@getAllCars');
     Route::get('/all-drivers', 'ClientHomeController@getAllDrivers');

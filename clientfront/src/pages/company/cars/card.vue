@@ -54,13 +54,6 @@
             </transition>
         </v-layout>
 
-        <v-snackbar :timeout="snackbar.timeout" :color="snackbar.color" v-model="snackbar.active">
-            {{ snackbar.text }}
-            <v-btn dark flat @click.native="snackbar.active = false">Закрыть</v-btn>
-        </v-snackbar>
-
-        <defect-act />
-
         <!-- Bind driver -->
         <v-dialog v-model="driver.dialog" max-width="500">
             <form @submit.prevent="bindDriver" data-vv-scope="bind-driver-form">
@@ -97,8 +90,6 @@
 
 <script>
 import axios from '@/axios'
-import config from '@/config'
-import snackbar from '@/components/mixins/snackbar'
 import assetsURL from '@/components/mixins/assets-url'
 
 import Loading from '@/components/Loading'
@@ -118,7 +109,7 @@ export default {
     $_veeValidate: {
         validator: 'new'
     },
-    mixins: [ snackbar, assetsURL ],
+    mixins: [ assetsURL ],
     components: {
         FileUpload, 
         CreateDefectAct, 
@@ -218,10 +209,18 @@ export default {
                                 this.car.drivers.push(driver);                                
                                 this.driver.dialog = false;
                                 this.driver.loading = false;
-                                this.successSnackbar(response.data.message);
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'success',
+                                    text: response.data.message,
+                                    active: true
+                                });
                             } else {
                                 this.driver.loading = false;
-                                this.errorSnackbar(response.data.message);
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'error',
+                                    text: response.data.message,
+                                    active: true
+                                });
                             }
                         })
                         .catch(error => console.log(error));
@@ -239,7 +238,11 @@ export default {
                 this.fetchDrivers();
                 this.deleteDriver.dialog = false;
                 this.deleteDriver.loading = false;
-                this.successSnackbar(response.data.message);
+                this.$store.dispatch('showSnackbar', {
+                    color: 'success',
+                    text: response.data.message,
+                    active: true
+                });
             })
             .catch(error => console.log(error)); 
         },
@@ -303,16 +306,28 @@ export default {
 
         onCommentAdded(response) {
             this.comments.push(response.comment);
-            this.successSnackbar(response.message);       
+            this.$store.dispatch('showSnackbar', {
+                color: 'success',
+                text: response.message,
+                active: true
+            });
         },
         
         onConsumableAdded(response) {
             this.consumables.push(response.consumable);
-            this.successSnackbar(response.message);
+            this.$store.dispatch('showSnackbar', {
+                color: 'success',
+                text: response.message,
+                active: true
+            });
         },
 
         onConsumableChanged(response) {
-            this.successSnackbar(response.message);
+            this.$store.dispatch('showSnackbar', {
+                color: 'success',
+                text: response.message,
+                active: true
+            });
             this.fetchConsumables();
         }
     },

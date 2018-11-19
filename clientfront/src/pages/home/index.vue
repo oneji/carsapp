@@ -5,21 +5,13 @@
         </v-layout>
 
         <transition class="row wrap" name="slide-x-transition" mode="out-in"> 
-            <v-layout row wrap :key="11" v-if="!loading">           
-                <v-flex xs12 sm6 mg3 lg4 :key="0" >
-                    <TileBox :link="{ name: 'HomeCompanies' }" title="Компании" :value="companies.length" box-icon="business" />
-                </v-flex>
-                <v-flex xs12 sm6 mg3 lg4 :key="1">
-                    <TileBox :link="{ name: 'HomeCars' }" title="Автомобили" :value="carsList.length" box-icon="directions_car" />
-                </v-flex>
-                <v-flex xs12 sm6 mg3 lg4 :key="2">
-                    <TileBox :link="{ name: 'HomeReservedCars' }" title="Резервные автомобили" :value="reservedCarsList.length" box-icon="directions_car" />
-                </v-flex>
-                <v-flex xs12 sm6 mg3 lg4 :key="3">
-                    <TileBox :link="{ name: 'HomeDriversIndex' }" title="Водители" :value="drivers.length" box-icon="people" />
-                </v-flex>
-                <v-flex xs12 sm6 mg3 lg4 :key="4">
-                    <TileBox :link="{ name: 'HomeDriversQueue' }" title="Водители в очереди" :value="queue.length" box-icon="people" />
+            <v-layout row wrap v-if="!loading">           
+                <v-flex v-for="item in statistics" :key="item.link.name" xs12 sm6 mg3 lg4>
+                    <TileBox 
+                        :title="item.title" 
+                        :link="item.link" 
+                        :value="item.value" 
+                        :box-icon="item.boxIcon" />
                 </v-flex>
             </v-layout>
         </transition> 
@@ -33,78 +25,36 @@ import Loading from '@/components/Loading'
 
 export default {
     components: {
-        TileBox, Loading
-    },
-    computed: {
-        carsList() {
-            return this.cars.filter(car => car.info.reserved === 0);
-        },
-
-        reservedCarsList() {
-            return this.cars.filter(car => car.info.reserved === 1);
-        },
-        
-        driverQueue() {
-            return this.queue;
-        },
-
-        driverList() {
-            return this.drivers;
-        },
-
-        companyList() {
-            return this.companies;
-        }
+        TileBox,
+        Loading
     },
     data() {
         return {
-            companies: [],
-            cars: [],
-            loading: false,
-            queue: [],
-            drivers: []
+            loading: true,
+            statistics: []
         }
     },
     methods: {
-        fetchUserProjects() {
-            this.loading = true;
-            axios.get('/all-cars')
-                .then(response => {                
-                    this.companies = response.data.companies;
+        getStatistics() {
+            axios.get('/statistics')
+                .then(response => {
+                    let { companiesCount, carsCount, reservedCarsCount, driversCount, queuedDriversCount } = response.data;
 
-                    this.companies.map(company => {
-                        company.cars.map(car => {                            
-                            let carInfo = {
-                                'info': car,
-                                'company': company
-                            };                    
-                            this.cars.push(carInfo);   
-                        });
-
-                        company.drivers.map(driver => {                            
-                            let driverInfo = {
-                                'info': driver,
-                                'company': company
-                            };                    
-                            this.drivers.push(driverInfo);   
-                        });
-                    })
+                    this.statistics = [
+                        { title: 'Компании', link: { name: 'HomeCompanies' }, value: companiesCount, boxIcon: 'business' },
+                        { title: 'Автомобили', link: { name: 'HomeCars' }, value: carsCount, boxIcon: 'directions_car' },
+                        { title: 'Резервные автомобили', link: { name: 'HomeReservedCars' }, value: reservedCarsCount, boxIcon: 'directions_car' },
+                        { title: 'Водители', link: { name: 'HomeDriversIndex' }, value: driversCount, boxIcon: 'people' },
+                        { title: 'Водители в очереди', link: { name: 'HomeDriversQueue' }, value: queuedDriversCount, boxIcon: 'people' },
+                    ];
 
                     this.loading = false;
                 })
-                .catch(error => console.error());
-        },
-        getQueue() {
-            axios.get(`/company/${this.$route.params.slug}/drivers/queue`)
-                .then(response => {
-                    this.queue = response.data;                    
-                })
                 .catch(error => console.log(error));
-        },
+        }
     },
     created() {
-        this.fetchUserProjects();
-        this.getQueue();
+        this.getStatistics();
     }
 }
 </script>
