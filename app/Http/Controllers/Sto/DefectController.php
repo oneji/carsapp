@@ -178,30 +178,42 @@ class DefectController extends Controller
      */
     public function storeDefect(Request $request, $sto_slug)
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
-        $defect = new Defect();
-        $defect->defect_name = $request->defect_name;
-        $defect->defect_type_id = $request->defect_type_id;
-        $defect->save();
-
-        // Get all default defect conclusions
-        $defaultDefectConclusions = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
-        // Save default price for each defect conclusion
-        $defaultPrices = [];
-        foreach($defaultDefectConclusions as $conclusion) {
-            array_push($defaultPrices, new ServicePrice([
-                'defect_id' => $defect->id,
-                'defect_conclusion_id' => $conclusion->id,
-            ]));
+        // Check if defect already exists
+        $oldDefect = Defect::where([
+            'defect_name' => $request->defect_name,
+            'deleted' => 0
+        ])->get();
+        
+        if(count($oldDefect)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Деталь с таким именем уже существует.'
+            ]);
+        } else {
+            $defect = new Defect();
+            $defect->defect_name = $request->defect_name;
+            $defect->defect_type_id = $request->defect_type_id;
+            $defect->save();
+    
+            // Get all default defect conclusions
+            $defaultDefectConclusions = DB::table('defect_conclusions')->select('*')->where('defect_id', null)->get();
+            // Save default price for each defect conclusion
+            $defaultPrices = [];
+            foreach($defaultDefectConclusions as $conclusion) {
+                array_push($defaultPrices, new ServicePrice([
+                    'defect_id' => $defect->id,
+                    'defect_conclusion_id' => $conclusion->id,
+                ]));
+            }
+            // Save prices
+            $defect->service_prices()->saveMany($defaultPrices);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Деталь успешно создана.',
+                'defect' => $defect
+            ]);
         }
-        // Save prices
-        $defect->service_prices()->saveMany($defaultPrices);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Дефект успешно создан.',
-            'defect' => $defect
-        ]);
     }
 
     /**

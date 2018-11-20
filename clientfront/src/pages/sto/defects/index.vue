@@ -658,17 +658,25 @@ export default {
                             'defect_type_id': this.defect.defect_type_id
                         })
                         .then(response => {
-                            this.defects.items.push(response.data.defect);
-                            this.defects.selectItems.push({
-                                text: response.data.defect.defect_name,
-                                value: response.data.defect.id
-                            });
+                            if(!response.data.success) {
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'error',
+                                    text: response.data.message,
+                                    active: true
+                                });    
+                            } else {
+                                this.defects.items.push(response.data.defect);
+                                this.defects.selectItems.push({
+                                    text: response.data.defect.defect_name,
+                                    value: response.data.defect.id
+                                });
+                                this.$store.dispatch('showSnackbar', {
+                                    color: 'success',
+                                    text: response.data.message,
+                                    active: true
+                                });
+                            }
                             this.defect.loading.button = false; 
-                            this.$store.dispatch('showSnackbar', {
-                                color: 'success',
-                                text: response.data.message,
-                                active: true
-                            });
                         })
                         .catch(error => console.log(error));
                     } else {

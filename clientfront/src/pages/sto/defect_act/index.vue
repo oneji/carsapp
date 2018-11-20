@@ -3,9 +3,11 @@
         <!-- Back button -->
         <v-layout row wrap>
             <v-flex>
-                <v-btn color="success" append @click="$router.back()">Назад</v-btn>
+                <v-btn color="success" @click="$router.back()">Назад</v-btn>
                 <v-btn color="success" v-if="act.partial_file !== null" append @click="downloadFile('partial')">Скачать PDF клиента</v-btn>
                 <v-btn color="success" v-if="act.full_file !== null" append @click="downloadFile('full')">Скачать PDF</v-btn>
+                <v-btn color="primary" v-if="showOnlyDefects === false" @click="showOnlyDefects = true">Показать дефекты</v-btn>
+                <v-btn color="primary" v-else @click="showOnlyDefects = false">Показать всё</v-btn>
             </v-flex>
         </v-layout>
         <!-- Page loading spinner -->
@@ -62,7 +64,7 @@
                     </table>
                     <table class="defect-act-table">
                         <tbody>
-                            <template v-for="(item, index) in defectsData">  
+                            <template v-for="(item, index) in dataDefects">  
                                 <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
                                     <th colspan="7">{{ item.defect_type_name }}</th>
                                 </tr>
@@ -172,6 +174,31 @@ export default {
             }
 
             return totalPrice; 
+        },
+        dataDefects() {
+            let temp = [];
+            let filteredDefectsData = [...this.defectsData];
+            if(this.showOnlyDefects) {
+                for(let i = 0; i < this.detailsInfo.length; i++) {
+                    let detailInfo = this.detailsInfo[i];
+                    if(detailInfo !== null && detailInfo !== undefined) {
+                        if(detailInfo.toReport === 0) {
+                            temp.push(i);
+                        }
+                    }
+                }
+                
+                for(let i = 0; i < filteredDefectsData.length; i++) {
+                    let defect = filteredDefectsData[i];
+                    if(!defect.heading) {
+                        if(!temp.includes(defect.id)) {
+                            filteredDefectsData.splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            return filteredDefectsData;
         }
     },
     filters: {
@@ -207,7 +234,8 @@ export default {
                 addMoreFiles: false,
                 newAct: false
             },
-            headersCheck: []
+            headersCheck: [],
+            showOnlyDefects: false
         }
     },
     methods: {

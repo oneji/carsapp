@@ -45,6 +45,10 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td colspan="1"><strong>Дата составления акта</strong></td>
+                                <td colspan="1">{{ new Date() | moment('MMMM DD, YYYY') }}</td>
+                            </tr>
+                            <tr>
                                 <td colspan="1"><strong>Акт составил</strong></td>
                                 <td colspan="1">{{ user.fullname }}</td>
                             </tr>
@@ -221,6 +225,10 @@
                             </td>
                         </tr>
                         <tr>
+                            <td colspan="1"><strong>Дата составления акта</strong></td>
+                            <td colspan="1">{{ new Date() | moment('MMMM DD, YYYY') }}</td>
+                        </tr>
+                        <tr>
                             <td colspan="1"><strong>Акт составил</strong></td>
                             <td colspan="1">{{ user.fullname }}</td>
                         </tr>
@@ -303,6 +311,10 @@
                                 </p>
                                 <p v-else>Водителя нет</p>
                             </td>
+                        </tr>
+                        <tr>
+                            <td colspan="1"><strong>Дата составления акта</strong></td>
+                            <td colspan="1">{{ new Date() | moment('MMMM DD, YYYY') }}</td>
                         </tr>
                         <tr>
                             <td colspan="1"><strong>Акт составил</strong></td>
