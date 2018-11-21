@@ -67,7 +67,7 @@
                         <tbody>
                             <template v-for="(item, index) in defectsData">
                                 <tr class="defect-act-table-title" v-if="item.heading && headersCheck[item.id]" :key="item.uuid">
-                                    <th :colspan="act.confirmed !== 1 ? 7 : 6">{{ item.defect_type_name }}</th>
+                                    <th :colspan="act.confirmed !== 1 ? 8 : 7">{{ item.defect_type_name }}</th>
                                 </tr>
                                 <tr class="defect-act-table-section" v-if="item.heading && headersCheck[item.id]" :key="index">
                                     <th v-if="act.confirmed !== 1">#</th>
@@ -76,6 +76,7 @@
                                     <th>Состояние</th>
                                     <th>Заключение</th>
                                     <th>Цена за ремонт</th>
+                                    <th>Количество</th>
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
@@ -106,20 +107,26 @@
                                     </td>
                                     <td>{{ actDefectConclusions.filter(conc => conc.defect_id === item.id)[0] !== undefined 
                                             ? actDefectConclusions.filter(conc => conc.defect_id === item.id)[0].service_price + ' сом.'
-                                            : null }}</td>
+                                            : null }}
+                                    </td>
+                                    <td>
+                                        {{ actDefectConclusions.filter(conc => conc.defect_id === item.id)[0] !== undefined 
+                                            ? actDefectConclusions.filter(conc => conc.defect_id === item.id)[0].quantity + ' шт.'
+                                            : null }}
+                                    </td>
                                     <td>{{ comments[item.id] !== undefined ? comments[item.id].body : 'Комментария нет.' }}</td>                                    
                                 </tr>
                             </template>
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th :colspan="act.confirmed !== 1 ? 7 : 6">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
+                                <th :colspan="act.confirmed !== 1 ? 8 : 7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
                             </tr>
                             <tr class="defect-act-table-title">
-                                <th :colspan="act.confirmed !== 1 ? 7 : 6">Файлы</th>
+                                <th :colspan="act.confirmed !== 1 ? 8 : 7">Файлы</th>
                             </tr>
                             <tr>
-                                <td :colspan="act.confirmed !== 1 ? 7 : 6">
+                                <td :colspan="act.confirmed !== 1 ? 8 : 7">
                                     <Lightbox
                                         id="defect_act_files"
                                         :images="attachments"
@@ -133,10 +140,10 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th colspan="7" class="defect-act-table-checklist-title">Добавить файлы</th>
+                                <th colspan="8" class="defect-act-table-checklist-title">Добавить файлы</th>
                             </tr>
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
                                     <FileUpload 
                                         @files-changed="onFileChanged" 
                                         types="image/jpeg, image/png, image/svg+xml" />
@@ -144,7 +151,7 @@
                                 </td>
                             </tr>
                             <tr v-if="act.confirmed !== 1">
-                                <td colspan="7">
+                                <td colspan="8">
                                     <v-btn color="primary" block :loading="loading.newAct" @click="createNewAct">Подтверждаю</v-btn>
                                 </td>
                             </tr>
@@ -236,7 +243,6 @@ export default {
                         actDefectConclusions,
                         car 
                     } = response.data;
-                    console.log(act);
                     this.$store.dispatch('setDefectAct', act);
                     this.act = act;
                     this.actDefectConclusions = actDefectConclusions;

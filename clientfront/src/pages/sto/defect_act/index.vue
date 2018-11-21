@@ -74,6 +74,7 @@
                                     <th>Состояние</th>
                                     <th>Заключение</th>
                                     <th>Цена за ремонт</th>
+                                    <th>Количество</th>
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
@@ -101,7 +102,12 @@
                                     </td>
                                     <td>{{ actDefectConclusions.filter(conc => conc.defect_id === item.id)[0] !== undefined 
                                             ? actDefectConclusions.filter(conc => conc.defect_id === item.id)[0].service_price + ' сом.'
-                                            : null }}</td>
+                                            : null }}
+                                    </td>
+                                    <td>{{ actDefectConclusions.filter(conc => conc.defect_id === item.id)[0] !== undefined 
+                                            ? actDefectConclusions.filter(conc => conc.defect_id === item.id)[0].quantity + ' шт.'
+                                            : null }}
+                                    </td>
                                     <td>{{ comments[item.id] !== undefined ? comments[item.id].body : 'Комментария нет.' }}</td>                                    
                                 </tr>
                             </template>
@@ -250,7 +256,6 @@ export default {
                         actDefectConclusions,
                         car 
                     } = response.data;
-                    console.log(act);
                     this.$store.dispatch('setDefectAct', act);
                     this.act = act;
                     this.actDefectConclusions = actDefectConclusions;

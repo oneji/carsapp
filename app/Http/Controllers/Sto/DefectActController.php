@@ -48,6 +48,7 @@ class DefectActController extends Controller
         $detailInfo = json_decode($request->detail_info);
         $detailConclusions = json_decode($request->detail_conclusions);
         $servicePrices = json_decode($request->service_prices);
+        $detailQuantities = json_decode($request->detail_quantities);
         $equipment = json_decode($request->equipment);
         // Name and HTML file for .pdf
         $partialReportFilename = $this->generateActFile($request->partialReport);
@@ -110,7 +111,8 @@ class DefectActController extends Controller
                     'defect_id' => $detailId,
                     'defect_conclusion_id' => $detailArray,
                     'defect_act_id' => $defectAct->id,
-                    'service_price' => $servicePrices[$detailId]
+                    'service_price' => $servicePrices[$detailId],
+                    'quantity' => $detailQuantities[$detailId]
                 ]);
                 // Save to the db
                 DB::table('defect_defect_conclusion')->insert($arrayOfValues);
@@ -354,7 +356,7 @@ class DefectActController extends Controller
             ->where('defect_defect_option.defect_act_id', $id)
             ->get();
         $chosenDefectConclusions = DB::table('defect_defect_conclusion')
-            ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name', 'service_price')
+            ->select('defects.defect_name', 'defects.id as defect_id', 'defect_conclusions.id as id', 'defect_conclusions.conclusion_name', 'service_price', 'quantity')
             ->join('defects', 'defect_id', '=', 'defects.id')
             ->join('defect_conclusions', 'defect_conclusion_id', '=', 'defect_conclusions.id')
             ->where('defect_defect_conclusion.defect_act_id', $id)

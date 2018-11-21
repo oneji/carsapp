@@ -58,7 +58,7 @@
                         <tbody>
                             <template v-for="(item, index) in defectsData">
                                 <tr class="defect-act-table-title" v-if="item.heading" :key="item.uuid">
-                                    <th colspan="6" :style="{ position: 'relative' }">                                        
+                                    <th colspan="7" :style="{ position: 'relative' }">                                        
                                         <a class="black--text" @click="toggleSection(item.id)">{{ item.defect_type_name }}</a>
                                     </th>
                                 </tr>
@@ -68,6 +68,7 @@
                                     <th>Состояние</th>
                                     <th>Заключение</th>
                                     <th>Цена за ремонт</th>
+                                    <th>Количество</th>
                                     <th>Комментарий</th>
                                 </tr>
                                 <tr v-if="!item.heading" v-show="hiddenDefectType === item.defect_type_id" :key="item.uuid">
@@ -121,6 +122,7 @@
                                         </v-radio-group>
                                         <a @click="unCheckConclusion(item.id)" :style="{ fontSize: '85%' }" class="grey--text">Убрать выбранное</a>
                                     </td>
+                                    <!-- Service price -->
                                     <td>
                                         <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
                                         <v-text-field
@@ -136,6 +138,14 @@
                                             :value="item.id"
                                             v-if="!setHumanHours.includes(item.id)"
                                             hide-details></v-checkbox>
+                                    </td>
+                                    <td>
+                                        <v-text-field
+                                            v-model="detailQuantities[item.id]"
+                                            label="Количество"
+                                            hide-details
+                                        ></v-text-field>
+                                        <v-btn small block color="success" @click="setPrice(item.id)">Сохранить</v-btn>
                                     </td>
                                     <!-- Comment -->
                                     <td colspan="1">
@@ -157,10 +167,10 @@
                                 <th colspan="7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
                             </tr>
                             <tr class="defect-act-table-title">
-                                <th colspan="6">Файлы и комментарий</th>                                
+                                <th colspan="7">Файлы и комментарий</th>                                
                             </tr>
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <v-text-field
                                         name="defect_act_comment"
                                         label="Введите комментарий"
@@ -173,7 +183,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <FileUpload
                                         @files-changed="onFileChanged"
                                         types="image/jpeg, image/png, image/svg+xml" />
@@ -182,7 +192,7 @@
                         </tbody>                       
                         <tfoot>
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <v-btn block color="success" :loading="loading.saveBtn" type="submit">Сохранить и отравить на утверждение</v-btn>
                                 </td>
                             </tr>
@@ -417,6 +427,7 @@ export default {
             selectedDetailConditions: [],
             selectedDetailConclusions: [],
             servicePrices: [],
+            detailQuantities: [],
             setHumanHours: [],
             humanHours: 1,
             selectedEquipment: [],
@@ -455,6 +466,7 @@ export default {
                             this.$set(this.selectedDetailConclusions, detail.id, null);
                             this.$set(this.detailsInfo, detail.id, { comment: '', toReport: null });
                             this.$set(this.servicePrices, detail.id, null);
+                            this.$set(this.detailQuantities, detail.id, 1);
                             // Data for PDF files
                             this.forPDF.fullReport[detail.id] = { comment: '', toReport: null };
                             this.forPDF.partialReport[detail.id] = { comment: '', toReport: null };
@@ -552,6 +564,7 @@ export default {
                         formData.append('detail_info', JSON.stringify(this.detailsInfo));
                         formData.append('detail_conclusions', JSON.stringify(this.selectedDetailConclusions));
                         formData.append('service_prices', JSON.stringify(this.servicePrices));
+                        formData.append('detail_quantities', JSON.stringify(this.detailQuantities));
                         formData.append('equipment', JSON.stringify(this.selectedEquipment));
                         // Collect files
                         for(let i = 0; i < this.attachments.length; i++) {
@@ -677,8 +690,10 @@ export default {
             this.$set(this.servicePrices, itemId, null);
         },
         setPrice(itemId) {
+            console.log(this.humanHours);
             let item = this.defectsData.filter(it => it.id === itemId)[0];
-            this.$set(this.servicePrices, itemId, item.service_prices.filter(price => price.defect_conclusion_id === this.selectedDetailConclusions[item.id])[0].price);
+            let price = item.service_prices.filter(price => price.defect_conclusion_id === this.selectedDetailConclusions[item.id])[0].price;
+            this.$set(this.servicePrices, itemId, Number(price * this.detailQuantities[itemId]));
         },
         saveHumanHours(itemId) {
             this.setHumanHours = this.setHumanHours.filter(id => id !== itemId);
@@ -692,7 +707,7 @@ export default {
                     active: true
                 });
             } else {
-                this.$set(this.servicePrices, itemId, Number(price * this.humanHours));
+                this.$set(this.servicePrices, itemId, Number(price * this.humanHours * this.detailQuantities[itemId]));
             }
         },
         toggleSection(itemId) {
