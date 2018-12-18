@@ -182,6 +182,20 @@
                                     ></v-text-field>
                                 </td>
                             </tr>
+                            <tr class="defect-act-table-title">
+                                <th colspan="7">Скидка</th>                                
+                            </tr>
+                            <tr>
+                                <td colspan="7">
+                                    <v-text-field
+                                        name="discount_percent"
+                                        label="Размер скидки, %"
+                                        clearable
+                                        no-resize
+                                        v-model="discount_percent"
+                                        hide-details></v-text-field>
+                                </td>
+                            </tr>
                             <tr>
                                 <td colspan="7">
                                     <FileUpload
@@ -247,16 +261,17 @@
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
                         <template v-for="(item, index) in defectsData">
-                            <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="item.uuid">
+                                <th colspan="7">{{ item.defect_type_name }}</th>
+                            </tr>
+                            <tr class="defect-act-table-section" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="index">
                                 <th>Деталь</th>
-                                <th>Cтатус</th>
+                                <th>Статус</th>
                                 <th>Состояние</th>
                                 <th>Заключение</th>
                                 <th>Цена за ремонт</th>
+                                <th>Количество</th>
                                 <th>Комментарий</th>
-                            </tr>
-                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.partialReportChecklistsHeaders[item.id]" :key="item.uuid">
-                                <th colspan="6">{{ item.defect_type_name }}</th>
                             </tr>
                             <tr v-if="!item.heading && forPDF.partialReport[item.id].toReport === 0" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
@@ -282,6 +297,7 @@
                                 <td>
                                     <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
                                 </td>
+                                <td>{{ detailQuantities[item.id] }}</td>
                                 <td>{{ forPDF.partialReport[item.id].comment }}</td>
                             </tr>
                         </template>
@@ -335,16 +351,17 @@
                 <table class="defect-act-table" style="font-size: 11px !important">
                     <tbody>
                         <template v-for="(item, index) in defectsData">
-                            <tr class="defect-act-table-title" v-if="index === 0" :key="index">
+                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.fullReportChecklistsHeaders[item.id]" :key="item.uuid">
+                                <th colspan="7">{{ item.defect_type_name }}</th>
+                            </tr>
+                            <tr class="defect-act-table-section" v-if="item.heading && forPDF.fullReportChecklistsHeaders[item.id]" :key="index">
                                 <th>Деталь</th>
-                                <th>Cтатус</th>                                
+                                <th>Статус</th>
                                 <th>Состояние</th>
                                 <th>Заключение</th>
                                 <th>Цена за ремонт</th>
+                                <th>Количество</th>
                                 <th>Комментарий</th>
-                            </tr>
-                            <tr class="defect-act-table-title" v-if="item.heading && forPDF.fullReportChecklistsHeaders[item.id]" :key="item.uuid">
-                                <th colspan="6">{{ item.defect_type_name }}</th>
                             </tr>
                             <tr v-if="!item.heading && detailsInfo[item.id].toReport !== null" :key="item.uuid">
                                 <td>{{ item.defect_name }}</td>
@@ -370,6 +387,7 @@
                                 <td>
                                     <p>{{ servicePrices[item.id] !== null ? servicePrices[item.id] + ' сом.' : null }}</p>
                                 </td>
+                                <td>{{ detailQuantities[item.id] }}</td>
                                 <td>{{ forPDF.fullReport[item.id].comment }}</td>
                             </tr>
                         </template>
@@ -420,6 +438,7 @@ export default {
             },
             company: {},
             comment: '',
+            discount_percent: null,
             attachments: [],
             cardId: null,
             defectsData: [],
@@ -560,6 +579,7 @@ export default {
                         // Collecting all data into FormData
                         formData.append('comment', this.comment);
                         formData.append('user_id', this.user.id);
+                        formData.append('discount_percent', this.discount_percent);
                         formData.append('detail_conditions', JSON.stringify(this.selectedDetailConditions));
                         formData.append('detail_info', JSON.stringify(this.detailsInfo));
                         formData.append('detail_conclusions', JSON.stringify(this.selectedDetailConclusions));

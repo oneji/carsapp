@@ -44,6 +44,7 @@ class DefectActController extends Controller
     {
         // Parse string data back to JSON
         $comment = $request->comment;
+        $discountPercent = $request->discount_percent;
         $conditions = json_decode($request->detail_conditions);
         $detailInfo = json_decode($request->detail_info);
         $detailConclusions = json_decode($request->detail_conclusions);
@@ -61,6 +62,7 @@ class DefectActController extends Controller
         $defectAct->user_id = $request->user_id;
         $defectAct->partial_file = $partialReportFilename;
         $defectAct->full_file = $fullReportFilename;
+        $defectAct->discount_percent = $discountPercent !== 'null' ? $discountPercent : null;
         $defectAct->save();
 
         // Loop through all defect details' conditions

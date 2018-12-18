@@ -177,6 +177,7 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
         Route::post('/{slug}/cars/{car}/attachments', 'CarController@addAttachments');
         
         Route::get('/{slug}/cars/{car}/card', 'CarCardController@getInfo');
+        Route::get('/{slug}/cars/repaired', 'CarController@getRepaired');
         // Car card routes
         Route::post('/{slug}/cards/{card}/defects', 'CarCardController@saveDefects');
         Route::post('/{slug}/cards/{card}/comments', 'CarCardController@storeComment');
@@ -218,5 +219,7 @@ Route::group(['namespace' => 'Sto', 'prefix' => 'sto'], function() {
 
         Route::put('/{slug}/engine/types/{type}', 'EngineTypeController@update');
         Route::put('/{slug}/engine/transmissions/{transmission}', 'TransmissionController@update');
+        // Statistics
+        Route::get('/{slug}/statistics', 'HomeController@getStatistics');
     });
 });

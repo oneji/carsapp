@@ -4,6 +4,7 @@
         <v-layout row wrap>
             <v-flex>
                 <v-btn color="success" append @click="$router.back()">Назад</v-btn>
+                <v-btn color="primary" append @click="print">Распечатать</v-btn>
             </v-flex>
         </v-layout>
         <!-- Page loading spinner -->
@@ -11,9 +12,9 @@
             <Loading :loading="loading.page" />
         </v-layout>
         <!-- Content -->
-        <v-layout row wrap v-if="!loading.page">
+        <v-layout row wrap v-if="!loading.page" >
             <v-flex xs12 sm12 md12 lg12>
-                <form @submit.prevent="createDefectAct" data-vv-scope="create-done-act-form" :style="{ fontSize: '14px' }">
+                <form id="print-block" @submit.prevent="createDefectAct" data-vv-scope="create-done-act-form" :style="{ fontSize: '14px' }">
                     <table class="done-act-table">
                         <thead>
                             <tr class="done-act-table-title">
@@ -63,9 +64,11 @@
                                         <v-checkbox
                                             v-model="markedDetails"
                                             :value="item.id"
+                                            v-if="act.confirmed === 0"
                                             label="Выполнено"
                                             @change="markAsDone(item.id)"
                                             hide-details></v-checkbox>
+                                        {{ markedDetails.includes(item.id) ? 'Выполнено' : 'Не выполнено' }}
                                     </td>
                                 </tr>
                             </template>
@@ -90,11 +93,6 @@
                                 <td colspan="6">
                                     <v-btn block color="success" :loading="loading.saveBtn" @click="sendDoneAct">Отправить</v-btn>
                                 </td>
-                            </tr>
-                        </tfoot>
-                        <tfoot v-else>
-                            <tr class="done-act-table-title">
-                                <th colspan="6"><h3>Акт уже отправлен на подтверждение.</h3></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -144,7 +142,8 @@ export default {
                 newAct: false
             },
             headersCheck: [],
-            markedDetails: []
+            markedDetails: [],
+            forPrint: false
         }
     },
     methods: {
@@ -247,6 +246,13 @@ export default {
                     });
                 })
                 .catch(error => console.log(error));
+        },
+        print() {
+            printJS({
+                printable: 'print-block',
+                type: 'html',
+                scanStyles: true
+            });
         }
     },
     created() {

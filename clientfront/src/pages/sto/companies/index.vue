@@ -31,7 +31,7 @@
                         </div>
                     </v-card-title>
                     <v-card-actions class="pt-1">
-                        <v-btn flat block color="orange" :to="{ name: 'StoCompany', params: { company: company.id } }">Панель</v-btn>
+                        <v-btn flat block color="orange" :to="{ name: 'StoCompany', params: { company: company.id } }">Кабинет</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-flex>      

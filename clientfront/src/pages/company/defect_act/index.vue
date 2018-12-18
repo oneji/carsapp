@@ -120,7 +120,10 @@
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th :colspan="act.confirmed !== 1 ? 8 : 7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
+                                <th :colspan="act.confirmed !== 1 ? 8 : 7">
+                                    Итоговая цена ремонта: {{ totalPrice }} сом.
+                                    {{ act.discount_percent !== null ? `(Скидка ${act.discount_percent}%)` : null }}
+                                </th>
                             </tr>
                             <tr class="defect-act-table-title">
                                 <th :colspan="act.confirmed !== 1 ? 8 : 7">Файлы</th>
@@ -190,6 +193,11 @@ export default {
                 if(this.toNewAct.includes(conclusion.defect_id)) {
                     totalPrice += Number(conclusion.service_price);
                 }
+            }
+
+            if(this.act.discount_percent !== null) {
+                let percentNumber = (totalPrice / 100) * this.act.discount_percent;
+                totalPrice -= Math.round(percentNumber);
             }
 
             return totalPrice; 

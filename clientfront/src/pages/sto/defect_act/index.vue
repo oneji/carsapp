@@ -114,7 +114,9 @@
                         </tbody>
                         <tbody>
                             <tr class="defect-act-table-title">
-                                <th colspan="7">Итоговая цена ремонта: {{ totalPrice }} сом.</th>
+                                <th colspan="7">
+                                    Итоговая цена ремонта: {{ totalPrice }} сом. 
+                                    {{ act.discount_percent !== null ? `(Скидка ${act.discount_percent}%)` : null }}</th>
                             </tr>
                             <tr class="defect-act-table-title">
                                 <th colspan="7">Файлы</th>                                
@@ -179,6 +181,11 @@ export default {
                 totalPrice += Number(conclusion.service_price);
             }
 
+            if(this.act.discount_percent !== null) {
+                let percentNumber = (totalPrice / 100) * this.act.discount_percent;
+                totalPrice -= Math.round(percentNumber);
+            }
+            
             return totalPrice; 
         },
         dataDefects() {

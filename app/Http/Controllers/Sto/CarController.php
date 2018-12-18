@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sto;
 
 use App\Car;
 use App\CarCard;
+use App\RepairRequest;
 use App\Company;
 use App\CarAttachment;
 use Illuminate\Http\Request;
@@ -91,6 +92,9 @@ class CarController extends Controller
         if($request->engine_capacity !== null && $request->engine_capacity !== 'null')
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
 
+        if($request->registered_for !== null && $request->registered_for !== 'null')
+            $car->registered_for = $request->registered_for;
+
         $car->save();       
 
         if($request->driver_id !== null && $request->driver_id !== 'null') {
@@ -168,6 +172,31 @@ class CarController extends Controller
             'success' => true,
             'message' => 'Файлы успешно сохранены.',
             'files' => $carAttachments
+        ]);
+    }
+
+    public function getRepaired($sto_slug)
+    {
+        $repairRequests = RepairRequest::select('repair_requests.*', 'company_name', 'sto_name')
+            ->join('companies', 'companies.id', '=', 'repair_requests.company_id')
+            ->join('stos', 'stos.id', '=', 'repair_requests.sto_id')
+            ->with([
+                'car' => function($query) {
+                    $query->select('cars.*', 'shape_name', 'brand_name', 'model_name', 'transmission_name', 'engine_type_name')
+                        ->join('car_shapes', 'car_shapes.id', '=', 'cars.shape_id')
+                        ->join('car_models', 'car_models.id', '=', 'cars.model_id')
+                        ->join('car_brands', 'car_brands.id', '=', 'cars.brand_id')
+                        ->join('engine_types', 'engine_types.id', '=', 'cars.engine_type_id')
+                        ->join('transmissions', 'transmissions.id', '=', 'cars.transmission_id')    
+                        // ->where('reserved', 0)  
+                        // ->where('sold', 0)  
+                        ->with('drivers')                          
+                        ->get();
+                }
+            ])->where('status', 3)->get();
+
+        return response()->json([
+            'repairedRequests' => $repairRequests
         ]);
     }
 }

@@ -36,16 +36,13 @@ export default {
     },
     methods: {
         getStatistics() {
-            axios.get('/statistics')
+            axios.get(`/sto/${this.$route.params.slug}/statistics`)
                 .then(response => {
-                    let { companiesCount, carsCount, reservedCarsCount, driversCount, queuedDriversCount } = response.data;
+                    console.log(response.data);
+                    let { repairedCarsCount } = response.data;
 
                     this.statistics = [
-                        { title: 'Компании', link: { name: 'HomeCompanies' }, value: companiesCount, boxIcon: 'business' },
-                        { title: 'Автомобили', link: { name: 'HomeCars' }, value: carsCount, boxIcon: 'directions_car' },
-                        { title: 'Резервные автомобили', link: { name: 'HomeReservedCars' }, value: reservedCarsCount, boxIcon: 'directions_car' },
-                        { title: 'Водители', link: { name: 'HomeDriversIndex' }, value: driversCount, boxIcon: 'people' },
-                        { title: 'Водители в очереди', link: { name: 'HomeDriversQueue' }, value: queuedDriversCount, boxIcon: 'people' },
+                        { title: 'Автомобили в ремонте', link: { name: 'StoRepairedCars' }, value: repairedCarsCount, boxIcon: 'directions_car' },
                     ];
 
                     this.loading = false;

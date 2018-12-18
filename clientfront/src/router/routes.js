@@ -28,8 +28,9 @@ const CompanyRepairRequests    = () => import ('@/pages/company/requests/repair'
 const CompanyArchivedRequests  = () => import ('@/pages/company/requests/archived')
 const CompanyDefectAct         = () => import ('@/pages/company/defect_act/index')
 const CompanyDoneAct           = () => import ('@/pages/company/done_acts/index')
-// STO pages    
-const StoHome                  = () => import ('@/pages/sto/index')
+// STO pages
+const StoLayout                = () => import ('@/pages/sto/index')
+const StoHome                  = () => import ('@/pages/sto/home/index')
 const StoRequests              = () => import ('@/pages/sto/requests/index')
 const StoCompanies             = () => import ('@/pages/sto/companies/index')
 const StoCompany               = () => import ('@/pages/sto/companies/company')
@@ -46,6 +47,7 @@ const StoEditRTAct             = () => import ('@/pages/sto/rt_act/edit')
 const StoCreateDefectAct       = () => import ('@/pages/sto/defect_act/create')
 const StoDefectAct             = () => import ('@/pages/sto/defect_act/index')
 const StoDoneAct               = () => import ('@/pages/sto/done_acts/index')
+const StoRepairedCars          = () => import ('@/pages/sto/repaired_cars/index')
 // Error pages
 const NotFound                 = () => import ('@/pages/errors/404')
 const NoAccess                 = () => import ('@/pages/errors/403')
@@ -121,26 +123,28 @@ const routes = [
         ]
     },
     // Sto routes
-    { path: '/s/:slug', name: 'StoHome', component: StoHome, meta: { requiresAuth: true, type: 'sto' },
+    { path: '/s', name: 'StoLayout', component: StoLayout, meta: { requiresAuth: true, type: 'sto' },
         children: [
-            { path: 'c-list', name: 'StoRequests', component: StoRequests, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'requests/repair', name: 'StoRepairRequests', component: StoRepairRequests, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies', name: 'StoCompanies', component: StoCompanies, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company', name: 'StoCompany', component: StoCompany, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/:car/card', name: 'StoCarCard', component: StoCarCard, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/create', name: 'StoCarCreate', component: StoCarCreate, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/:car/edit', name: 'StoCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug', name: 'StoHome', component: StoHome, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/c-list', name: 'StoRequests', component: StoRequests, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/requests/repair', name: 'StoRepairRequests', component: StoRepairRequests, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies', name: 'StoCompanies', component: StoCompanies, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company', name: 'StoCompany', component: StoCompany, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/:car/card', name: 'StoCarCard', component: StoCarCard, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/create', name: 'StoCarCreate', component: StoCarCreate, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/:car/edit', name: 'StoCarsEdit', component: CompanyCarsEdit, meta: { requiresAuth: true, type: 'sto' } },
             
-            { path: 'pricelist', name: 'StoPricelist', component: StoPricelist, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'defects', name: 'StoDefects', component: StoDefects, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'rt-act/crud', name: 'StoRTAct', component: StoRTAct, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'rt-act/:act', name: 'StoRTActIndex', component: StoRTActIndex, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/:car/card/rt-act/create', name: 'StoCreateRTAct', component: StoCreateRTAct, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/:car/card/rt-act/:act/edit', name: 'StoEditRTAct', component: StoEditRTAct, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'companies/:company/cars/:car/card/defect-act/create', name: 'StoCreateDefectAct', component: StoCreateDefectAct, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'defect-act/:act', name: 'StoDefectAct', component: StoDefectAct, meta: { requiresAuth: true, type: 'sto' } },
-            { path: 'done-act/:act', name: 'StoDoneAct', component: StoDoneAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/pricelist', name: 'StoPricelist', component: StoPricelist, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/services', name: 'StoServices', component: StoServices, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/defects', name: 'StoDefects', component: StoDefects, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/rt-act/crud', name: 'StoRTAct', component: StoRTAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/rt-act/:act', name: 'StoRTActIndex', component: StoRTActIndex, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/:car/card/rt-act/create', name: 'StoCreateRTAct', component: StoCreateRTAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/:car/card/rt-act/:act/edit', name: 'StoEditRTAct', component: StoEditRTAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/companies/:company/cars/:car/card/defect-act/create', name: 'StoCreateDefectAct', component: StoCreateDefectAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/defect-act/:act', name: 'StoDefectAct', component: StoDefectAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/done-act/:act', name: 'StoDoneAct', component: StoDoneAct, meta: { requiresAuth: true, type: 'sto' } },
+            { path: ':slug/repaired-cars', name: 'StoRepairedCars', component: StoRepairedCars, meta: { requiresAuth: true, type: 'sto' } },
         ]
     }
 ]

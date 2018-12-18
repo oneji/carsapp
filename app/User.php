@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laratrust\Traits\LaratrustUserTrait;
+use JWTAuth;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -117,5 +118,14 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return array_unique($rolePermissions);
+    }
+
+    /**
+     * Get current user.
+     */
+    public static function getCurrent()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        return $user;
     }
 }

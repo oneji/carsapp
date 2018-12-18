@@ -132,14 +132,20 @@
                         <div class="car-details-block caption mb-2">
                             <i class="ic-speedometer car-icon"></i>
                             <strong>Тех осмотр:</strong> 
-                            <span v-if="item.teh_osmotr_end_date !== null">{{ item.teh_osmotr_end_date | moment('MMMM D, YYYY') }} </span>
+                            <span v-if="item.teh_osmotr_end_date !== null">{{ item.teh_osmotr_end_date | moment('MMMM D, YYYY') }}</span>
                             <span v-else>Не установлен.</span>
                         </div>
                         <div class="car-details-block caption mb-2">
                             <i class="ic-speedometer car-icon"></i>
                             <strong>Тонировка до:</strong> 
-                            <span v-if="item.tint_end_date !== null">{{ item.tint_end_date | moment('MMMM D, YYYY')}}</span>
+                            <span v-if="item.tint_end_date !== null">{{ item.tint_end_date | moment('MMMM D, YYYY') }}</span>
                             <span v-else>Не установлена.</span>
+                        </div>
+                        <div class="car-details-block caption mb-2">
+                            <i class="ic-car car-icon"></i>
+                            <strong>Оформлен на:</strong> 
+                            <span v-if="item.registered_for !== null">{{ item.registered_for }}</span>
+                            <span v-else>Не установлен.</span>
                         </div>
                     </v-flex>
                 </v-card-text>

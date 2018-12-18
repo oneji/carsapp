@@ -54,8 +54,8 @@
                         :card="true"
                         @reserve="onReserveCar" />
                 </v-flex>
-            </v-layout> 
-        <!-- </transition-group> -->  
+            </v-layout>
+        <!-- </transition-group> -->
     </div>
 </template>
 

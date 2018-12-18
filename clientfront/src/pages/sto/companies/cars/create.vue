@@ -210,7 +210,14 @@
                                                     locale="ru" 
                                                     @input="$refs.menu3.save(newCar.tint_end_date)"
                                                 ></v-date-picker>
-                                        </v-menu> 
+                                        </v-menu>
+
+                                        <v-text-field 
+                                            v-model="newCar.registered_for" 
+                                            name="registered_for" 
+                                            label="Оформлена на" 
+                                            type="text" 
+                                            prepend-icon="person"></v-text-field>
 
                                         <v-checkbox label="В резерв" v-model="newCar.reserved" hide-details></v-checkbox>
                                         <v-checkbox label="Есть GPS" v-model="newCar.has_gps" hide-details></v-checkbox>
@@ -298,7 +305,8 @@ export default {
                 reserved: false,
                 type: 0,
                 teh_osmotr_end_date: null,
-                tint_end_date: null 
+                tint_end_date: null,
+                registered_for: null
             },
 
             loading: false,
@@ -351,6 +359,7 @@ export default {
                         formData.append('type', this.newCar.type);
                         formData.append('teh_osmotr_end_date', this.newCar.teh_osmotr_end_date);
                         formData.append('tint_end_date', this.newCar.tint_end_date);
+                        formData.append('registered_for', this.newCar.registered_for);
                         
                         for(let i = 0; i < fileList.length; i++) {
                             formData.append('attachments[]', fileList[i]);

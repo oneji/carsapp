@@ -19,7 +19,6 @@ class RepairRequestController extends Controller
      */
     public function get($sto_slug) 
     {
-        $sto = Sto::where('slug', $sto_slug)->first();
         $requests = RepairRequest::select('repair_requests.*', 'company_name', 'sto_name')
                                 ->join('companies', 'companies.id', '=', 'repair_requests.company_id')
                                 ->join('stos', 'stos.id', '=', 'repair_requests.sto_id')

@@ -177,10 +177,17 @@
                                                     </v-date-picker>
                                             </v-menu>
 
-                                            <v-checkbox label="В резерв" v-model="editCar.reserved"></v-checkbox>
-                                            <v-checkbox label="Есть GPS" v-model="editCar.has_gps"></v-checkbox>
+                                            <v-text-field 
+                                                v-model="editCar.registered_for" 
+                                                name="registered_for" 
+                                                label="Оформлена на" 
+                                                type="text" 
+                                                prepend-icon="person"></v-text-field>
 
-                                            <v-radio-group v-model="editCar.type" row class="pt-0">
+                                            <v-checkbox label="В резерв" v-model="editCar.reserved" hide-details></v-checkbox>
+                                            <v-checkbox label="Есть GPS" v-model="editCar.has_gps" hide-details></v-checkbox>
+
+                                            <v-radio-group v-model="editCar.type" row class="pt-0" hide-details>
                                                 <v-radio label="Служебная" :value="0"></v-radio>
                                                 <v-radio label="Служебно-Личная" :value="1"></v-radio>
                                             </v-radio-group>                                       
@@ -263,7 +270,8 @@ export default {
                 reserved: false,
                 type: '',
                 teh_osmotr_end_date: '',
-                tint_end_date: ''
+                tint_end_date: '',
+                registered_for: null
             },
             newCar: {
                 year: null,
@@ -323,6 +331,7 @@ export default {
                     this.editCar.type = response.data.type;
                     this.editCar.teh_osmotr_end_date = response.data.teh_osmotr_end_date;
                     this.editCar.tint_end_date = response.data.tint_end_date;
+                    this.editCar.registered_for = response.data.registered_for;
                     this.loading.pageLoad = false;  
                 })
                 .catch(error => console.log(error));
@@ -353,6 +362,7 @@ export default {
                         formData.append('type', this.editCar.type);
                         formData.append('teh_osmotr_end_date', this.editCar.teh_osmotr_end_date);
                         formData.append('tint_end_date', this.editCar.tint_end_date);
+                        formData.append('registered_for', this.editCar.registered_for);
 
                         axios.post(`/company/${this.$route.params.slug}/cars/${this.$route.params.car}/update`, formData)
                             .then(response => {

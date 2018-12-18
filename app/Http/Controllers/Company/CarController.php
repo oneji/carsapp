@@ -184,6 +184,9 @@ class CarController extends Controller
 
         if($request->engine_capacity !== null && $request->engine_capacity !== 'null')
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
+
+        if($request->registered_for !== null && $request->registered_for !== 'null')
+            $car->registered_for = $request->registered_for;
             
         $car->save();       
 
@@ -378,7 +381,6 @@ class CarController extends Controller
         if($coverImageNameToStore !== null)
             $car->cover_image = $coverImageNameToStore;
         
-        // $car->engine_capacity = $request->engine_capacity !== 'null' ? $request->engine_capacity : null;
         $car->engine_type_id = $request->engine_type_id;
         $car->transmission_id = $request->transmission_id;
         
@@ -386,6 +388,11 @@ class CarController extends Controller
             $car->engine_capacity = str_replace(',', '.', $request->engine_capacity);
         else 
             $car->engine_capacity = null;
+            
+        if($request->registered_for !== 'null' && $request->registered_for !== null)
+            $car->registered_for = $request->registered_for;
+        else 
+            $car->registered_for = null;
 
         if($request->teh_osmotr_end_date !== null && $request->teh_osmotr_end_date !== 'null')
             $car->teh_osmotr_end_date = Carbon::parse($request->teh_osmotr_end_date);
